@@ -115,7 +115,7 @@ loadjs.ready(["wrapper", "head"], function () {
 <span id="el_Users_ProfilePicture">
 <span @Html.Raw(usersView.ProfilePicture.ViewAttributes)>@if (!string.IsNullOrEmpty(usersList.ProfilePicture.GetViewValue()))
 {
-    <a href="uploads/usersList.MobileNumber.GetViewValue()/@ConvertToString(usersList.ProfilePicture.GetViewValue())" target="_blank">Attachment</a>
+    <a href="uploads/@ConvertToString(usersList.UserID.GetViewValue())/@ConvertToString(usersList.ProfilePicture.GetViewValue())" target="_blank">Attachment</a>
 }
 else
 {
