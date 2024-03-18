@@ -78,7 +78,7 @@ public partial class mecommerce {
 
         public const string ProjectId = "{0AA1F10E-58AB-481A-991C-E9F0FF4ED711}"; // Project ID (GUID)
 
-        public static string RandomKey = "xNtmD0ckPx0HWAaS"; // Random key for encryption
+        public static string RandomKey = "4tnRgwdFustwcy97"; // Random key for encryption
 
         public static string EncryptionKey = ""; // Encryption key for data protection
 

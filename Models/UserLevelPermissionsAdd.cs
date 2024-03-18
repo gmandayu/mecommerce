@@ -514,6 +514,9 @@ public partial class mecommerce {
             if (UseAjaxActions)
                 InlineDelete = true;
 
+            // Set up lookup cache
+            await SetupLookupOptions(UserLevelID);
+
             // Load default values for add
             LoadDefaultValues();
 
@@ -679,7 +682,7 @@ public partial class mecommerce {
                 if (IsApi() && !CurrentForm.HasValue("UserLevelID") && !CurrentForm.HasValue("x_UserLevelID")) // DN
                     UserLevelID.Visible = false; // Disable update for API request
                 else
-                    UserLevelID.SetFormValue(val, true, validate);
+                    UserLevelID.SetFormValue(val);
             }
 
             // Check field name 'TableName' before field var 'x__TableName'
@@ -805,8 +808,24 @@ public partial class mecommerce {
             // View row
             if (RowType == RowType.View) {
                 // UserLevelID
-                UserLevelID.ViewValue = UserLevelID.CurrentValue;
-                UserLevelID.ViewValue = FormatNumber(UserLevelID.ViewValue, UserLevelID.FormatPattern);
+                curVal = ConvertToString(UserLevelID.CurrentValue);
+                if (!Empty(curVal)) {
+                    if (UserLevelID.Lookup != null && IsDictionary(UserLevelID.Lookup?.Options) && UserLevelID.Lookup?.Options.Values.Count > 0) { // Load from cache // DN
+                        UserLevelID.ViewValue = UserLevelID.LookupCacheOption(curVal);
+                    } else { // Lookup from database // DN
+                        filterWrk = SearchFilter("[UserLevelID]", "=", UserLevelID.CurrentValue, DataType.Number, "");
+                        sqlWrk = UserLevelID.Lookup?.GetSql(false, filterWrk, null, this, true, true);
+                        rswrk = sqlWrk != null ? Connection.GetRows(sqlWrk) : null; // Must use Sync to avoid overwriting ViewValue in RenderViewRow
+                        if (rswrk?.Count > 0 && UserLevelID.Lookup != null) { // Lookup values found
+                            var listwrk = UserLevelID.Lookup?.RenderViewRow(rswrk[0]);
+                            UserLevelID.ViewValue = UserLevelID.HighlightLookup(ConvertToString(rswrk[0]), UserLevelID.DisplayValue(listwrk));
+                        } else {
+                            UserLevelID.ViewValue = FormatNumber(UserLevelID.CurrentValue, UserLevelID.FormatPattern);
+                        }
+                    }
+                } else {
+                    UserLevelID.ViewValue = DbNullValue;
+                }
                 UserLevelID.ViewCustomAttributes = "";
 
                 // TableName
@@ -829,7 +848,19 @@ public partial class mecommerce {
             } else if (RowType == RowType.Add) {
                 // UserLevelID
                 UserLevelID.SetupEditAttributes();
-                UserLevelID.EditValue = UserLevelID.CurrentValue; // DN
+                curVal = ConvertToString(UserLevelID.CurrentValue)?.Trim() ?? "";
+                if (UserLevelID.Lookup != null && IsDictionary(UserLevelID.Lookup?.Options) && UserLevelID.Lookup?.Options.Values.Count > 0) { // Load from cache // DN
+                    UserLevelID.EditValue = UserLevelID.Lookup?.Options.Values.ToList();
+                } else { // Lookup from database
+                    if (curVal == "") {
+                        filterWrk = "0=1";
+                    } else {
+                        filterWrk = SearchFilter("[UserLevelID]", "=", UserLevelID.CurrentValue, DataType.Number, "");
+                    }
+                    sqlWrk = UserLevelID.Lookup?.GetSql(true, filterWrk, null, this, false, true);
+                    rswrk = sqlWrk != null ? Connection.GetRows(sqlWrk) : null; // Must use Sync to avoid overwriting ViewValue in RenderViewRow
+                    UserLevelID.EditValue = rswrk;
+                }
                 UserLevelID.PlaceHolder = RemoveHtml(UserLevelID.Caption);
                 if (!Empty(UserLevelID.EditValue) && IsNumeric(UserLevelID.EditValue))
                     UserLevelID.EditValue = FormatNumber(UserLevelID.EditValue, UserLevelID.FormatPattern);
@@ -879,9 +910,6 @@ public partial class mecommerce {
                 if (!UserLevelID.IsDetailKey && Empty(UserLevelID.FormValue)) {
                     UserLevelID.AddErrorMessage(ConvertToString(UserLevelID.RequiredErrorMessage).Replace("%s", UserLevelID.Caption));
                 }
-            }
-            if (!CheckInteger(UserLevelID.FormValue)) {
-                UserLevelID.AddErrorMessage(UserLevelID.GetErrorMessage(false));
             }
             if (_TableName.Required) {
                 if (!_TableName.IsDetailKey && Empty(_TableName.FormValue)) {

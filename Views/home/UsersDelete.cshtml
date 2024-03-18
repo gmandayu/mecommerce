@@ -151,7 +151,7 @@ loadjs.ready("head", function() {
 <span id="">
 <span @Html.Raw(usersDelete.ProfilePicture.ViewAttributes)>@if (!string.IsNullOrEmpty(usersList.ProfilePicture.GetViewValue()))
 {
-    <a href="uploads/usersList.MobileNumber.GetViewValue()/@ConvertToString(usersList.ProfilePicture.GetViewValue())" target="_blank">Attachment</a>
+    <a href="uploads/@ConvertToString(usersList.UserID.GetViewValue())/@ConvertToString(usersList.ProfilePicture.GetViewValue())" target="_blank">Attachment</a>
 }
 else
 {

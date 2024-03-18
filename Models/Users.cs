@@ -257,7 +257,7 @@ public partial class mecommerce {
                 "id-ID" => new Lookup<DbField>(ProfilePicture, "Users", true, "ProfilePicture", new List<string> {"ProfilePicture", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", ""),
                 _ => new Lookup<DbField>(ProfilePicture, "Users", true, "ProfilePicture", new List<string> {"ProfilePicture", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", "")
             };
-            ProfilePicture.GetUploadPath = () => "uploads/" + MobileNumber.DbValue;
+            ProfilePicture.GetUploadPath = () => "uploads/" + UserID.DbValue;
             Fields.Add("ProfilePicture", ProfilePicture);
 
             // ProfileDescription
