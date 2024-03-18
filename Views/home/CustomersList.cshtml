@@ -1,0 +1,460 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (customersList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!customersList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!customersList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(customersList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { Customers: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(customersList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(customersList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(customersList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(customersList.FormKeyCountName)")
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!customersList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (customersList.TotalRecords > 0 && customersList.ExportOptions.Visible) {
+    customersList.ExportOptions.Render("body");
+}
+@if (customersList.ImportOptions.Visible) {
+    customersList.ImportOptions.Render("body");
+}
+@if (customersList.SearchOptions.Visible) {
+    customersList.SearchOptions.Render("body");
+}
+@if (customersList.FilterOptions.Visible) {
+    customersList.FilterOptions.Render("body");
+}
+</div>
+}
+@if (!customersList.IsModal) {
+<form name="fCustomerssrch" id="fCustomerssrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" novalidate autocomplete="off">
+<div id="fCustomerssrch_search_panel" class="mb-2 mb-sm-0 @(customersList.SearchPanelClass)"><!-- .ew-search-panel -->
+<script>
+var currentTable = @Html.Raw(ConvertToJson(customersList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { Customers: currentTable } });
+var currentForm;
+var fCustomerssrch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fCustomerssrch")
+        .setPageId("list")
+@if (customersList.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Dynamic selection lists
+        .setLists({
+        })
+
+        // Filters
+        .setFilterList(@Html.Raw(await customersList.GetFilterList()))
+
+        // Init search panel as collapsed
+        .setInitSearchPanel(true)
+        .build();
+    window[form.id] = form;
+    currentSearchForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<input type="hidden" name="cmd" value="search">
+@if (Security.CanSearch) {
+if (!customersList.IsExport() && Empty(customersList.CurrentAction) && customersList.HasSearchFields()) { @* Show search form (begin) *@
+<div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0">
+    <div class="col-sm-auto px-0 pe-sm-2">
+        <div class="ew-basic-search input-group">
+            <input type="search" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control ew-basic-search-keyword" value="@Html.Raw(HtmlEncode(customersList.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))" aria-label="@(HtmlEncode(Language.Phrase("Search")))">
+            <input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" class="ew-basic-search-type" value="@(HtmlEncode(customersList.BasicSearch.SessionType))">
+            <button type="button" data-bs-toggle="dropdown" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false">
+                <span id="searchtype">@Html.Raw(customersList.BasicSearch.TypeNameShort)</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <button type="button" class="dropdown-item@(customersList.BasicSearch.SessionType == "" ? " active" : "")" form="fCustomerssrch" data-ew-action="search-type">@Html.Raw(Language.Phrase("QuickSearchAuto"))</button>
+                <button type="button" class="dropdown-item@(customersList.BasicSearch.SessionType == "=" ? " active" : "")" form="fCustomerssrch" data-ew-action="search-type" data-search-type="=">@Html.Raw(Language.Phrase("QuickSearchExact"))</button>
+                <button type="button" class="dropdown-item@(customersList.BasicSearch.SessionType == "AND" ? " active" : "")" form="fCustomerssrch" data-ew-action="search-type" data-search-type="AND">@Html.Raw(Language.Phrase("QuickSearchAll"))</button>
+                <button type="button" class="dropdown-item@(customersList.BasicSearch.SessionType == "OR" ? " active" : "")" form="fCustomerssrch" data-ew-action="search-type" data-search-type="OR">@Html.Raw(Language.Phrase("QuickSearchAny"))</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-auto mb-3">
+        <button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+    </div>
+</div>
+</div><!-- /.ew-extended-search -->
+} @* Show search form (end) *@
+}
+</div><!-- /.ew-search-panel -->
+</form>
+}
+@customersList.ShowPageHeader()
+@customersList.ShowMessages()
+<main class="list @(customersList.TotalRecords == 0 && !customersList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (customersList.TotalRecords > 0 || !Empty(customersList.CurrentAction)) {
+<div class="card ew-card ew-grid@(customersList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(customersList.TableGridClass)">
+<form name="@(customersList.FormName)" id="@(customersList.FormName)" class="ew-form ew-list-form" action="@AppPath(customersList.PageName)" method="post" novalidate autocomplete="off">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (customersList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div id="gmp_Customers" class="card-body ew-grid-middle-panel @(customersList.TableContainerClass)" style="@(customersList.TableContainerStyle)">
+@if (customersList.TotalRecords > 0 || customersList.IsGridEdit || customersList.IsMultiEdit) {
+<table id="tbl_Customerslist" class="@(customersList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    customersList.RowType = RowType.Header;
+
+    // Render list options
+    await customersList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@customersList.ListOptions.RenderHeader("left")
+@if (customersList.CustomerID.Visible) { // customersList.CustomerID.Visible (begin)
+        <th data-name="CustomerID" class="@(customersList.CustomerID.HeaderCellClass)"><div id="elh_Customers_CustomerID" class="Customers_CustomerID">@Html.Raw(customersList.RenderFieldHeader(customersList.CustomerID))</div></th>
+} @* customersList.CustomerID.Visible (end) *@
+@if (customersList.FirstName.Visible) { // customersList.FirstName.Visible (begin)
+        <th data-name="FirstName" class="@(customersList.FirstName.HeaderCellClass)"><div id="elh_Customers_FirstName" class="Customers_FirstName">@Html.Raw(customersList.RenderFieldHeader(customersList.FirstName))</div></th>
+} @* customersList.FirstName.Visible (end) *@
+@if (customersList.MiddleName.Visible) { // customersList.MiddleName.Visible (begin)
+        <th data-name="MiddleName" class="@(customersList.MiddleName.HeaderCellClass)"><div id="elh_Customers_MiddleName" class="Customers_MiddleName">@Html.Raw(customersList.RenderFieldHeader(customersList.MiddleName))</div></th>
+} @* customersList.MiddleName.Visible (end) *@
+@if (customersList.LastName.Visible) { // customersList.LastName.Visible (begin)
+        <th data-name="LastName" class="@(customersList.LastName.HeaderCellClass)"><div id="elh_Customers_LastName" class="Customers_LastName">@Html.Raw(customersList.RenderFieldHeader(customersList.LastName))</div></th>
+} @* customersList.LastName.Visible (end) *@
+@if (customersList.Gender.Visible) { // customersList.Gender.Visible (begin)
+        <th data-name="Gender" class="@(customersList.Gender.HeaderCellClass)"><div id="elh_Customers_Gender" class="Customers_Gender">@Html.Raw(customersList.RenderFieldHeader(customersList.Gender))</div></th>
+} @* customersList.Gender.Visible (end) *@
+@if (customersList.PlaceOfBirth.Visible) { // customersList.PlaceOfBirth.Visible (begin)
+        <th data-name="PlaceOfBirth" class="@(customersList.PlaceOfBirth.HeaderCellClass)"><div id="elh_Customers_PlaceOfBirth" class="Customers_PlaceOfBirth">@Html.Raw(customersList.RenderFieldHeader(customersList.PlaceOfBirth))</div></th>
+} @* customersList.PlaceOfBirth.Visible (end) *@
+@if (customersList.DateOfBirth.Visible) { // customersList.DateOfBirth.Visible (begin)
+        <th data-name="DateOfBirth" class="@(customersList.DateOfBirth.HeaderCellClass)"><div id="elh_Customers_DateOfBirth" class="Customers_DateOfBirth">@Html.Raw(customersList.RenderFieldHeader(customersList.DateOfBirth))</div></th>
+} @* customersList.DateOfBirth.Visible (end) *@
+@if (customersList.PrimaryAddressCity.Visible) { // customersList.PrimaryAddressCity.Visible (begin)
+        <th data-name="PrimaryAddressCity" class="@(customersList.PrimaryAddressCity.HeaderCellClass)"><div id="elh_Customers_PrimaryAddressCity" class="Customers_PrimaryAddressCity">@Html.Raw(customersList.RenderFieldHeader(customersList.PrimaryAddressCity))</div></th>
+} @* customersList.PrimaryAddressCity.Visible (end) *@
+@if (customersList.PrimaryAddressPostCode.Visible) { // customersList.PrimaryAddressPostCode.Visible (begin)
+        <th data-name="PrimaryAddressPostCode" class="@(customersList.PrimaryAddressPostCode.HeaderCellClass)"><div id="elh_Customers_PrimaryAddressPostCode" class="Customers_PrimaryAddressPostCode">@Html.Raw(customersList.RenderFieldHeader(customersList.PrimaryAddressPostCode))</div></th>
+} @* customersList.PrimaryAddressPostCode.Visible (end) *@
+@if (customersList.PrimaryAddressCountryID.Visible) { // customersList.PrimaryAddressCountryID.Visible (begin)
+        <th data-name="PrimaryAddressCountryID" class="@(customersList.PrimaryAddressCountryID.HeaderCellClass)"><div id="elh_Customers_PrimaryAddressCountryID" class="Customers_PrimaryAddressCountryID">@Html.Raw(customersList.RenderFieldHeader(customersList.PrimaryAddressCountryID))</div></th>
+} @* customersList.PrimaryAddressCountryID.Visible (end) *@
+@if (customersList.AlternativeAddressCity.Visible) { // customersList.AlternativeAddressCity.Visible (begin)
+        <th data-name="AlternativeAddressCity" class="@(customersList.AlternativeAddressCity.HeaderCellClass)"><div id="elh_Customers_AlternativeAddressCity" class="Customers_AlternativeAddressCity">@Html.Raw(customersList.RenderFieldHeader(customersList.AlternativeAddressCity))</div></th>
+} @* customersList.AlternativeAddressCity.Visible (end) *@
+@if (customersList.AlternativeAddressPostCode.Visible) { // customersList.AlternativeAddressPostCode.Visible (begin)
+        <th data-name="AlternativeAddressPostCode" class="@(customersList.AlternativeAddressPostCode.HeaderCellClass)"><div id="elh_Customers_AlternativeAddressPostCode" class="Customers_AlternativeAddressPostCode">@Html.Raw(customersList.RenderFieldHeader(customersList.AlternativeAddressPostCode))</div></th>
+} @* customersList.AlternativeAddressPostCode.Visible (end) *@
+@if (customersList.AlternativeAddressCountryID.Visible) { // customersList.AlternativeAddressCountryID.Visible (begin)
+        <th data-name="AlternativeAddressCountryID" class="@(customersList.AlternativeAddressCountryID.HeaderCellClass)"><div id="elh_Customers_AlternativeAddressCountryID" class="Customers_AlternativeAddressCountryID">@Html.Raw(customersList.RenderFieldHeader(customersList.AlternativeAddressCountryID))</div></th>
+} @* customersList.AlternativeAddressCountryID.Visible (end) *@
+@if (customersList.MobileNumber.Visible) { // customersList.MobileNumber.Visible (begin)
+        <th data-name="MobileNumber" class="@(customersList.MobileNumber.HeaderCellClass)"><div id="elh_Customers_MobileNumber" class="Customers_MobileNumber">@Html.Raw(customersList.RenderFieldHeader(customersList.MobileNumber))</div></th>
+} @* customersList.MobileNumber.Visible (end) *@
+@if (customersList.UserID.Visible) { // customersList.UserID.Visible (begin)
+        <th data-name="UserID" class="@(customersList.UserID.HeaderCellClass)"><div id="elh_Customers_UserID" class="Customers_UserID">@Html.Raw(customersList.RenderFieldHeader(customersList.UserID))</div></th>
+} @* customersList.UserID.Visible (end) *@
+@if (customersList.Status.Visible) { // customersList.Status.Visible (begin)
+        <th data-name="Status" class="@(customersList.Status.HeaderCellClass)"><div id="elh_Customers_Status" class="Customers_Status">@Html.Raw(customersList.RenderFieldHeader(customersList.Status))</div></th>
+} @* customersList.Status.Visible (end) *@
+@if (customersList.CreatedBy.Visible) { // customersList.CreatedBy.Visible (begin)
+        <th data-name="CreatedBy" class="@(customersList.CreatedBy.HeaderCellClass)"><div id="elh_Customers_CreatedBy" class="Customers_CreatedBy">@Html.Raw(customersList.RenderFieldHeader(customersList.CreatedBy))</div></th>
+} @* customersList.CreatedBy.Visible (end) *@
+@if (customersList.CreatedDateTime.Visible) { // customersList.CreatedDateTime.Visible (begin)
+        <th data-name="CreatedDateTime" class="@(customersList.CreatedDateTime.HeaderCellClass)"><div id="elh_Customers_CreatedDateTime" class="Customers_CreatedDateTime">@Html.Raw(customersList.RenderFieldHeader(customersList.CreatedDateTime))</div></th>
+} @* customersList.CreatedDateTime.Visible (end) *@
+@if (customersList.UpdatedBy.Visible) { // customersList.UpdatedBy.Visible (begin)
+        <th data-name="UpdatedBy" class="@(customersList.UpdatedBy.HeaderCellClass)"><div id="elh_Customers_UpdatedBy" class="Customers_UpdatedBy">@Html.Raw(customersList.RenderFieldHeader(customersList.UpdatedBy))</div></th>
+} @* customersList.UpdatedBy.Visible (end) *@
+@if (customersList.UpdatedDateTime.Visible) { // customersList.UpdatedDateTime.Visible (begin)
+        <th data-name="UpdatedDateTime" class="@(customersList.UpdatedDateTime.HeaderCellClass)"><div id="elh_Customers_UpdatedDateTime" class="Customers_UpdatedDateTime">@Html.Raw(customersList.RenderFieldHeader(customersList.UpdatedDateTime))</div></th>
+} @* customersList.UpdatedDateTime.Visible (end) *@
+@* Render list options (header, right) *@
+@customersList.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(customersList.PageNumber)">
+@{
+    await customersList.SetupGrid();
+    bool eof = customersList.Recordset == null; // DN
+}
+@while (customersList.RecordCount < customersList.StopRecord || SameString(customersList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(customersList.RowIndex, "$rowindex$") &&
+        (!customersList.IsGridAdd || customersList.CurrentMode == "copy") &&
+        (!((customersList.IsCopy || customersList.IsAdd) && customersList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await customersList.Recordset.ReadAsync();
+    customersList.RecordCount++;
+    if (customersList.RecordCount >= customersList.StartRecord) {
+        await customersList.SetupRow();
+    <tr @Html.Raw(customersList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @customersList.ListOptions.RenderBody("left", customersList.RowCount)
+    @if (customersList.CustomerID.Visible) { // customersList.CustomerID.Visible (begin)
+        <td data-name="CustomerID" @Html.Raw(customersList.CustomerID.CellAttributes)>
+<span id="el@(customersList.RowIndex == "$rowindex$" ? "$rowindex$" : customersList.RowCount)_Customers_CustomerID" class="el_Customers_CustomerID">
+<span @Html.Raw(customersList.CustomerID.ViewAttributes)>
+@Html.Raw(customersList.CustomerID.GetViewValue())</span>
+</span>
+</td>
+    } @* customersList.CustomerID.Visible (end) *@
+    @if (customersList.FirstName.Visible) { // customersList.FirstName.Visible (begin)
+        <td data-name="FirstName" @Html.Raw(customersList.FirstName.CellAttributes)>
+<span id="el@(customersList.RowIndex == "$rowindex$" ? "$rowindex$" : customersList.RowCount)_Customers_FirstName" class="el_Customers_FirstName">
+<span @Html.Raw(customersList.FirstName.ViewAttributes)>
+@Html.Raw(customersList.FirstName.GetViewValue())</span>
+</span>
+</td>
+    } @* customersList.FirstName.Visible (end) *@
+    @if (customersList.MiddleName.Visible) { // customersList.MiddleName.Visible (begin)
+        <td data-name="MiddleName" @Html.Raw(customersList.MiddleName.CellAttributes)>
+<span id="el@(customersList.RowIndex == "$rowindex$" ? "$rowindex$" : customersList.RowCount)_Customers_MiddleName" class="el_Customers_MiddleName">
+<span @Html.Raw(customersList.MiddleName.ViewAttributes)>
+@Html.Raw(customersList.MiddleName.GetViewValue())</span>
+</span>
+</td>
+    } @* customersList.MiddleName.Visible (end) *@
+    @if (customersList.LastName.Visible) { // customersList.LastName.Visible (begin)
+        <td data-name="LastName" @Html.Raw(customersList.LastName.CellAttributes)>
+<span id="el@(customersList.RowIndex == "$rowindex$" ? "$rowindex$" : customersList.RowCount)_Customers_LastName" class="el_Customers_LastName">
+<span @Html.Raw(customersList.LastName.ViewAttributes)>
+@Html.Raw(customersList.LastName.GetViewValue())</span>
+</span>
+</td>
+    } @* customersList.LastName.Visible (end) *@
+    @if (customersList.Gender.Visible) { // customersList.Gender.Visible (begin)
+        <td data-name="Gender" @Html.Raw(customersList.Gender.CellAttributes)>
+<span id="el@(customersList.RowIndex == "$rowindex$" ? "$rowindex$" : customersList.RowCount)_Customers_Gender" class="el_Customers_Gender">
+<span @Html.Raw(customersList.Gender.ViewAttributes)>
+@Html.Raw(customersList.Gender.GetViewValue())</span>
+</span>
+</td>
+    } @* customersList.Gender.Visible (end) *@
+    @if (customersList.PlaceOfBirth.Visible) { // customersList.PlaceOfBirth.Visible (begin)
+        <td data-name="PlaceOfBirth" @Html.Raw(customersList.PlaceOfBirth.CellAttributes)>
+<span id="el@(customersList.RowIndex == "$rowindex$" ? "$rowindex$" : customersList.RowCount)_Customers_PlaceOfBirth" class="el_Customers_PlaceOfBirth">
+<span @Html.Raw(customersList.PlaceOfBirth.ViewAttributes)>
+@Html.Raw(customersList.PlaceOfBirth.GetViewValue())</span>
+</span>
+</td>
+    } @* customersList.PlaceOfBirth.Visible (end) *@
+    @if (customersList.DateOfBirth.Visible) { // customersList.DateOfBirth.Visible (begin)
+        <td data-name="DateOfBirth" @Html.Raw(customersList.DateOfBirth.CellAttributes)>
+<span id="el@(customersList.RowIndex == "$rowindex$" ? "$rowindex$" : customersList.RowCount)_Customers_DateOfBirth" class="el_Customers_DateOfBirth">
+<span @Html.Raw(customersList.DateOfBirth.ViewAttributes)>
+@Html.Raw(customersList.DateOfBirth.GetViewValue())</span>
+</span>
+</td>
+    } @* customersList.DateOfBirth.Visible (end) *@
+    @if (customersList.PrimaryAddressCity.Visible) { // customersList.PrimaryAddressCity.Visible (begin)
+        <td data-name="PrimaryAddressCity" @Html.Raw(customersList.PrimaryAddressCity.CellAttributes)>
+<span id="el@(customersList.RowIndex == "$rowindex$" ? "$rowindex$" : customersList.RowCount)_Customers_PrimaryAddressCity" class="el_Customers_PrimaryAddressCity">
+<span @Html.Raw(customersList.PrimaryAddressCity.ViewAttributes)>
+@Html.Raw(customersList.PrimaryAddressCity.GetViewValue())</span>
+</span>
+</td>
+    } @* customersList.PrimaryAddressCity.Visible (end) *@
+    @if (customersList.PrimaryAddressPostCode.Visible) { // customersList.PrimaryAddressPostCode.Visible (begin)
+        <td data-name="PrimaryAddressPostCode" @Html.Raw(customersList.PrimaryAddressPostCode.CellAttributes)>
+<span id="el@(customersList.RowIndex == "$rowindex$" ? "$rowindex$" : customersList.RowCount)_Customers_PrimaryAddressPostCode" class="el_Customers_PrimaryAddressPostCode">
+<span @Html.Raw(customersList.PrimaryAddressPostCode.ViewAttributes)>
+@Html.Raw(customersList.PrimaryAddressPostCode.GetViewValue())</span>
+</span>
+</td>
+    } @* customersList.PrimaryAddressPostCode.Visible (end) *@
+    @if (customersList.PrimaryAddressCountryID.Visible) { // customersList.PrimaryAddressCountryID.Visible (begin)
+        <td data-name="PrimaryAddressCountryID" @Html.Raw(customersList.PrimaryAddressCountryID.CellAttributes)>
+<span id="el@(customersList.RowIndex == "$rowindex$" ? "$rowindex$" : customersList.RowCount)_Customers_PrimaryAddressCountryID" class="el_Customers_PrimaryAddressCountryID">
+<span @Html.Raw(customersList.PrimaryAddressCountryID.ViewAttributes)>
+@Html.Raw(customersList.PrimaryAddressCountryID.GetViewValue())</span>
+</span>
+</td>
+    } @* customersList.PrimaryAddressCountryID.Visible (end) *@
+    @if (customersList.AlternativeAddressCity.Visible) { // customersList.AlternativeAddressCity.Visible (begin)
+        <td data-name="AlternativeAddressCity" @Html.Raw(customersList.AlternativeAddressCity.CellAttributes)>
+<span id="el@(customersList.RowIndex == "$rowindex$" ? "$rowindex$" : customersList.RowCount)_Customers_AlternativeAddressCity" class="el_Customers_AlternativeAddressCity">
+<span @Html.Raw(customersList.AlternativeAddressCity.ViewAttributes)>
+@Html.Raw(customersList.AlternativeAddressCity.GetViewValue())</span>
+</span>
+</td>
+    } @* customersList.AlternativeAddressCity.Visible (end) *@
+    @if (customersList.AlternativeAddressPostCode.Visible) { // customersList.AlternativeAddressPostCode.Visible (begin)
+        <td data-name="AlternativeAddressPostCode" @Html.Raw(customersList.AlternativeAddressPostCode.CellAttributes)>
+<span id="el@(customersList.RowIndex == "$rowindex$" ? "$rowindex$" : customersList.RowCount)_Customers_AlternativeAddressPostCode" class="el_Customers_AlternativeAddressPostCode">
+<span @Html.Raw(customersList.AlternativeAddressPostCode.ViewAttributes)>
+@Html.Raw(customersList.AlternativeAddressPostCode.GetViewValue())</span>
+</span>
+</td>
+    } @* customersList.AlternativeAddressPostCode.Visible (end) *@
+    @if (customersList.AlternativeAddressCountryID.Visible) { // customersList.AlternativeAddressCountryID.Visible (begin)
+        <td data-name="AlternativeAddressCountryID" @Html.Raw(customersList.AlternativeAddressCountryID.CellAttributes)>
+<span id="el@(customersList.RowIndex == "$rowindex$" ? "$rowindex$" : customersList.RowCount)_Customers_AlternativeAddressCountryID" class="el_Customers_AlternativeAddressCountryID">
+<span @Html.Raw(customersList.AlternativeAddressCountryID.ViewAttributes)>
+@Html.Raw(customersList.AlternativeAddressCountryID.GetViewValue())</span>
+</span>
+</td>
+    } @* customersList.AlternativeAddressCountryID.Visible (end) *@
+    @if (customersList.MobileNumber.Visible) { // customersList.MobileNumber.Visible (begin)
+        <td data-name="MobileNumber" @Html.Raw(customersList.MobileNumber.CellAttributes)>
+<span id="el@(customersList.RowIndex == "$rowindex$" ? "$rowindex$" : customersList.RowCount)_Customers_MobileNumber" class="el_Customers_MobileNumber">
+<span @Html.Raw(customersList.MobileNumber.ViewAttributes)>
+@Html.Raw(customersList.MobileNumber.GetViewValue())</span>
+</span>
+</td>
+    } @* customersList.MobileNumber.Visible (end) *@
+    @if (customersList.UserID.Visible) { // customersList.UserID.Visible (begin)
+        <td data-name="UserID" @Html.Raw(customersList.UserID.CellAttributes)>
+<span id="el@(customersList.RowIndex == "$rowindex$" ? "$rowindex$" : customersList.RowCount)_Customers_UserID" class="el_Customers_UserID">
+<span @Html.Raw(customersList.UserID.ViewAttributes)>
+@Html.Raw(customersList.UserID.GetViewValue())</span>
+</span>
+</td>
+    } @* customersList.UserID.Visible (end) *@
+    @if (customersList.Status.Visible) { // customersList.Status.Visible (begin)
+        <td data-name="Status" @Html.Raw(customersList.Status.CellAttributes)>
+<span id="el@(customersList.RowIndex == "$rowindex$" ? "$rowindex$" : customersList.RowCount)_Customers_Status" class="el_Customers_Status">
+<span @Html.Raw(customersList.Status.ViewAttributes)>
+@Html.Raw(customersList.Status.GetViewValue())</span>
+</span>
+</td>
+    } @* customersList.Status.Visible (end) *@
+    @if (customersList.CreatedBy.Visible) { // customersList.CreatedBy.Visible (begin)
+        <td data-name="CreatedBy" @Html.Raw(customersList.CreatedBy.CellAttributes)>
+<span id="el@(customersList.RowIndex == "$rowindex$" ? "$rowindex$" : customersList.RowCount)_Customers_CreatedBy" class="el_Customers_CreatedBy">
+<span @Html.Raw(customersList.CreatedBy.ViewAttributes)>
+@Html.Raw(customersList.CreatedBy.GetViewValue())</span>
+</span>
+</td>
+    } @* customersList.CreatedBy.Visible (end) *@
+    @if (customersList.CreatedDateTime.Visible) { // customersList.CreatedDateTime.Visible (begin)
+        <td data-name="CreatedDateTime" @Html.Raw(customersList.CreatedDateTime.CellAttributes)>
+<span id="el@(customersList.RowIndex == "$rowindex$" ? "$rowindex$" : customersList.RowCount)_Customers_CreatedDateTime" class="el_Customers_CreatedDateTime">
+<span @Html.Raw(customersList.CreatedDateTime.ViewAttributes)>
+@Html.Raw(customersList.CreatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* customersList.CreatedDateTime.Visible (end) *@
+    @if (customersList.UpdatedBy.Visible) { // customersList.UpdatedBy.Visible (begin)
+        <td data-name="UpdatedBy" @Html.Raw(customersList.UpdatedBy.CellAttributes)>
+<span id="el@(customersList.RowIndex == "$rowindex$" ? "$rowindex$" : customersList.RowCount)_Customers_UpdatedBy" class="el_Customers_UpdatedBy">
+<span @Html.Raw(customersList.UpdatedBy.ViewAttributes)>
+@Html.Raw(customersList.UpdatedBy.GetViewValue())</span>
+</span>
+</td>
+    } @* customersList.UpdatedBy.Visible (end) *@
+    @if (customersList.UpdatedDateTime.Visible) { // customersList.UpdatedDateTime.Visible (begin)
+        <td data-name="UpdatedDateTime" @Html.Raw(customersList.UpdatedDateTime.CellAttributes)>
+<span id="el@(customersList.RowIndex == "$rowindex$" ? "$rowindex$" : customersList.RowCount)_Customers_UpdatedDateTime" class="el_Customers_UpdatedDateTime">
+<span @Html.Raw(customersList.UpdatedDateTime.ViewAttributes)>
+@Html.Raw(customersList.UpdatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* customersList.UpdatedDateTime.Visible (end) *@
+    @* Render list options (body, right) *@
+    @customersList.ListOptions.RenderBody("right", customersList.RowCount)
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(customersList.RowIndex, "$rowindex$"))
+        customersList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((customersList.IsCopy || customersList.IsAdd) && customersList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        customersList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(customersList.CurrentAction) && !customersList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ customersList.CloseRecordset(); }
+@if (!customersList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!customersList.IsGridAdd && !(customersList.IsGridEdit && customersList.ModalGridEdit) && !customersList.IsMultiEdit) {
+@Html.Raw(customersList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@customersList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@customersList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@customersList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!customersList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("Customers");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>
+}

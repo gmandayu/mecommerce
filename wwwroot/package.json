@@ -1,0 +1,13 @@
+{
+    "name": "mecommerce",
+    "version": "20.8.5",
+    "description": "mecommerce",
+    "license": "SEE LICENSE IN LICENSE.md",
+    "private": true,
+    "dependencies": {
+        "react": "^18.2.0"
+    },
+    "engines": {
+        "node": ">=16"
+    }
+}

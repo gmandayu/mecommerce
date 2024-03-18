@@ -1,0 +1,292 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (register.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!register.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+var currentTable = @Html.Raw(ConvertToJson(register.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { Users: currentTable } });
+var currentPageID = ew.PAGE_ID = "register";
+var currentForm;
+var fregister;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("fregister")
+        .setPageId("register")
+
+        // Add fields
+        .setFields([
+
+            ["_Email", [fields._Email.visible && fields._Email.required ? ew.Validators.required(fields._Email.caption) : null], fields._Email.isInvalid],
+            ["MobileNumber", [fields.MobileNumber.visible && fields.MobileNumber.required ? ew.Validators.required(fields.MobileNumber.caption) : null], fields.MobileNumber.isInvalid],
+            ["_Username", [fields._Username.visible && fields._Username.required ? ew.Validators.required(fields._Username.caption) : null, ew.Validators.username(fields._Username.raw)], fields._Username.isInvalid],
+            ["c_Password", [ew.Validators.required(ew.language.phrase("ConfirmPassword")), ew.Validators.mismatchPassword], fields.Password.isInvalid],
+            ["Password", [fields.Password.visible && fields.Password.required ? ew.Validators.required(fields.Password.caption) : null, ew.Validators.passwordStrength, ew.Validators.password(fields.Password.raw)], fields.Password.isInvalid],
+            ["ProfilePicture", [fields.ProfilePicture.visible && fields.ProfilePicture.required ? ew.Validators.fileRequired(fields.ProfilePicture.caption) : null], fields.ProfilePicture.isInvalid]
+        ])
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@register.ShowPageHeader()
+@register.ShowMessages()
+<form name="fregister" id="fregister" class="@(register.FormClassName)" action="@AppPath(CurrentPageName())" method="post" novalidate autocomplete="off">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="modal" value="@(ConvertToInt(register.IsModal))">
+@if (register.IsConfirm) { // Confirm page
+<input type="hidden" name="action" id="action" value="insert">
+<input type="hidden" name="confirm" id="confirm" value="confirm">
+} else {
+<input type="hidden" name="action" id="action" value="confirm">
+}
+<div class="ew-register-div"><!-- page* -->
+@if (register._Email.Visible) { // register._Email.Visible (begin)
+    <div id="r__Email" @Html.Raw(register._Email.RowAttributes)>
+        <label id="elh_Users__Email" for="x__Email" class="@(register.LeftColumnClass)">@Html.Raw(register._Email.Caption)@Html.Raw(register._Email.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(register.RightColumnClass)"><div @Html.Raw(register._Email.CellAttributes)>
+@if (!register.IsConfirm) { // _Email (begin)
+<span id="el_Users__Email">
+<input type="@(register._Email.InputTextType)" name="x__Email" id="x__Email" data-table="Users" data-field="x__Email" value="@Html.Raw(register._Email.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(register._Email.PlaceHolder))" data-format-pattern="@(register._Email.FormatPattern)"@Html.Raw(register._Email.EditAttributes) aria-describedby="x__Email_help">
+@Html.Raw(register._Email.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(register._Email.GetErrorMessage())</div>
+</span>
+} else { // _Email (confirm)
+<span id="el_Users__Email">
+<span @Html.Raw(register._Email.ViewAttributes)>
+<input type="text" readonly class="form-control-plaintext" value="@Html.Raw(RemoveHtml(ConvertToString(register._Email.ViewValue)))"></span>
+<input type="hidden" data-table="Users" data-field="x__Email" data-hidden="1" name="x__Email" id="x__Email" value="@Html.Raw(HtmlEncode(register._Email.FormValue))">
+</span>
+} @* _Email (end) *@
+</div></div>
+    </div>
+} @* register._Email.Visible (end) *@
+@if (register.MobileNumber.Visible) { // register.MobileNumber.Visible (begin)
+    <div id="r_MobileNumber" @Html.Raw(register.MobileNumber.RowAttributes)>
+        <label id="elh_Users_MobileNumber" for="x_MobileNumber" class="@(register.LeftColumnClass)">@Html.Raw(register.MobileNumber.Caption)@Html.Raw(register.MobileNumber.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(register.RightColumnClass)"><div @Html.Raw(register.MobileNumber.CellAttributes)>
+@if (!register.IsConfirm) { // MobileNumber (begin)
+<span id="el_Users_MobileNumber">
+<input type="@(register.MobileNumber.InputTextType)" name="x_MobileNumber" id="x_MobileNumber" data-table="Users" data-field="x_MobileNumber" value="@Html.Raw(register.MobileNumber.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(register.MobileNumber.PlaceHolder))" data-format-pattern="@(register.MobileNumber.FormatPattern)"@Html.Raw(register.MobileNumber.EditAttributes) aria-describedby="x_MobileNumber_help">
+@Html.Raw(register.MobileNumber.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(register.MobileNumber.GetErrorMessage())</div>
+</span>
+} else { // MobileNumber (confirm)
+<span id="el_Users_MobileNumber">
+<span @Html.Raw(register.MobileNumber.ViewAttributes)>
+<input type="text" readonly class="form-control-plaintext" value="@Html.Raw(RemoveHtml(ConvertToString(register.MobileNumber.ViewValue)))"></span>
+<input type="hidden" data-table="Users" data-field="x_MobileNumber" data-hidden="1" name="x_MobileNumber" id="x_MobileNumber" value="@Html.Raw(HtmlEncode(register.MobileNumber.FormValue))">
+</span>
+} @* MobileNumber (end) *@
+</div></div>
+    </div>
+} @* register.MobileNumber.Visible (end) *@
+@if (register._Username.Visible) { // register._Username.Visible (begin)
+    <div id="r__Username" @Html.Raw(register._Username.RowAttributes)>
+        <label id="elh_Users__Username" for="x__Username" class="@(register.LeftColumnClass)">@Html.Raw(register._Username.Caption)@Html.Raw(register._Username.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(register.RightColumnClass)"><div @Html.Raw(register._Username.CellAttributes)>
+@if (!register.IsConfirm) { // _Username (begin)
+<span id="el_Users__Username">
+<input type="@(register._Username.InputTextType)" name="x__Username" id="x__Username" data-table="Users" data-field="x__Username" value="@Html.Raw(register._Username.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(register._Username.PlaceHolder))" data-format-pattern="@(register._Username.FormatPattern)"@Html.Raw(register._Username.EditAttributes) aria-describedby="x__Username_help">
+@Html.Raw(register._Username.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(register._Username.GetErrorMessage())</div>
+</span>
+} else { // _Username (confirm)
+<span id="el_Users__Username">
+<span @Html.Raw(register._Username.ViewAttributes)>
+<input type="text" readonly class="form-control-plaintext" value="@Html.Raw(RemoveHtml(ConvertToString(register._Username.ViewValue)))"></span>
+<input type="hidden" data-table="Users" data-field="x__Username" data-hidden="1" name="x__Username" id="x__Username" value="@Html.Raw(HtmlEncode(register._Username.FormValue))">
+</span>
+} @* _Username (end) *@
+</div></div>
+    </div>
+} @* register._Username.Visible (end) *@
+@if (register.Password.Visible) { // register.Password.Visible (begin)
+    <div id="r_Password" @Html.Raw(register.Password.RowAttributes)>
+        <label id="elh_Users_Password" for="x_Password" class="@(register.LeftColumnClass)">@Html.Raw(register.Password.Caption)@Html.Raw(register.Password.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(register.RightColumnClass)"><div @Html.Raw(register.Password.CellAttributes)>
+@if (!register.IsConfirm) { // Password (begin)
+<span id="el_Users_Password">
+<div class="input-group" id="ig_Password">
+    <input type="password" autocomplete="new-password" data-password-strength="pst_Password" data-table="Users" data-field="x_Password" name="x_Password" id="x_Password" size="30" maxlength="255" placeholder="@(HtmlEncode(register.Password.PlaceHolder))" @Html.Raw(register.Password.EditAttributes) aria-describedby="x_Password_help">
+    <button type="button" class="btn btn-default ew-toggle-password" data-ew-action="password"><i class="fa-solid fa-eye"></i></button>
+    <button type="button" class="btn btn-default ew-password-generator rounded-end" title="@Html.Raw(Language.Phrase("GeneratePassword", true))" data-password-field="x_Password" data-password-confirm="c_Password" data-password-strength="pst_Password">@Html.Raw(Language.Phrase("GeneratePassword"))</button>
+</div>
+<div class="progress ew-password-strength-bar form-text mt-1 d-none" id="pst_Password">
+    <div class="progress-bar" role="progressbar"></div>
+</div>
+@Html.Raw(register.Password.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(register.Password.GetErrorMessage())</div>
+</span>
+} else { // Password (confirm)
+<span id="el_Users_Password">
+<span @Html.Raw(register.Password.ViewAttributes)>
+<input type="text" readonly class="form-control-plaintext" value="@Html.Raw(RemoveHtml(ConvertToString(register.Password.ViewValue)))"></span>
+<input type="hidden" data-table="Users" data-field="x_Password" data-hidden="1" name="x_Password" id="x_Password" value="@Html.Raw(HtmlEncode(register.Password.FormValue))">
+</span>
+} @* Password (end) *@
+</div></div>
+    </div>
+} @* register.Password.Visible (end) *@
+@if (register.Password.Visible) { // register.Password.Visible (begin)
+    <div id="r_c_Password" class="row">
+        <label id="elh_c_Users_Password" for="c_Password" class="@(register.LeftColumnClass)">@Html.Raw(Language.Phrase("Confirm")) @Html.Raw(register.Password.Caption)@Html.Raw(register.Password.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(register.RightColumnClass)"><div @Html.Raw(register.Password.CellAttributes)>
+@if (!register.IsConfirm) { // Password (begin)
+<span id="el_c_Users_Password">
+<div class="input-group">
+    <input type="password" name="c_Password" id="c_Password" autocomplete="new-password" data-field="c_Password" size="30" maxlength="255" placeholder="@(HtmlEncode(register.Password.PlaceHolder))"@Html.Raw(register.Password.EditAttributes) aria-describedby="x_Password_help">
+    <button type="button" class="btn btn-default ew-toggle-password rounded-end" data-ew-action="password"><i class="fa-solid fa-eye"></i></button>
+</div>
+@Html.Raw(register.Password.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(register.Password.GetErrorMessage())</div>
+</span>
+} else { // Password (confirm)
+<span id="el_c_Users_Password">
+<span @Html.Raw(register.Password.ViewAttributes)>
+<input type="text" readonly class="form-control-plaintext" value="@Html.Raw(RemoveHtml(ConvertToString(register.Password.ViewValue)))"></span>
+<input type="hidden" data-table="Users" data-field="x_Password" data-hidden="1" name="c_Password" id="c_Password" value="@Html.Raw(HtmlEncode(register.Password.FormValue))">
+</span>
+} @* Password (end) *@
+</div></div>
+    </div>
+} @* register.Password.Visible (end) *@
+@if (register.ProfilePicture.Visible) { // register.ProfilePicture.Visible (begin)
+    <div id="r_ProfilePicture" @Html.Raw(register.ProfilePicture.RowAttributes)>
+        <label id="elh_Users_ProfilePicture" class="@(register.LeftColumnClass)">@Html.Raw(register.ProfilePicture.Caption)@Html.Raw(register.ProfilePicture.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(register.RightColumnClass)"><div @Html.Raw(register.ProfilePicture.CellAttributes)>
+@if (!register.IsConfirm) { // ProfilePicture (begin)
+<span id="el_Users_ProfilePicture">
+<div id="fd_x_ProfilePicture" class="fileinput-button ew-file-drop-zone">
+    <input
+        type="file"
+        id="x_ProfilePicture"
+        name="x_ProfilePicture"
+        class="form-control ew-file-input"
+        title="@(register.ProfilePicture.Title)"
+        lang="@(CurrentLanguageID)"
+        data-table="Users"
+        data-field="x_ProfilePicture"
+        data-size="0"
+        data-accept-file-types="@(register.ProfilePicture.AcceptFileTypes)"
+        data-max-file-size="@(register.ProfilePicture.UploadMaxFileSize)"
+        data-max-number-of-files="null"
+        data-disable-image-crop="@(register.ProfilePicture.ImageCropper ? 0 : 1)"
+        aria-describedby="x_ProfilePicture_help"
+        @Html.Raw((register.ProfilePicture.ReadOnly || register.ProfilePicture.Disabled) ? " disabled" : "")
+        @Html.Raw(register.ProfilePicture.EditAttributes)
+    >
+    <div class="text-muted ew-file-text">@Html.Raw(Language.Phrase("ChooseFile"))</div>
+</div>
+@Html.Raw(register.ProfilePicture.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(register.ProfilePicture.GetErrorMessage())</div>
+<input type="hidden" name="fn_x_ProfilePicture" id= "fn_x_ProfilePicture" value="@(register.ProfilePicture.Upload.FileName)">
+<input type="hidden" name="fa_x_ProfilePicture" id= "fa_x_ProfilePicture" value="0">
+<table id="ft_x_ProfilePicture" class="table table-sm float-start ew-upload-table"><tbody class="files"></tbody></table>
+</span>
+} else { // ProfilePicture (confirm)
+<span id="el_Users_ProfilePicture">
+<div id="fd_x_ProfilePicture">
+    <input
+        type="file"
+        id="x_ProfilePicture"
+        name="x_ProfilePicture"
+        class="form-control ew-file-input d-none"
+        title="@(register.ProfilePicture.Title)"
+        lang="@(CurrentLanguageID)"
+        data-table="Users"
+        data-field="x_ProfilePicture"
+        data-size="0"
+        data-accept-file-types="@(register.ProfilePicture.AcceptFileTypes)"
+        data-max-file-size="@(register.ProfilePicture.UploadMaxFileSize)"
+        data-max-number-of-files="null"
+        data-disable-image-crop="@(register.ProfilePicture.ImageCropper ? 0 : 1)"
+        aria-describedby="x_ProfilePicture_help"
+        @Html.Raw(register.ProfilePicture.EditAttributes)
+    >
+</div>
+@Html.Raw(register.ProfilePicture.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(register.ProfilePicture.GetErrorMessage())</div>
+<input type="hidden" name="fn_x_ProfilePicture" id= "fn_x_ProfilePicture" value="@(register.ProfilePicture.Upload.FileName)">
+<input type="hidden" name="fa_x_ProfilePicture" id= "fa_x_ProfilePicture" value="0">
+<table id="ft_x_ProfilePicture" class="table table-sm float-start ew-upload-table"><tbody class="files"></tbody></table>
+</span>
+} @* ProfilePicture (end) *@
+</div></div>
+    </div>
+} @* register.ProfilePicture.Visible (end) *@
+</div><!-- /page* -->
+@Html.Raw(register.IsModal ? "<template class=\"ew-modal-buttons\">" : "<div class=\"row ew-buttons\">")<!-- buttons .row -->
+    <div class="@(register.OffsetColumnClass)"><!-- buttons offset -->
+@if (!register.IsConfirm) { // Confirm page
+    <button class="btn btn-primary ew-btn disabled enable-on-init" name="btn-action" id="btn-action" type="submit" form="fregister" data-ew-action="set-action" data-value="confirm">@Html.Raw(Language.Phrase("RegisterBtn"))</button>
+} else {
+    <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fregister">@Html.Raw(Language.Phrase("ConfirmBtn"))</button>
+    <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="submit" form="fregister" data-ew-action="set-action" data-value="cancel">@Html.Raw(Language.Phrase("CancelBtn"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(register.IsModal ? "</template>" : "</div>")<!-- /buttons .row -->
+</form>
+@register.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("Users");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your startup script here
+    // document.write("page loaded");
+});
+</script>

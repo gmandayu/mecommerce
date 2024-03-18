@@ -1,0 +1,2076 @@
+namespace ASPNETMaker2023.Models;
+
+// Partial class
+public partial class mecommerce {
+    /// <summary>
+    /// customersEdit
+    /// </summary>
+    public static CustomersEdit customersEdit
+    {
+        get => HttpData.Get<CustomersEdit>("customersEdit")!;
+        set => HttpData["customersEdit"] = value;
+    }
+
+    /// <summary>
+    /// Page class for Customers
+    /// </summary>
+    public class CustomersEdit : CustomersEditBase
+    {
+        // Constructor
+        public CustomersEdit(Controller controller) : base(controller)
+        {
+        }
+
+        // Constructor
+        public CustomersEdit() : base()
+        {
+        }
+    }
+
+    /// <summary>
+    /// Page base class
+    /// </summary>
+    public class CustomersEditBase : Customers
+    {
+        // Page ID
+        public string PageID = "edit";
+
+        // Project ID
+        public string ProjectID = "{0AA1F10E-58AB-481A-991C-E9F0FF4ED711}";
+
+        // Table name
+        public string TableName { get; set; } = "Customers";
+
+        // Page object name
+        public string PageObjName = "customersEdit";
+
+        // Title
+        public string? Title = null; // Title for <title> tag
+
+        // Page headings
+        public string Heading = "";
+
+        public string Subheading = "";
+
+        public string PageHeader = "";
+
+        public string PageFooter = "";
+
+        // Token
+        public string? Token = null; // DN
+
+        public bool CheckToken = Config.CheckToken;
+
+        // Action result // DN
+        public IActionResult? ActionResult;
+
+        // Cache // DN
+        public IMemoryCache? Cache;
+
+        // Page layout
+        public bool UseLayout = true;
+
+        // Page terminated // DN
+        private bool _terminated = false;
+
+        // Is terminated
+        public bool IsTerminated => _terminated;
+
+        // Is lookup
+        public bool IsLookup => IsApi() && RouteValues.TryGetValue("controller", out object? name) && SameText(name, Config.ApiLookupAction);
+
+        // Is AutoFill
+        public bool IsAutoFill => IsLookup && SameText(Post("ajax"), "autofill");
+
+        // Is AutoSuggest
+        public bool IsAutoSuggest => IsLookup && SameText(Post("ajax"), "autosuggest");
+
+        // Is modal lookup
+        public bool IsModalLookup => IsLookup && SameText(Post("ajax"), "modal");
+
+        // Page URL
+        private string _pageUrl = "";
+
+        // Constructor
+        public CustomersEditBase()
+        {
+            // Initialize
+            CurrentPage = this;
+
+            // Table CSS class
+            TableClass = "table table-striped table-bordered table-hover table-sm ew-desktop-table ew-edit-table";
+
+            // Language object
+            Language = ResolveLanguage();
+
+            // Table object (customers)
+            if (customers == null || customers is Customers)
+                customers = this;
+
+            // Start time
+            StartTime = Environment.TickCount;
+
+            // Debug message
+            LoadDebugMessage();
+
+            // Open connection
+            Conn = Connection; // DN
+
+            // User table object (Users)
+            UserTable = Resolve("usertable")!;
+            UserTableConn = GetConnection(UserTable.DbId);
+        }
+
+        // Page action result
+        public IActionResult PageResult()
+        {
+            if (ActionResult != null)
+                return ActionResult;
+            SetupMenus();
+            return Controller.View();
+        }
+
+        // Page heading
+        public string PageHeading
+        {
+            get {
+                if (!Empty(Heading))
+                    return Heading;
+                else if (!Empty(Caption))
+                    return Caption;
+                else
+                    return "";
+            }
+        }
+
+        // Page subheading
+        public string PageSubheading
+        {
+            get {
+                if (!Empty(Subheading))
+                    return Subheading;
+                if (!Empty(TableName))
+                    return Language.Phrase(PageID);
+                return "";
+            }
+        }
+
+        // Page name
+        public string PageName => "customersedit";
+
+        // Page URL
+        public string PageUrl
+        {
+            get {
+                if (_pageUrl == "") {
+                    _pageUrl = PageName + "?";
+                }
+                return _pageUrl;
+            }
+        }
+
+        // Show Page Header
+        public IHtmlContent ShowPageHeader()
+        {
+            string header = PageHeader;
+            PageDataRendering(ref header);
+            if (!Empty(header)) // Header exists, display
+                return new HtmlString("<p id=\"ew-page-header\">" + header + "</p>");
+            return HtmlString.Empty;
+        }
+
+        // Show Page Footer
+        public IHtmlContent ShowPageFooter()
+        {
+            string footer = PageFooter;
+            PageDataRendered(ref footer);
+            if (!Empty(footer)) // Footer exists, display
+                return new HtmlString("<p id=\"ew-page-footer\">" + footer + "</p>");
+            return HtmlString.Empty;
+        }
+
+        // Valid post
+        protected async Task<bool> ValidPost() => !CheckToken || !IsPost() || IsApi() || Antiforgery != null && HttpContext != null && await Antiforgery.IsRequestValidAsync(HttpContext);
+
+        // Create token
+        public void CreateToken()
+        {
+            Token ??= HttpContext != null ? Antiforgery?.GetAndStoreTokens(HttpContext).RequestToken : null;
+            CurrentToken = Token ?? ""; // Save to global variable
+        }
+
+        // Set field visibility
+        public void SetVisibility()
+        {
+            CustomerID.SetVisibility();
+            FirstName.SetVisibility();
+            MiddleName.SetVisibility();
+            LastName.SetVisibility();
+            Gender.SetVisibility();
+            PlaceOfBirth.SetVisibility();
+            DateOfBirth.SetVisibility();
+            PrimaryAddress.SetVisibility();
+            PrimaryAddressCity.SetVisibility();
+            PrimaryAddressPostCode.SetVisibility();
+            PrimaryAddressCountryID.SetVisibility();
+            AlternativeAddress.SetVisibility();
+            AlternativeAddressCity.SetVisibility();
+            AlternativeAddressPostCode.SetVisibility();
+            AlternativeAddressCountryID.SetVisibility();
+            MobileNumber.SetVisibility();
+            UserID.SetVisibility();
+            Status.SetVisibility();
+            CreatedBy.SetVisibility();
+            CreatedDateTime.SetVisibility();
+            UpdatedBy.SetVisibility();
+            UpdatedDateTime.SetVisibility();
+        }
+
+        // Constructor
+        public CustomersEditBase(Controller? controller = null): this() { // DN
+            if (controller != null)
+                Controller = controller;
+        }
+
+        /// <summary>
+        /// Terminate page
+        /// </summary>
+        /// <param name="url">URL to rediect to</param>
+        /// <returns>Page result</returns>
+        public override IActionResult Terminate(string url = "") { // DN
+            if (_terminated) // DN
+                return new EmptyResult();
+
+            // Page Unload event
+            PageUnload();
+
+            // Global Page Unloaded event
+            PageUnloaded();
+            if (!IsApi())
+                PageRedirecting(ref url);
+
+            // Gargage collection
+            Collect(); // DN
+
+            // Terminate
+            _terminated = true; // DN
+
+            // Return for API
+            if (IsApi()) {
+                var result = new Dictionary<string, string> { { "version", Config.ProductVersion } };
+                if (!Empty(url)) // Add url
+                    result.Add("url", GetUrl(url));
+                foreach (var (key, value) in GetMessages()) // Add messages
+                    result.Add(key, value);
+                return Controller.Json(result);
+            } else if (ActionResult != null) { // Check action result
+                return ActionResult;
+            }
+
+            // Go to URL if specified
+            if (!Empty(url)) {
+                if (!Config.Debug)
+                    ResponseClear();
+                if (Response != null && !Response.HasStarted) {
+                    // Handle modal response (Assume return to modal for simplicity)
+                    if (IsModal) { // Show as modal
+                        var result = new Dictionary<string, string> { {"url", GetUrl(url)}, {"modal", "1"} };
+                        string pageName = GetPageName(url);
+                        if (pageName != ListUrl) { // Not List page
+                            result.Add("caption", GetModalCaption(pageName));
+                            result.Add("view", pageName == "customersview" ? "1" : "0"); // If View page, no primary button
+                        } else { // List page
+                            // result.Add("list", PageID == "search" ? "1" : "0"); // Refresh List page if current page is Search page
+                            result.Add("error", FailureMessage); // List page should not be shown as modal => error
+                            ClearFailureMessage();
+                        }
+                        return Controller.Json(result);
+                    } else {
+                        SaveDebugMessage();
+                        return Controller.LocalRedirect(AppPath(url));
+                    }
+                }
+            }
+            return new EmptyResult();
+        }
+
+        // Get all records from datareader
+        [return: NotNullIfNotNull("dr")]
+        protected async Task<List<Dictionary<string, object>>> GetRecordsFromRecordset(DbDataReader? dr)
+        {
+            var rows = new List<Dictionary<string, object>>();
+            while (dr != null && await dr.ReadAsync()) {
+                await LoadRowValues(dr); // Set up DbValue/CurrentValue
+                if (GetRecordFromDictionary(GetDictionary(dr)) is Dictionary<string, object> row)
+                    rows.Add(row);
+            }
+            return rows;
+        }
+
+        // Get all records from the list of records
+        #pragma warning disable 1998
+
+        protected async Task<List<Dictionary<string, object>>> GetRecordsFromRecordset(List<Dictionary<string, object>>? list)
+        {
+            var rows = new List<Dictionary<string, object>>();
+            if (list != null) {
+                foreach (var row in list) {
+                    if (GetRecordFromDictionary(row) is Dictionary<string, object> d)
+                       rows.Add(row);
+                }
+            }
+            return rows;
+        }
+        #pragma warning restore 1998
+
+        // Get the first record from datareader
+        [return: NotNullIfNotNull("dr")]
+        protected async Task<Dictionary<string, object>?> GetRecordFromRecordset(DbDataReader? dr)
+        {
+            if (dr != null) {
+                await LoadRowValues(dr); // Set up DbValue/CurrentValue
+                return GetRecordFromDictionary(GetDictionary(dr));
+            }
+            return null;
+        }
+
+        // Get the first record from the list of records
+        protected Dictionary<string, object>? GetRecordFromRecordset(List<Dictionary<string, object>>? list) =>
+            list != null && list.Count > 0 ? GetRecordFromDictionary(list[0]) : null;
+
+        // Get record from Dictionary
+        protected Dictionary<string, object>? GetRecordFromDictionary(Dictionary<string, object>? dict) {
+            if (dict == null)
+                return null;
+            var row = new Dictionary<string, object>();
+            foreach (var (key, value) in dict) {
+                if (Fields.TryGetValue(key, out DbField? fld)) {
+                    if (fld.Visible || fld.IsPrimaryKey) { // Primary key or Visible
+                        if (fld.HtmlTag == "FILE") { // Upload field
+                            if (Empty(value)) {
+                                // row[key] = null;
+                            } else {
+                                if (fld.DataType == DataType.Blob) {
+                                    string url = FullUrl(GetPageName(Config.ApiUrl) + "/" + Config.ApiFileAction + "/" + fld.TableVar + "/" + fld.Param + "/" + GetRecordKeyValue(dict)); // Query string format
+                                    row[key] = new Dictionary<string, object> { { "type", ContentType((byte[])value) }, { "url", url }, { "name", fld.Param + ContentExtension((byte[])value) } };
+                                } else if (!fld.UploadMultiple || !ConvertToString(value).Contains(Config.MultipleUploadSeparator)) { // Single file
+                                    string url = FullUrl(GetPageName(Config.ApiUrl) + "/" + Config.ApiFileAction + "/" + fld.TableVar + "/" + Encrypt(fld.PhysicalUploadPath + ConvertToString(value))); // Query string format
+                                    row[key] = new Dictionary<string, object> { { "type", ContentType(ConvertToString(value)) }, { "url", url }, { "name", ConvertToString(value) } };
+                                } else { // Multiple files
+                                    var files = ConvertToString(value).Split(Config.MultipleUploadSeparator);
+                                    row[key] = files.Where(file => !Empty(file)).Select(file => new Dictionary<string, object> { { "type", ContentType(file) }, { "url", FullUrl(GetPageName(Config.ApiUrl) + "/" + Config.ApiFileAction + "/" + fld.TableVar + "/" + Encrypt(fld.PhysicalUploadPath + file)) }, { "name", file } });
+                                }
+                            }
+                        } else {
+                            string val = ConvertToString(value);
+                            if (fld.DataType == DataType.Date && value is DateTime dt)
+                                val = dt.ToString("s");
+                            row[key] = ConvertToString(val);
+                        }
+                    }
+                }
+            }
+            return row;
+        }
+
+        // Get record key value from array
+        protected string GetRecordKeyValue(Dictionary<string, object> dict) {
+            string key = "";
+            key += UrlEncode(ConvertToString(dict.ContainsKey("CustomerID") ? dict["CustomerID"] : CustomerID.CurrentValue));
+            return key;
+        }
+
+        // Hide fields for Add/Edit
+        protected void HideFieldsForAddEdit() {
+            if (IsAdd || IsCopy || IsGridAdd)
+                CustomerID.Visible = false;
+        }
+
+        #pragma warning disable 219
+        /// <summary>
+        /// Lookup data from table
+        /// </summary>
+        public async Task<Dictionary<string, object>> Lookup(Dictionary<string, string>? dict = null)
+        {
+            Language = ResolveLanguage();
+            Security = ResolveSecurity();
+            string? v;
+
+            // Get lookup object
+            string fieldName = IsDictionary(dict) && dict.TryGetValue("field", out v) && v != null ? v : Post("field");
+            var lookupField = FieldByName(fieldName);
+            var lookup = lookupField?.Lookup;
+            if (lookup == null) // DN
+                return new Dictionary<string, object>();
+            string lookupType = IsDictionary(dict) && dict.TryGetValue("ajax", out v) && v != null ? v : (Post("ajax") ?? "unknown");
+            int pageSize = -1;
+            int offset = -1;
+            string searchValue = "";
+            if (SameText(lookupType, "modal") || SameText(lookupType, "filter")) {
+                searchValue = IsDictionary(dict) && (dict.TryGetValue("q", out v) && v != null || dict.TryGetValue("sv", out v) && v != null)
+                    ? v
+                    : (Param("q") ?? Post("sv"));
+                pageSize = IsDictionary(dict) && (dict.TryGetValue("n", out v) || dict.TryGetValue("recperpage", out v))
+                    ? ConvertToInt(v)
+                    : (IsNumeric(Param("n")) ? Param<int>("n") : (Post("recperpage", out StringValues rpp) ? ConvertToInt(rpp.ToString()) : 10));
+            } else if (SameText(lookupType, "autosuggest")) {
+                searchValue = IsDictionary(dict) && dict.TryGetValue("q", out v) && v != null ? v : Param("q");
+                pageSize = IsDictionary(dict) && dict.TryGetValue("n", out v) ? ConvertToInt(v) : (IsNumeric(Param("n")) ? Param<int>("n") : -1);
+                if (pageSize <= 0)
+                    pageSize = Config.AutoSuggestMaxEntries;
+            }
+            int start = IsDictionary(dict) && dict.TryGetValue("start", out v) ? ConvertToInt(v) : (IsNumeric(Param("start")) ? Param<int>("start") : -1);
+            int page = IsDictionary(dict) && dict.TryGetValue("page", out v) ? ConvertToInt(v) : (IsNumeric(Param("page")) ? Param<int>("page") : -1);
+            offset = start >= 0 ? start : (page > 0 && pageSize > 0 ? (page - 1) * pageSize : 0);
+            string userSelect = Decrypt(IsDictionary(dict) && dict.TryGetValue("s", out v) && v != null ? v : Post("s"));
+            string userFilter = Decrypt(IsDictionary(dict) && dict.TryGetValue("f", out v) && v != null ? v : Post("f"));
+            string userOrderBy = Decrypt(IsDictionary(dict) && dict.TryGetValue("o", out v) && v != null ? v : Post("o"));
+
+            // Selected records from modal, skip parent/filter fields and show all records
+            lookup.LookupType = lookupType; // Lookup type
+            lookup.FilterValues.Clear(); // Clear filter values first
+            StringValues keys = IsDictionary(dict) && dict.TryGetValue("keys", out v) && !Empty(v)
+                ? (StringValues)v
+                : (Post("keys[]", out StringValues k) ? (StringValues)k : StringValues.Empty);
+            if (!Empty(keys)) { // Selected records from modal
+                lookup.FilterFields = new (); // Skip parent fields if any
+                pageSize = -1; // Show all records
+                lookup.FilterValues.Add(String.Join(",", keys.ToArray()));
+            } else { // Lookup values
+                string lookupValue = IsDictionary(dict) && (dict.TryGetValue("v0", out v) && v != null || dict.TryGetValue("lookupValue", out v) && v != null)
+                    ? v
+                    : (Post<string>("v0") ?? Post("lookupValue"));
+                lookup.FilterValues.Add(lookupValue);
+            }
+            int cnt = IsDictionary(lookup.FilterFields) ? lookup.FilterFields.Count : 0;
+            for (int i = 1; i <= cnt; i++) {
+                var val = UrlDecode(IsDictionary(dict) && dict.TryGetValue("v" + i, out v) ? v : Post("v" + i));
+                if (val != null) // DN
+                    lookup.FilterValues.Add(val);
+            }
+            lookup.SearchValue = searchValue;
+            lookup.PageSize = pageSize;
+            lookup.Offset = offset;
+            if (userSelect != "")
+                lookup.UserSelect = userSelect;
+            if (userFilter != "")
+                lookup.UserFilter = userFilter;
+            if (userOrderBy != "")
+                lookup.UserOrderBy = userOrderBy;
+            return await lookup.ToJson(this);
+        }
+        #pragma warning restore 219
+
+        private Pager? _pager; // DN
+
+        public int DisplayRecords = 1; // Number of display records
+
+        public int StartRecord;
+
+        public int StopRecord;
+
+        public int TotalRecords = -1;
+
+        public int RecordRange = 10;
+
+        public int RecordCount;
+
+        public Dictionary<string, string> RecordKeys = new ();
+
+        public string FormClassName = "ew-form ew-edit-form overlay-wrapper";
+
+        public bool IsModal = false;
+
+        public bool IsMobileOrModal = false;
+
+        public string DbMasterFilter = "";
+
+        public string DbDetailFilter = "";
+
+        public DbDataReader? Recordset; // DN
+
+        public Pager Pager
+        {
+            get {
+                _pager ??= new NumericPager(this, StartRecord, DisplayRecords, TotalRecords, "", RecordRange, AutoHidePager, false, false);
+                _pager.PageNumberName = Config.TablePageNumber;
+                _pager.PagePhraseId = "Record"; // Show as record
+                return _pager;
+            }
+        }
+
+        #pragma warning disable 219
+        /// <summary>
+        /// Page run
+        /// </summary>
+        /// <returns>Page result</returns>
+        public override async Task<IActionResult> Run()
+        {
+            // Is modal
+            IsModal = Param<bool>("modal");
+            UseLayout = UseLayout && !IsModal;
+
+            // Use layout
+            if (!Empty(Param("layout")) && !Param<bool>("layout"))
+                UseLayout = false;
+
+            // User profile
+            Profile = ResolveProfile();
+
+            // Security
+            Security = ResolveSecurity();
+            if (TableVar != "")
+                Security.LoadTablePermissions(TableVar);
+
+            // Create form object
+            CurrentForm ??= new ();
+            await CurrentForm.Init();
+            CurrentAction = Param("action"); // Set up current action
+            SetVisibility();
+
+            // Do not use lookup cache
+            if (!Config.LookupCachePageIds.Contains(PageID))
+                SetUseLookupCache(false);
+
+            // Global Page Loading event
+            PageLoading();
+
+            // Page Load event
+            PageLoad();
+
+            // Check token
+            if (!await ValidPost())
+                End(Language.Phrase("InvalidPostRequest"));
+
+            // Check action result
+            if (ActionResult != null) // Action result set by server event // DN
+                return ActionResult;
+
+            // Create token
+            CreateToken();
+
+            // Hide fields for add/edit
+            if (!UseAjaxActions)
+                HideFieldsForAddEdit();
+            // Use inline delete
+            if (UseAjaxActions)
+                InlineDelete = true;
+
+            // Check modal
+            if (IsModal)
+                SkipHeaderFooter = true;
+            IsMobileOrModal = IsMobile() || IsModal;
+
+            // Load record by position
+            bool loadByPosition = false;
+            bool loaded = false;
+            bool postBack = false;
+            StringValues sv;
+            object? rv;
+
+            // Set up current action and primary key
+            if (IsApi()) {
+                loaded = true;
+
+                // Load key from form
+                string[] keyValues = {};
+                if (RouteValues.TryGetValue("key", out object? k))
+                    keyValues = ConvertToString(k).Split('/');
+                if (RouteValues.TryGetValue("CustomerID", out rv)) { // DN
+                    CustomerID.FormValue = UrlDecode(rv); // DN
+                    CustomerID.OldValue = CustomerID.FormValue;
+                } else if (CurrentForm.HasValue("x_CustomerID")) {
+                    CustomerID.FormValue = CurrentForm.GetValue("x_CustomerID");
+                    CustomerID.OldValue = CustomerID.FormValue;
+                } else if (!Empty(keyValues)) {
+                    CustomerID.OldValue = ConvertToString(keyValues[0]);
+                } else {
+                    loaded = false; // Unable to load key
+                }
+
+                // Load record
+                if (loaded)
+                    loaded = await LoadRow();
+                if (!loaded) {
+                    FailureMessage = Language.Phrase("NoRecord"); // Set no record message
+                    return Terminate();
+                }
+                CurrentAction = "update"; // Update record directly
+                OldKey = GetKey(true); // Get from CurrentValue
+                postBack = true;
+            } else {
+                if (!Empty(Post("action"))) {
+                    CurrentAction = Post("action"); // Get action code
+                    if (!IsShow) // Not reload record, handle as postback
+                        postBack = true;
+
+                    // Get key from Form
+                    if (Post(OldKeyName, out sv))
+                        SetKey(sv.ToString(), IsShow);
+                } else {
+                    CurrentAction = "show"; // Default action is display
+
+                    // Load key from QueryString
+                    bool loadByQuery = false;
+                    if (RouteValues.TryGetValue("CustomerID", out rv)) { // DN
+                        CustomerID.QueryValue = UrlDecode(rv); // DN
+                        loadByQuery = true;
+                    } else if (Get("CustomerID", out sv)) {
+                        CustomerID.QueryValue = sv.ToString();
+                        loadByQuery = true;
+                    } else {
+                        CustomerID.CurrentValue = DbNullValue;
+                    }
+                    if (!loadByQuery || IsNumeric(Get(Config.TableStartRec)) || IsNumeric(Get(Config.TablePageNumber)))
+                        loadByPosition = true;
+                }
+
+                // Load recordset
+                if (IsShow) {
+                    if (!IsModal) { // Normal edit page
+                        StartRecord = 1; // Initialize start position
+                        Recordset = await LoadRecordset(); // Load records
+                        TotalRecords = await ListRecordCountAsync(); // Get record count // DN
+                        if (TotalRecords <= 0) { // No record found
+                            if (Empty(SuccessMessage) && Empty(FailureMessage))
+                                FailureMessage = Language.Phrase("NoRecord"); // Set no record message
+                            if (IsApi()) {
+                                if (!Empty(SuccessMessage))
+                                    return new JsonBoolResult(new { success = true, message = SuccessMessage, version = Config.ProductVersion }, true);
+                                else
+                                    return new JsonBoolResult(new { success = false, error = FailureMessage, version = Config.ProductVersion }, false);
+                            } else {
+                                return Terminate("customerslist"); // Return to list page
+                            }
+                        } else if (loadByPosition) { // Load record by position
+                            SetupStartRecord(); // Set up start record position
+                            // Point to current record
+                            if (Recordset != null && StartRecord <= TotalRecords) {
+                                for (int i = 1; i <= StartRecord; i++)
+                                    await Recordset.ReadAsync();
+
+                                // Redirect to correct record
+                                await LoadRowValues(Recordset);
+                                string url = GetCurrentUrl();
+                                return Terminate(url);
+                            }
+                        } else { // Match key values
+                            if (CustomerID.CurrentValue != null) {
+                                while (Recordset != null && await Recordset.ReadAsync()) {
+                                    if (SameString(CustomerID.CurrentValue, Recordset["CustomerID"])) {
+                                        StartRecordNumber = StartRecord; // Save record position
+                                        loaded = true;
+                                        break;
+                                    } else {
+                                        StartRecord++;
+                                    }
+                                }
+                            }
+                        }
+
+                        // Load current row values
+                        if (loaded)
+                            await LoadRowValues(Recordset);
+                } else {
+                    // Load current record
+                    loaded = await LoadRow();
+                } // End modal checking
+                OldKey = loaded ? GetKey(true) : ""; // Get from CurrentValue
+            }
+        }
+
+        // Process form if post back
+        if (postBack) {
+            await LoadFormValues(); // Get form values
+            if (IsApi() && RouteValues.TryGetValue("key", out object? k)) {
+                var keyValues = ConvertToString(k).Split('/');
+                CustomerID.FormValue = ConvertToString(keyValues[0]);
+            }
+        }
+
+        // Validate form if post back
+        if (postBack) {
+            if (!await ValidateForm()) {
+                EventCancelled = true; // Event cancelled
+                RestoreFormValues();
+                if (IsApi())
+                    return Terminate();
+                else
+                    CurrentAction = ""; // Form error, reset action
+            }
+        }
+
+        // Perform current action
+        switch (CurrentAction) {
+                case "show": // Get a record to display
+                    if (!IsModal) { // Normal edit page
+                        if (!loaded) {
+                            if (Empty(SuccessMessage) && Empty(FailureMessage))
+                                FailureMessage = Language.Phrase("NoRecord"); // Set no record message
+                            if (IsApi()) {
+                                if (!Empty(SuccessMessage))
+                                    return new JsonBoolResult(new { success = true, message = SuccessMessage, version = Config.ProductVersion }, true);
+                                else
+                                    return new JsonBoolResult(new { success = false, error = FailureMessage, version = Config.ProductVersion }, false);
+                            } else {
+                                return Terminate("customerslist"); // Return to list page
+                            }
+                        } else {
+                        }
+                    } else { // Modal edit page
+                        if (!loaded) { // Load record based on key
+                            if (Empty(FailureMessage))
+                                FailureMessage = Language.Phrase("NoRecord"); // No record found
+                            return Terminate("customerslist"); // No matching record, return to list
+                        }
+                    } // End modal checking
+                    break;
+                case "update": // Update // DN
+                    CloseRecordset(); // DN
+                    string returnUrl = ReturnUrl;
+                    if (GetPageName(returnUrl) == "customerslist")
+                        returnUrl = AddMasterUrl(ListUrl); // List page, return to List page with correct master key if necessary
+                    SendEmail = true; // Send email on update success
+                    var res = await EditRow();
+                    if (res) { // Update record based on key
+                        if (Empty(SuccessMessage))
+                            SuccessMessage = Language.Phrase("UpdateSuccess"); // Update success
+
+                        // Handle UseAjaxActions with return page
+                        if (IsModal && UseAjaxActions) {
+                            IsModal = false;
+                            if (GetPageName(returnUrl) != "customerslist") {
+                                TempData["Return-Url"] = returnUrl; // Save return URL
+                                returnUrl = "customerslist"; // Return list page content
+                            }
+                        }
+                        if (IsJsonResponse()) {
+                            ClearMessages(); // Clear messages for Json response
+                            return res;
+                        } else {
+                            return Terminate(returnUrl); // Return to caller
+                        }
+                    } else if (IsApi()) { // API request, return
+                        return Terminate();
+                    } else if (IsModal && UseAjaxActions) { // Return JSON error message
+                        return Controller.Json(new { success = false, error = GetFailureMessage() });
+                    } else if (FailureMessage == Language.Phrase("NoRecord")) {
+                        return Terminate(returnUrl); // Return to caller
+                    } else {
+                        EventCancelled = true; // Event cancelled
+                        RestoreFormValues(); // Restore form values if update failed
+                    }
+                    break;
+            }
+
+            // Set up Breadcrumb
+            SetupBreadcrumb();
+
+            // Render the record
+            RowType = RowType.Edit; // Render as Edit
+            ResetAttributes();
+            await RenderRow();
+
+            // Set LoginStatus, Page Rendering and Page Render
+            if (!IsApi() && !IsTerminated) {
+                SetupLoginStatus(); // Setup login status
+
+                // Pass login status to client side
+                SetClientVar("login", LoginStatus);
+
+                // Global Page Rendering event
+                PageRendering();
+
+                // Page Render event
+                customersEdit?.PageRender();
+            }
+            return PageResult();
+        }
+        #pragma warning restore 219
+
+        // Confirm page
+        public bool ConfirmPage = false; // DN
+
+        #pragma warning disable 1998
+        // Get upload files
+        public async Task GetUploadFiles()
+        {
+            // Get upload data
+        }
+        #pragma warning restore 1998
+
+        #pragma warning disable 1998
+        // Load form values
+        protected async Task LoadFormValues() {
+            if (CurrentForm == null)
+                return;
+            bool validate = !Config.ServerValidate;
+            string val;
+
+            // Check field name 'CustomerID' before field var 'x_CustomerID'
+            val = CurrentForm.HasValue("CustomerID") ? CurrentForm.GetValue("CustomerID") : CurrentForm.GetValue("x_CustomerID");
+            if (!CustomerID.IsDetailKey)
+                CustomerID.SetFormValue(val);
+
+            // Check field name 'FirstName' before field var 'x_FirstName'
+            val = CurrentForm.HasValue("FirstName") ? CurrentForm.GetValue("FirstName") : CurrentForm.GetValue("x_FirstName");
+            if (!FirstName.IsDetailKey) {
+                if (IsApi() && !CurrentForm.HasValue("FirstName") && !CurrentForm.HasValue("x_FirstName")) // DN
+                    FirstName.Visible = false; // Disable update for API request
+                else
+                    FirstName.SetFormValue(val);
+            }
+
+            // Check field name 'MiddleName' before field var 'x_MiddleName'
+            val = CurrentForm.HasValue("MiddleName") ? CurrentForm.GetValue("MiddleName") : CurrentForm.GetValue("x_MiddleName");
+            if (!MiddleName.IsDetailKey) {
+                if (IsApi() && !CurrentForm.HasValue("MiddleName") && !CurrentForm.HasValue("x_MiddleName")) // DN
+                    MiddleName.Visible = false; // Disable update for API request
+                else
+                    MiddleName.SetFormValue(val);
+            }
+
+            // Check field name 'LastName' before field var 'x_LastName'
+            val = CurrentForm.HasValue("LastName") ? CurrentForm.GetValue("LastName") : CurrentForm.GetValue("x_LastName");
+            if (!LastName.IsDetailKey) {
+                if (IsApi() && !CurrentForm.HasValue("LastName") && !CurrentForm.HasValue("x_LastName")) // DN
+                    LastName.Visible = false; // Disable update for API request
+                else
+                    LastName.SetFormValue(val);
+            }
+
+            // Check field name 'Gender' before field var 'x_Gender'
+            val = CurrentForm.HasValue("Gender") ? CurrentForm.GetValue("Gender") : CurrentForm.GetValue("x_Gender");
+            if (!Gender.IsDetailKey) {
+                if (IsApi() && !CurrentForm.HasValue("Gender") && !CurrentForm.HasValue("x_Gender")) // DN
+                    Gender.Visible = false; // Disable update for API request
+                else
+                    Gender.SetFormValue(val);
+            }
+
+            // Check field name 'PlaceOfBirth' before field var 'x_PlaceOfBirth'
+            val = CurrentForm.HasValue("PlaceOfBirth") ? CurrentForm.GetValue("PlaceOfBirth") : CurrentForm.GetValue("x_PlaceOfBirth");
+            if (!PlaceOfBirth.IsDetailKey) {
+                if (IsApi() && !CurrentForm.HasValue("PlaceOfBirth") && !CurrentForm.HasValue("x_PlaceOfBirth")) // DN
+                    PlaceOfBirth.Visible = false; // Disable update for API request
+                else
+                    PlaceOfBirth.SetFormValue(val);
+            }
+
+            // Check field name 'DateOfBirth' before field var 'x_DateOfBirth'
+            val = CurrentForm.HasValue("DateOfBirth") ? CurrentForm.GetValue("DateOfBirth") : CurrentForm.GetValue("x_DateOfBirth");
+            if (!DateOfBirth.IsDetailKey) {
+                if (IsApi() && !CurrentForm.HasValue("DateOfBirth") && !CurrentForm.HasValue("x_DateOfBirth")) // DN
+                    DateOfBirth.Visible = false; // Disable update for API request
+                else
+                    DateOfBirth.SetFormValue(val, true, validate);
+                DateOfBirth.CurrentValue = UnformatDateTime(DateOfBirth.CurrentValue, DateOfBirth.FormatPattern);
+            }
+
+            // Check field name 'PrimaryAddress' before field var 'x_PrimaryAddress'
+            val = CurrentForm.HasValue("PrimaryAddress") ? CurrentForm.GetValue("PrimaryAddress") : CurrentForm.GetValue("x_PrimaryAddress");
+            if (!PrimaryAddress.IsDetailKey) {
+                if (IsApi() && !CurrentForm.HasValue("PrimaryAddress") && !CurrentForm.HasValue("x_PrimaryAddress")) // DN
+                    PrimaryAddress.Visible = false; // Disable update for API request
+                else
+                    PrimaryAddress.SetFormValue(val);
+            }
+
+            // Check field name 'PrimaryAddressCity' before field var 'x_PrimaryAddressCity'
+            val = CurrentForm.HasValue("PrimaryAddressCity") ? CurrentForm.GetValue("PrimaryAddressCity") : CurrentForm.GetValue("x_PrimaryAddressCity");
+            if (!PrimaryAddressCity.IsDetailKey) {
+                if (IsApi() && !CurrentForm.HasValue("PrimaryAddressCity") && !CurrentForm.HasValue("x_PrimaryAddressCity")) // DN
+                    PrimaryAddressCity.Visible = false; // Disable update for API request
+                else
+                    PrimaryAddressCity.SetFormValue(val);
+            }
+
+            // Check field name 'PrimaryAddressPostCode' before field var 'x_PrimaryAddressPostCode'
+            val = CurrentForm.HasValue("PrimaryAddressPostCode") ? CurrentForm.GetValue("PrimaryAddressPostCode") : CurrentForm.GetValue("x_PrimaryAddressPostCode");
+            if (!PrimaryAddressPostCode.IsDetailKey) {
+                if (IsApi() && !CurrentForm.HasValue("PrimaryAddressPostCode") && !CurrentForm.HasValue("x_PrimaryAddressPostCode")) // DN
+                    PrimaryAddressPostCode.Visible = false; // Disable update for API request
+                else
+                    PrimaryAddressPostCode.SetFormValue(val);
+            }
+
+            // Check field name 'PrimaryAddressCountryID' before field var 'x_PrimaryAddressCountryID'
+            val = CurrentForm.HasValue("PrimaryAddressCountryID") ? CurrentForm.GetValue("PrimaryAddressCountryID") : CurrentForm.GetValue("x_PrimaryAddressCountryID");
+            if (!PrimaryAddressCountryID.IsDetailKey) {
+                if (IsApi() && !CurrentForm.HasValue("PrimaryAddressCountryID") && !CurrentForm.HasValue("x_PrimaryAddressCountryID")) // DN
+                    PrimaryAddressCountryID.Visible = false; // Disable update for API request
+                else
+                    PrimaryAddressCountryID.SetFormValue(val, true, validate);
+            }
+
+            // Check field name 'AlternativeAddress' before field var 'x_AlternativeAddress'
+            val = CurrentForm.HasValue("AlternativeAddress") ? CurrentForm.GetValue("AlternativeAddress") : CurrentForm.GetValue("x_AlternativeAddress");
+            if (!AlternativeAddress.IsDetailKey) {
+                if (IsApi() && !CurrentForm.HasValue("AlternativeAddress") && !CurrentForm.HasValue("x_AlternativeAddress")) // DN
+                    AlternativeAddress.Visible = false; // Disable update for API request
+                else
+                    AlternativeAddress.SetFormValue(val);
+            }
+
+            // Check field name 'AlternativeAddressCity' before field var 'x_AlternativeAddressCity'
+            val = CurrentForm.HasValue("AlternativeAddressCity") ? CurrentForm.GetValue("AlternativeAddressCity") : CurrentForm.GetValue("x_AlternativeAddressCity");
+            if (!AlternativeAddressCity.IsDetailKey) {
+                if (IsApi() && !CurrentForm.HasValue("AlternativeAddressCity") && !CurrentForm.HasValue("x_AlternativeAddressCity")) // DN
+                    AlternativeAddressCity.Visible = false; // Disable update for API request
+                else
+                    AlternativeAddressCity.SetFormValue(val);
+            }
+
+            // Check field name 'AlternativeAddressPostCode' before field var 'x_AlternativeAddressPostCode'
+            val = CurrentForm.HasValue("AlternativeAddressPostCode") ? CurrentForm.GetValue("AlternativeAddressPostCode") : CurrentForm.GetValue("x_AlternativeAddressPostCode");
+            if (!AlternativeAddressPostCode.IsDetailKey) {
+                if (IsApi() && !CurrentForm.HasValue("AlternativeAddressPostCode") && !CurrentForm.HasValue("x_AlternativeAddressPostCode")) // DN
+                    AlternativeAddressPostCode.Visible = false; // Disable update for API request
+                else
+                    AlternativeAddressPostCode.SetFormValue(val);
+            }
+
+            // Check field name 'AlternativeAddressCountryID' before field var 'x_AlternativeAddressCountryID'
+            val = CurrentForm.HasValue("AlternativeAddressCountryID") ? CurrentForm.GetValue("AlternativeAddressCountryID") : CurrentForm.GetValue("x_AlternativeAddressCountryID");
+            if (!AlternativeAddressCountryID.IsDetailKey) {
+                if (IsApi() && !CurrentForm.HasValue("AlternativeAddressCountryID") && !CurrentForm.HasValue("x_AlternativeAddressCountryID")) // DN
+                    AlternativeAddressCountryID.Visible = false; // Disable update for API request
+                else
+                    AlternativeAddressCountryID.SetFormValue(val, true, validate);
+            }
+
+            // Check field name 'MobileNumber' before field var 'x_MobileNumber'
+            val = CurrentForm.HasValue("MobileNumber") ? CurrentForm.GetValue("MobileNumber") : CurrentForm.GetValue("x_MobileNumber");
+            if (!MobileNumber.IsDetailKey) {
+                if (IsApi() && !CurrentForm.HasValue("MobileNumber") && !CurrentForm.HasValue("x_MobileNumber")) // DN
+                    MobileNumber.Visible = false; // Disable update for API request
+                else
+                    MobileNumber.SetFormValue(val);
+            }
+
+            // Check field name 'UserID' before field var 'x_UserID'
+            val = CurrentForm.HasValue("UserID") ? CurrentForm.GetValue("UserID") : CurrentForm.GetValue("x_UserID");
+            if (!UserID.IsDetailKey) {
+                if (IsApi() && !CurrentForm.HasValue("UserID") && !CurrentForm.HasValue("x_UserID")) // DN
+                    UserID.Visible = false; // Disable update for API request
+                else
+                    UserID.SetFormValue(val, true, validate);
+            }
+
+            // Check field name 'Status' before field var 'x_Status'
+            val = CurrentForm.HasValue("Status") ? CurrentForm.GetValue("Status") : CurrentForm.GetValue("x_Status");
+            if (!Status.IsDetailKey) {
+                if (IsApi() && !CurrentForm.HasValue("Status") && !CurrentForm.HasValue("x_Status")) // DN
+                    Status.Visible = false; // Disable update for API request
+                else
+                    Status.SetFormValue(val);
+            }
+
+            // Check field name 'CreatedBy' before field var 'x_CreatedBy'
+            val = CurrentForm.HasValue("CreatedBy") ? CurrentForm.GetValue("CreatedBy") : CurrentForm.GetValue("x_CreatedBy");
+            if (!CreatedBy.IsDetailKey) {
+                if (IsApi() && !CurrentForm.HasValue("CreatedBy") && !CurrentForm.HasValue("x_CreatedBy")) // DN
+                    CreatedBy.Visible = false; // Disable update for API request
+                else
+                    CreatedBy.SetFormValue(val, true, validate);
+            }
+
+            // Check field name 'CreatedDateTime' before field var 'x_CreatedDateTime'
+            val = CurrentForm.HasValue("CreatedDateTime") ? CurrentForm.GetValue("CreatedDateTime") : CurrentForm.GetValue("x_CreatedDateTime");
+            if (!CreatedDateTime.IsDetailKey) {
+                if (IsApi() && !CurrentForm.HasValue("CreatedDateTime") && !CurrentForm.HasValue("x_CreatedDateTime")) // DN
+                    CreatedDateTime.Visible = false; // Disable update for API request
+                else
+                    CreatedDateTime.SetFormValue(val, true, validate);
+                CreatedDateTime.CurrentValue = UnformatDateTime(CreatedDateTime.CurrentValue, CreatedDateTime.FormatPattern);
+            }
+
+            // Check field name 'UpdatedBy' before field var 'x_UpdatedBy'
+            val = CurrentForm.HasValue("UpdatedBy") ? CurrentForm.GetValue("UpdatedBy") : CurrentForm.GetValue("x_UpdatedBy");
+            if (!UpdatedBy.IsDetailKey) {
+                if (IsApi() && !CurrentForm.HasValue("UpdatedBy") && !CurrentForm.HasValue("x_UpdatedBy")) // DN
+                    UpdatedBy.Visible = false; // Disable update for API request
+                else
+                    UpdatedBy.SetFormValue(val, true, validate);
+            }
+
+            // Check field name 'UpdatedDateTime' before field var 'x_UpdatedDateTime'
+            val = CurrentForm.HasValue("UpdatedDateTime") ? CurrentForm.GetValue("UpdatedDateTime") : CurrentForm.GetValue("x_UpdatedDateTime");
+            if (!UpdatedDateTime.IsDetailKey) {
+                if (IsApi() && !CurrentForm.HasValue("UpdatedDateTime") && !CurrentForm.HasValue("x_UpdatedDateTime")) // DN
+                    UpdatedDateTime.Visible = false; // Disable update for API request
+                else
+                    UpdatedDateTime.SetFormValue(val, true, validate);
+                UpdatedDateTime.CurrentValue = UnformatDateTime(UpdatedDateTime.CurrentValue, UpdatedDateTime.FormatPattern);
+            }
+        }
+        #pragma warning restore 1998
+
+        // Restore form values
+        public void RestoreFormValues()
+        {
+            CustomerID.CurrentValue = CustomerID.FormValue;
+            FirstName.CurrentValue = FirstName.FormValue;
+            MiddleName.CurrentValue = MiddleName.FormValue;
+            LastName.CurrentValue = LastName.FormValue;
+            Gender.CurrentValue = Gender.FormValue;
+            PlaceOfBirth.CurrentValue = PlaceOfBirth.FormValue;
+            DateOfBirth.CurrentValue = DateOfBirth.FormValue;
+            DateOfBirth.CurrentValue = UnformatDateTime(DateOfBirth.CurrentValue, DateOfBirth.FormatPattern);
+            PrimaryAddress.CurrentValue = PrimaryAddress.FormValue;
+            PrimaryAddressCity.CurrentValue = PrimaryAddressCity.FormValue;
+            PrimaryAddressPostCode.CurrentValue = PrimaryAddressPostCode.FormValue;
+            PrimaryAddressCountryID.CurrentValue = PrimaryAddressCountryID.FormValue;
+            AlternativeAddress.CurrentValue = AlternativeAddress.FormValue;
+            AlternativeAddressCity.CurrentValue = AlternativeAddressCity.FormValue;
+            AlternativeAddressPostCode.CurrentValue = AlternativeAddressPostCode.FormValue;
+            AlternativeAddressCountryID.CurrentValue = AlternativeAddressCountryID.FormValue;
+            MobileNumber.CurrentValue = MobileNumber.FormValue;
+            UserID.CurrentValue = UserID.FormValue;
+            Status.CurrentValue = Status.FormValue;
+            CreatedBy.CurrentValue = CreatedBy.FormValue;
+            CreatedDateTime.CurrentValue = CreatedDateTime.FormValue;
+            CreatedDateTime.CurrentValue = UnformatDateTime(CreatedDateTime.CurrentValue, CreatedDateTime.FormatPattern);
+            UpdatedBy.CurrentValue = UpdatedBy.FormValue;
+            UpdatedDateTime.CurrentValue = UpdatedDateTime.FormValue;
+            UpdatedDateTime.CurrentValue = UnformatDateTime(UpdatedDateTime.CurrentValue, UpdatedDateTime.FormatPattern);
+        }
+
+        // Load recordset // DN
+        public async Task<DbDataReader?> LoadRecordset(int offset = -1, int rowcnt = -1)
+        {
+            // Load list page SQL
+            string sql = ListSql;
+
+            // Load recordset // DN
+            var dr = await Connection.SelectLimit(sql, rowcnt, offset, !Empty(OrderBy) || !Empty(SessionOrderBy));
+
+            // Call Recordset Selected event
+            RecordsetSelected(dr);
+            return dr;
+        }
+
+        // Load rows // DN
+        public async Task<List<Dictionary<string, object>>> LoadRows(int offset = -1, int rowcnt = -1)
+        {
+            // Load list page SQL
+            string sql = ListSql;
+
+            // Load rows // DN
+            using var dr = await Connection.SelectLimit(sql, rowcnt, offset, !Empty(OrderBy) || !Empty(SessionOrderBy));
+            var rows = await Connection.GetRowsAsync(dr);
+            dr.Close(); // Close datareader before return
+            return rows;
+        }
+
+        // Load row based on key values
+        public async Task<bool> LoadRow()
+        {
+            string filter = GetRecordFilter();
+
+            // Call Row Selecting event
+            RowSelecting(ref filter);
+
+            // Load SQL based on filter
+            CurrentFilter = filter;
+            string sql = CurrentSql;
+            bool res = false;
+            try {
+                var row = await Connection.GetRowAsync(sql);
+                if (row != null) {
+                    await LoadRowValues(row);
+                    res = true;
+                } else {
+                    return false;
+                }
+            } catch {
+                if (Config.Debug)
+                    throw;
+            }
+            return res;
+        }
+
+        #pragma warning disable 162, 168, 1998, 4014
+        // Load row values from data reader
+        public async Task LoadRowValues(DbDataReader? dr = null) => await LoadRowValues(GetDictionary(dr));
+
+        // Load row values from recordset
+        public async Task LoadRowValues(Dictionary<string, object>? row)
+        {
+            row ??= NewRow();
+
+            // Call Row Selected event
+            RowSelected(row);
+            CustomerID.SetDbValue(row["CustomerID"]);
+            FirstName.SetDbValue(row["FirstName"]);
+            MiddleName.SetDbValue(row["MiddleName"]);
+            LastName.SetDbValue(row["LastName"]);
+            Gender.SetDbValue(row["Gender"]);
+            PlaceOfBirth.SetDbValue(row["PlaceOfBirth"]);
+            DateOfBirth.SetDbValue(row["DateOfBirth"]);
+            PrimaryAddress.SetDbValue(row["PrimaryAddress"]);
+            PrimaryAddressCity.SetDbValue(row["PrimaryAddressCity"]);
+            PrimaryAddressPostCode.SetDbValue(row["PrimaryAddressPostCode"]);
+            PrimaryAddressCountryID.SetDbValue(row["PrimaryAddressCountryID"]);
+            AlternativeAddress.SetDbValue(row["AlternativeAddress"]);
+            AlternativeAddressCity.SetDbValue(row["AlternativeAddressCity"]);
+            AlternativeAddressPostCode.SetDbValue(row["AlternativeAddressPostCode"]);
+            AlternativeAddressCountryID.SetDbValue(row["AlternativeAddressCountryID"]);
+            MobileNumber.SetDbValue(row["MobileNumber"]);
+            UserID.SetDbValue(row["UserID"]);
+            Status.SetDbValue(row["Status"]);
+            CreatedBy.SetDbValue(row["CreatedBy"]);
+            CreatedDateTime.SetDbValue(row["CreatedDateTime"]);
+            UpdatedBy.SetDbValue(row["UpdatedBy"]);
+            UpdatedDateTime.SetDbValue(row["UpdatedDateTime"]);
+        }
+        #pragma warning restore 162, 168, 1998, 4014
+
+        // Return a row with default values
+        protected Dictionary<string, object> NewRow() {
+            var row = new Dictionary<string, object>();
+            row.Add("CustomerID", CustomerID.DefaultValue ?? DbNullValue); // DN
+            row.Add("FirstName", FirstName.DefaultValue ?? DbNullValue); // DN
+            row.Add("MiddleName", MiddleName.DefaultValue ?? DbNullValue); // DN
+            row.Add("LastName", LastName.DefaultValue ?? DbNullValue); // DN
+            row.Add("Gender", Gender.DefaultValue ?? DbNullValue); // DN
+            row.Add("PlaceOfBirth", PlaceOfBirth.DefaultValue ?? DbNullValue); // DN
+            row.Add("DateOfBirth", DateOfBirth.DefaultValue ?? DbNullValue); // DN
+            row.Add("PrimaryAddress", PrimaryAddress.DefaultValue ?? DbNullValue); // DN
+            row.Add("PrimaryAddressCity", PrimaryAddressCity.DefaultValue ?? DbNullValue); // DN
+            row.Add("PrimaryAddressPostCode", PrimaryAddressPostCode.DefaultValue ?? DbNullValue); // DN
+            row.Add("PrimaryAddressCountryID", PrimaryAddressCountryID.DefaultValue ?? DbNullValue); // DN
+            row.Add("AlternativeAddress", AlternativeAddress.DefaultValue ?? DbNullValue); // DN
+            row.Add("AlternativeAddressCity", AlternativeAddressCity.DefaultValue ?? DbNullValue); // DN
+            row.Add("AlternativeAddressPostCode", AlternativeAddressPostCode.DefaultValue ?? DbNullValue); // DN
+            row.Add("AlternativeAddressCountryID", AlternativeAddressCountryID.DefaultValue ?? DbNullValue); // DN
+            row.Add("MobileNumber", MobileNumber.DefaultValue ?? DbNullValue); // DN
+            row.Add("UserID", UserID.DefaultValue ?? DbNullValue); // DN
+            row.Add("Status", Status.DefaultValue ?? DbNullValue); // DN
+            row.Add("CreatedBy", CreatedBy.DefaultValue ?? DbNullValue); // DN
+            row.Add("CreatedDateTime", CreatedDateTime.DefaultValue ?? DbNullValue); // DN
+            row.Add("UpdatedBy", UpdatedBy.DefaultValue ?? DbNullValue); // DN
+            row.Add("UpdatedDateTime", UpdatedDateTime.DefaultValue ?? DbNullValue); // DN
+            return row;
+        }
+
+        #pragma warning disable 618, 1998
+        // Load old record
+        protected async Task<Dictionary<string, object>?> LoadOldRecord(DatabaseConnectionBase<SqlConnection, SqlCommand, SqlDataReader, SqlDbType>? cnn = null) {
+            // Load old record
+            Dictionary<string, object>? row = null;
+            bool validKey = !Empty(OldKey);
+            if (validKey) {
+                SetKey(OldKey);
+                CurrentFilter = GetRecordFilter();
+                string sql = CurrentSql;
+                try {
+                    row = await (cnn ?? Connection).GetRowAsync(sql);
+                } catch {
+                    row = null;
+                }
+            }
+            await LoadRowValues(row); // Load row values
+            return row;
+        }
+        #pragma warning restore 618, 1998
+
+        #pragma warning disable 1998
+        // Render row values based on field settings
+        public async Task RenderRow()
+        {
+            // Call Row Rendering event
+            RowRendering();
+
+            // Common render codes for all row types
+
+            // CustomerID
+            CustomerID.RowCssClass = "row";
+
+            // FirstName
+            FirstName.RowCssClass = "row";
+
+            // MiddleName
+            MiddleName.RowCssClass = "row";
+
+            // LastName
+            LastName.RowCssClass = "row";
+
+            // Gender
+            Gender.RowCssClass = "row";
+
+            // PlaceOfBirth
+            PlaceOfBirth.RowCssClass = "row";
+
+            // DateOfBirth
+            DateOfBirth.RowCssClass = "row";
+
+            // PrimaryAddress
+            PrimaryAddress.RowCssClass = "row";
+
+            // PrimaryAddressCity
+            PrimaryAddressCity.RowCssClass = "row";
+
+            // PrimaryAddressPostCode
+            PrimaryAddressPostCode.RowCssClass = "row";
+
+            // PrimaryAddressCountryID
+            PrimaryAddressCountryID.RowCssClass = "row";
+
+            // AlternativeAddress
+            AlternativeAddress.RowCssClass = "row";
+
+            // AlternativeAddressCity
+            AlternativeAddressCity.RowCssClass = "row";
+
+            // AlternativeAddressPostCode
+            AlternativeAddressPostCode.RowCssClass = "row";
+
+            // AlternativeAddressCountryID
+            AlternativeAddressCountryID.RowCssClass = "row";
+
+            // MobileNumber
+            MobileNumber.RowCssClass = "row";
+
+            // UserID
+            UserID.RowCssClass = "row";
+
+            // Status
+            Status.RowCssClass = "row";
+
+            // CreatedBy
+            CreatedBy.RowCssClass = "row";
+
+            // CreatedDateTime
+            CreatedDateTime.RowCssClass = "row";
+
+            // UpdatedBy
+            UpdatedBy.RowCssClass = "row";
+
+            // UpdatedDateTime
+            UpdatedDateTime.RowCssClass = "row";
+
+            // View row
+            if (RowType == RowType.View) {
+                // CustomerID
+                CustomerID.ViewValue = CustomerID.CurrentValue;
+                CustomerID.ViewCustomAttributes = "";
+
+                // FirstName
+                FirstName.ViewValue = ConvertToString(FirstName.CurrentValue); // DN
+                FirstName.ViewCustomAttributes = "";
+
+                // MiddleName
+                MiddleName.ViewValue = ConvertToString(MiddleName.CurrentValue); // DN
+                MiddleName.ViewCustomAttributes = "";
+
+                // LastName
+                LastName.ViewValue = ConvertToString(LastName.CurrentValue); // DN
+                LastName.ViewCustomAttributes = "";
+
+                // Gender
+                Gender.ViewValue = ConvertToString(Gender.CurrentValue); // DN
+                Gender.ViewCustomAttributes = "";
+
+                // PlaceOfBirth
+                PlaceOfBirth.ViewValue = ConvertToString(PlaceOfBirth.CurrentValue); // DN
+                PlaceOfBirth.ViewCustomAttributes = "";
+
+                // DateOfBirth
+                DateOfBirth.ViewValue = DateOfBirth.CurrentValue;
+                DateOfBirth.ViewValue = FormatDateTime(DateOfBirth.ViewValue, DateOfBirth.FormatPattern);
+                DateOfBirth.ViewCustomAttributes = "";
+
+                // PrimaryAddress
+                PrimaryAddress.ViewValue = PrimaryAddress.CurrentValue;
+                PrimaryAddress.ViewCustomAttributes = "";
+
+                // PrimaryAddressCity
+                PrimaryAddressCity.ViewValue = ConvertToString(PrimaryAddressCity.CurrentValue); // DN
+                PrimaryAddressCity.ViewCustomAttributes = "";
+
+                // PrimaryAddressPostCode
+                PrimaryAddressPostCode.ViewValue = ConvertToString(PrimaryAddressPostCode.CurrentValue); // DN
+                PrimaryAddressPostCode.ViewCustomAttributes = "";
+
+                // PrimaryAddressCountryID
+                PrimaryAddressCountryID.ViewValue = PrimaryAddressCountryID.CurrentValue;
+                PrimaryAddressCountryID.ViewValue = FormatNumber(PrimaryAddressCountryID.ViewValue, PrimaryAddressCountryID.FormatPattern);
+                PrimaryAddressCountryID.ViewCustomAttributes = "";
+
+                // AlternativeAddress
+                AlternativeAddress.ViewValue = AlternativeAddress.CurrentValue;
+                AlternativeAddress.ViewCustomAttributes = "";
+
+                // AlternativeAddressCity
+                AlternativeAddressCity.ViewValue = ConvertToString(AlternativeAddressCity.CurrentValue); // DN
+                AlternativeAddressCity.ViewCustomAttributes = "";
+
+                // AlternativeAddressPostCode
+                AlternativeAddressPostCode.ViewValue = ConvertToString(AlternativeAddressPostCode.CurrentValue); // DN
+                AlternativeAddressPostCode.ViewCustomAttributes = "";
+
+                // AlternativeAddressCountryID
+                AlternativeAddressCountryID.ViewValue = AlternativeAddressCountryID.CurrentValue;
+                AlternativeAddressCountryID.ViewValue = FormatNumber(AlternativeAddressCountryID.ViewValue, AlternativeAddressCountryID.FormatPattern);
+                AlternativeAddressCountryID.ViewCustomAttributes = "";
+
+                // MobileNumber
+                MobileNumber.ViewValue = ConvertToString(MobileNumber.CurrentValue); // DN
+                MobileNumber.ViewCustomAttributes = "";
+
+                // UserID
+                UserID.ViewValue = UserID.CurrentValue;
+                UserID.ViewValue = FormatNumber(UserID.ViewValue, UserID.FormatPattern);
+                UserID.ViewCustomAttributes = "";
+
+                // Status
+                Status.ViewValue = ConvertToString(Status.CurrentValue); // DN
+                Status.ViewCustomAttributes = "";
+
+                // CreatedBy
+                CreatedBy.ViewValue = CreatedBy.CurrentValue;
+                CreatedBy.ViewValue = FormatNumber(CreatedBy.ViewValue, CreatedBy.FormatPattern);
+                CreatedBy.ViewCustomAttributes = "";
+
+                // CreatedDateTime
+                CreatedDateTime.ViewValue = CreatedDateTime.CurrentValue;
+                CreatedDateTime.ViewValue = FormatDateTime(CreatedDateTime.ViewValue, CreatedDateTime.FormatPattern);
+                CreatedDateTime.ViewCustomAttributes = "";
+
+                // UpdatedBy
+                UpdatedBy.ViewValue = UpdatedBy.CurrentValue;
+                UpdatedBy.ViewValue = FormatNumber(UpdatedBy.ViewValue, UpdatedBy.FormatPattern);
+                UpdatedBy.ViewCustomAttributes = "";
+
+                // UpdatedDateTime
+                UpdatedDateTime.ViewValue = UpdatedDateTime.CurrentValue;
+                UpdatedDateTime.ViewValue = FormatDateTime(UpdatedDateTime.ViewValue, UpdatedDateTime.FormatPattern);
+                UpdatedDateTime.ViewCustomAttributes = "";
+
+                // CustomerID
+                CustomerID.HrefValue = "";
+
+                // FirstName
+                FirstName.HrefValue = "";
+
+                // MiddleName
+                MiddleName.HrefValue = "";
+
+                // LastName
+                LastName.HrefValue = "";
+
+                // Gender
+                Gender.HrefValue = "";
+
+                // PlaceOfBirth
+                PlaceOfBirth.HrefValue = "";
+
+                // DateOfBirth
+                DateOfBirth.HrefValue = "";
+
+                // PrimaryAddress
+                PrimaryAddress.HrefValue = "";
+
+                // PrimaryAddressCity
+                PrimaryAddressCity.HrefValue = "";
+
+                // PrimaryAddressPostCode
+                PrimaryAddressPostCode.HrefValue = "";
+
+                // PrimaryAddressCountryID
+                PrimaryAddressCountryID.HrefValue = "";
+
+                // AlternativeAddress
+                AlternativeAddress.HrefValue = "";
+
+                // AlternativeAddressCity
+                AlternativeAddressCity.HrefValue = "";
+
+                // AlternativeAddressPostCode
+                AlternativeAddressPostCode.HrefValue = "";
+
+                // AlternativeAddressCountryID
+                AlternativeAddressCountryID.HrefValue = "";
+
+                // MobileNumber
+                MobileNumber.HrefValue = "";
+
+                // UserID
+                UserID.HrefValue = "";
+
+                // Status
+                Status.HrefValue = "";
+
+                // CreatedBy
+                CreatedBy.HrefValue = "";
+
+                // CreatedDateTime
+                CreatedDateTime.HrefValue = "";
+
+                // UpdatedBy
+                UpdatedBy.HrefValue = "";
+
+                // UpdatedDateTime
+                UpdatedDateTime.HrefValue = "";
+            } else if (RowType == RowType.Edit) {
+                // CustomerID
+                CustomerID.SetupEditAttributes();
+                CustomerID.EditValue = CustomerID.CurrentValue;
+                CustomerID.ViewCustomAttributes = "";
+
+                // FirstName
+                FirstName.SetupEditAttributes();
+                if (!FirstName.Raw)
+                    FirstName.CurrentValue = HtmlDecode(FirstName.CurrentValue);
+                FirstName.EditValue = HtmlEncode(FirstName.CurrentValue);
+                FirstName.PlaceHolder = RemoveHtml(FirstName.Caption);
+
+                // MiddleName
+                MiddleName.SetupEditAttributes();
+                if (!MiddleName.Raw)
+                    MiddleName.CurrentValue = HtmlDecode(MiddleName.CurrentValue);
+                MiddleName.EditValue = HtmlEncode(MiddleName.CurrentValue);
+                MiddleName.PlaceHolder = RemoveHtml(MiddleName.Caption);
+
+                // LastName
+                LastName.SetupEditAttributes();
+                if (!LastName.Raw)
+                    LastName.CurrentValue = HtmlDecode(LastName.CurrentValue);
+                LastName.EditValue = HtmlEncode(LastName.CurrentValue);
+                LastName.PlaceHolder = RemoveHtml(LastName.Caption);
+
+                // Gender
+                Gender.SetupEditAttributes();
+                if (!Gender.Raw)
+                    Gender.CurrentValue = HtmlDecode(Gender.CurrentValue);
+                Gender.EditValue = HtmlEncode(Gender.CurrentValue);
+                Gender.PlaceHolder = RemoveHtml(Gender.Caption);
+
+                // PlaceOfBirth
+                PlaceOfBirth.SetupEditAttributes();
+                if (!PlaceOfBirth.Raw)
+                    PlaceOfBirth.CurrentValue = HtmlDecode(PlaceOfBirth.CurrentValue);
+                PlaceOfBirth.EditValue = HtmlEncode(PlaceOfBirth.CurrentValue);
+                PlaceOfBirth.PlaceHolder = RemoveHtml(PlaceOfBirth.Caption);
+
+                // DateOfBirth
+                DateOfBirth.SetupEditAttributes();
+                DateOfBirth.EditValue = FormatDateTime(DateOfBirth.CurrentValue, DateOfBirth.FormatPattern); // DN
+                DateOfBirth.PlaceHolder = RemoveHtml(DateOfBirth.Caption);
+
+                // PrimaryAddress
+                PrimaryAddress.SetupEditAttributes();
+                PrimaryAddress.EditValue = PrimaryAddress.CurrentValue; // DN
+                PrimaryAddress.PlaceHolder = RemoveHtml(PrimaryAddress.Caption);
+
+                // PrimaryAddressCity
+                PrimaryAddressCity.SetupEditAttributes();
+                if (!PrimaryAddressCity.Raw)
+                    PrimaryAddressCity.CurrentValue = HtmlDecode(PrimaryAddressCity.CurrentValue);
+                PrimaryAddressCity.EditValue = HtmlEncode(PrimaryAddressCity.CurrentValue);
+                PrimaryAddressCity.PlaceHolder = RemoveHtml(PrimaryAddressCity.Caption);
+
+                // PrimaryAddressPostCode
+                PrimaryAddressPostCode.SetupEditAttributes();
+                if (!PrimaryAddressPostCode.Raw)
+                    PrimaryAddressPostCode.CurrentValue = HtmlDecode(PrimaryAddressPostCode.CurrentValue);
+                PrimaryAddressPostCode.EditValue = HtmlEncode(PrimaryAddressPostCode.CurrentValue);
+                PrimaryAddressPostCode.PlaceHolder = RemoveHtml(PrimaryAddressPostCode.Caption);
+
+                // PrimaryAddressCountryID
+                PrimaryAddressCountryID.SetupEditAttributes();
+                PrimaryAddressCountryID.EditValue = PrimaryAddressCountryID.CurrentValue; // DN
+                PrimaryAddressCountryID.PlaceHolder = RemoveHtml(PrimaryAddressCountryID.Caption);
+                if (!Empty(PrimaryAddressCountryID.EditValue) && IsNumeric(PrimaryAddressCountryID.EditValue))
+                    PrimaryAddressCountryID.EditValue = FormatNumber(PrimaryAddressCountryID.EditValue, PrimaryAddressCountryID.FormatPattern);
+
+                // AlternativeAddress
+                AlternativeAddress.SetupEditAttributes();
+                AlternativeAddress.EditValue = AlternativeAddress.CurrentValue; // DN
+                AlternativeAddress.PlaceHolder = RemoveHtml(AlternativeAddress.Caption);
+
+                // AlternativeAddressCity
+                AlternativeAddressCity.SetupEditAttributes();
+                if (!AlternativeAddressCity.Raw)
+                    AlternativeAddressCity.CurrentValue = HtmlDecode(AlternativeAddressCity.CurrentValue);
+                AlternativeAddressCity.EditValue = HtmlEncode(AlternativeAddressCity.CurrentValue);
+                AlternativeAddressCity.PlaceHolder = RemoveHtml(AlternativeAddressCity.Caption);
+
+                // AlternativeAddressPostCode
+                AlternativeAddressPostCode.SetupEditAttributes();
+                if (!AlternativeAddressPostCode.Raw)
+                    AlternativeAddressPostCode.CurrentValue = HtmlDecode(AlternativeAddressPostCode.CurrentValue);
+                AlternativeAddressPostCode.EditValue = HtmlEncode(AlternativeAddressPostCode.CurrentValue);
+                AlternativeAddressPostCode.PlaceHolder = RemoveHtml(AlternativeAddressPostCode.Caption);
+
+                // AlternativeAddressCountryID
+                AlternativeAddressCountryID.SetupEditAttributes();
+                AlternativeAddressCountryID.EditValue = AlternativeAddressCountryID.CurrentValue; // DN
+                AlternativeAddressCountryID.PlaceHolder = RemoveHtml(AlternativeAddressCountryID.Caption);
+                if (!Empty(AlternativeAddressCountryID.EditValue) && IsNumeric(AlternativeAddressCountryID.EditValue))
+                    AlternativeAddressCountryID.EditValue = FormatNumber(AlternativeAddressCountryID.EditValue, AlternativeAddressCountryID.FormatPattern);
+
+                // MobileNumber
+                MobileNumber.SetupEditAttributes();
+                if (!MobileNumber.Raw)
+                    MobileNumber.CurrentValue = HtmlDecode(MobileNumber.CurrentValue);
+                MobileNumber.EditValue = HtmlEncode(MobileNumber.CurrentValue);
+                MobileNumber.PlaceHolder = RemoveHtml(MobileNumber.Caption);
+
+                // UserID
+                UserID.SetupEditAttributes();
+                UserID.EditValue = UserID.CurrentValue; // DN
+                UserID.PlaceHolder = RemoveHtml(UserID.Caption);
+                if (!Empty(UserID.EditValue) && IsNumeric(UserID.EditValue))
+                    UserID.EditValue = FormatNumber(UserID.EditValue, UserID.FormatPattern);
+
+                // Status
+                Status.SetupEditAttributes();
+                if (!Status.Raw)
+                    Status.CurrentValue = HtmlDecode(Status.CurrentValue);
+                Status.EditValue = HtmlEncode(Status.CurrentValue);
+                Status.PlaceHolder = RemoveHtml(Status.Caption);
+
+                // CreatedBy
+                CreatedBy.SetupEditAttributes();
+                CreatedBy.EditValue = CreatedBy.CurrentValue; // DN
+                CreatedBy.PlaceHolder = RemoveHtml(CreatedBy.Caption);
+                if (!Empty(CreatedBy.EditValue) && IsNumeric(CreatedBy.EditValue))
+                    CreatedBy.EditValue = FormatNumber(CreatedBy.EditValue, CreatedBy.FormatPattern);
+
+                // CreatedDateTime
+                CreatedDateTime.SetupEditAttributes();
+                CreatedDateTime.EditValue = FormatDateTime(CreatedDateTime.CurrentValue, CreatedDateTime.FormatPattern); // DN
+                CreatedDateTime.PlaceHolder = RemoveHtml(CreatedDateTime.Caption);
+
+                // UpdatedBy
+                UpdatedBy.SetupEditAttributes();
+                UpdatedBy.EditValue = UpdatedBy.CurrentValue; // DN
+                UpdatedBy.PlaceHolder = RemoveHtml(UpdatedBy.Caption);
+                if (!Empty(UpdatedBy.EditValue) && IsNumeric(UpdatedBy.EditValue))
+                    UpdatedBy.EditValue = FormatNumber(UpdatedBy.EditValue, UpdatedBy.FormatPattern);
+
+                // UpdatedDateTime
+                UpdatedDateTime.SetupEditAttributes();
+                UpdatedDateTime.EditValue = FormatDateTime(UpdatedDateTime.CurrentValue, UpdatedDateTime.FormatPattern); // DN
+                UpdatedDateTime.PlaceHolder = RemoveHtml(UpdatedDateTime.Caption);
+
+                // Edit refer script
+
+                // CustomerID
+                CustomerID.HrefValue = "";
+
+                // FirstName
+                FirstName.HrefValue = "";
+
+                // MiddleName
+                MiddleName.HrefValue = "";
+
+                // LastName
+                LastName.HrefValue = "";
+
+                // Gender
+                Gender.HrefValue = "";
+
+                // PlaceOfBirth
+                PlaceOfBirth.HrefValue = "";
+
+                // DateOfBirth
+                DateOfBirth.HrefValue = "";
+
+                // PrimaryAddress
+                PrimaryAddress.HrefValue = "";
+
+                // PrimaryAddressCity
+                PrimaryAddressCity.HrefValue = "";
+
+                // PrimaryAddressPostCode
+                PrimaryAddressPostCode.HrefValue = "";
+
+                // PrimaryAddressCountryID
+                PrimaryAddressCountryID.HrefValue = "";
+
+                // AlternativeAddress
+                AlternativeAddress.HrefValue = "";
+
+                // AlternativeAddressCity
+                AlternativeAddressCity.HrefValue = "";
+
+                // AlternativeAddressPostCode
+                AlternativeAddressPostCode.HrefValue = "";
+
+                // AlternativeAddressCountryID
+                AlternativeAddressCountryID.HrefValue = "";
+
+                // MobileNumber
+                MobileNumber.HrefValue = "";
+
+                // UserID
+                UserID.HrefValue = "";
+
+                // Status
+                Status.HrefValue = "";
+
+                // CreatedBy
+                CreatedBy.HrefValue = "";
+
+                // CreatedDateTime
+                CreatedDateTime.HrefValue = "";
+
+                // UpdatedBy
+                UpdatedBy.HrefValue = "";
+
+                // UpdatedDateTime
+                UpdatedDateTime.HrefValue = "";
+            }
+            if (RowType == RowType.Add || RowType == RowType.Edit || RowType == RowType.Search) // Add/Edit/Search row
+                SetupFieldTitles();
+
+            // Call Row Rendered event
+            if (RowType != RowType.AggregateInit)
+                RowRendered();
+        }
+        #pragma warning restore 1998
+
+        #pragma warning disable 1998
+        // Validate form
+        protected async Task<bool> ValidateForm() {
+            // Check if validation required
+            if (!Config.ServerValidate)
+                return true;
+            bool validateForm = true;
+            if (CustomerID.Required) {
+                if (!CustomerID.IsDetailKey && Empty(CustomerID.FormValue)) {
+                    CustomerID.AddErrorMessage(ConvertToString(CustomerID.RequiredErrorMessage).Replace("%s", CustomerID.Caption));
+                }
+            }
+            if (FirstName.Required) {
+                if (!FirstName.IsDetailKey && Empty(FirstName.FormValue)) {
+                    FirstName.AddErrorMessage(ConvertToString(FirstName.RequiredErrorMessage).Replace("%s", FirstName.Caption));
+                }
+            }
+            if (MiddleName.Required) {
+                if (!MiddleName.IsDetailKey && Empty(MiddleName.FormValue)) {
+                    MiddleName.AddErrorMessage(ConvertToString(MiddleName.RequiredErrorMessage).Replace("%s", MiddleName.Caption));
+                }
+            }
+            if (LastName.Required) {
+                if (!LastName.IsDetailKey && Empty(LastName.FormValue)) {
+                    LastName.AddErrorMessage(ConvertToString(LastName.RequiredErrorMessage).Replace("%s", LastName.Caption));
+                }
+            }
+            if (Gender.Required) {
+                if (!Gender.IsDetailKey && Empty(Gender.FormValue)) {
+                    Gender.AddErrorMessage(ConvertToString(Gender.RequiredErrorMessage).Replace("%s", Gender.Caption));
+                }
+            }
+            if (PlaceOfBirth.Required) {
+                if (!PlaceOfBirth.IsDetailKey && Empty(PlaceOfBirth.FormValue)) {
+                    PlaceOfBirth.AddErrorMessage(ConvertToString(PlaceOfBirth.RequiredErrorMessage).Replace("%s", PlaceOfBirth.Caption));
+                }
+            }
+            if (DateOfBirth.Required) {
+                if (!DateOfBirth.IsDetailKey && Empty(DateOfBirth.FormValue)) {
+                    DateOfBirth.AddErrorMessage(ConvertToString(DateOfBirth.RequiredErrorMessage).Replace("%s", DateOfBirth.Caption));
+                }
+            }
+            if (!CheckDate(DateOfBirth.FormValue, DateOfBirth.FormatPattern)) {
+                DateOfBirth.AddErrorMessage(DateOfBirth.GetErrorMessage(false));
+            }
+            if (PrimaryAddress.Required) {
+                if (!PrimaryAddress.IsDetailKey && Empty(PrimaryAddress.FormValue)) {
+                    PrimaryAddress.AddErrorMessage(ConvertToString(PrimaryAddress.RequiredErrorMessage).Replace("%s", PrimaryAddress.Caption));
+                }
+            }
+            if (PrimaryAddressCity.Required) {
+                if (!PrimaryAddressCity.IsDetailKey && Empty(PrimaryAddressCity.FormValue)) {
+                    PrimaryAddressCity.AddErrorMessage(ConvertToString(PrimaryAddressCity.RequiredErrorMessage).Replace("%s", PrimaryAddressCity.Caption));
+                }
+            }
+            if (PrimaryAddressPostCode.Required) {
+                if (!PrimaryAddressPostCode.IsDetailKey && Empty(PrimaryAddressPostCode.FormValue)) {
+                    PrimaryAddressPostCode.AddErrorMessage(ConvertToString(PrimaryAddressPostCode.RequiredErrorMessage).Replace("%s", PrimaryAddressPostCode.Caption));
+                }
+            }
+            if (PrimaryAddressCountryID.Required) {
+                if (!PrimaryAddressCountryID.IsDetailKey && Empty(PrimaryAddressCountryID.FormValue)) {
+                    PrimaryAddressCountryID.AddErrorMessage(ConvertToString(PrimaryAddressCountryID.RequiredErrorMessage).Replace("%s", PrimaryAddressCountryID.Caption));
+                }
+            }
+            if (!CheckInteger(PrimaryAddressCountryID.FormValue)) {
+                PrimaryAddressCountryID.AddErrorMessage(PrimaryAddressCountryID.GetErrorMessage(false));
+            }
+            if (AlternativeAddress.Required) {
+                if (!AlternativeAddress.IsDetailKey && Empty(AlternativeAddress.FormValue)) {
+                    AlternativeAddress.AddErrorMessage(ConvertToString(AlternativeAddress.RequiredErrorMessage).Replace("%s", AlternativeAddress.Caption));
+                }
+            }
+            if (AlternativeAddressCity.Required) {
+                if (!AlternativeAddressCity.IsDetailKey && Empty(AlternativeAddressCity.FormValue)) {
+                    AlternativeAddressCity.AddErrorMessage(ConvertToString(AlternativeAddressCity.RequiredErrorMessage).Replace("%s", AlternativeAddressCity.Caption));
+                }
+            }
+            if (AlternativeAddressPostCode.Required) {
+                if (!AlternativeAddressPostCode.IsDetailKey && Empty(AlternativeAddressPostCode.FormValue)) {
+                    AlternativeAddressPostCode.AddErrorMessage(ConvertToString(AlternativeAddressPostCode.RequiredErrorMessage).Replace("%s", AlternativeAddressPostCode.Caption));
+                }
+            }
+            if (AlternativeAddressCountryID.Required) {
+                if (!AlternativeAddressCountryID.IsDetailKey && Empty(AlternativeAddressCountryID.FormValue)) {
+                    AlternativeAddressCountryID.AddErrorMessage(ConvertToString(AlternativeAddressCountryID.RequiredErrorMessage).Replace("%s", AlternativeAddressCountryID.Caption));
+                }
+            }
+            if (!CheckInteger(AlternativeAddressCountryID.FormValue)) {
+                AlternativeAddressCountryID.AddErrorMessage(AlternativeAddressCountryID.GetErrorMessage(false));
+            }
+            if (MobileNumber.Required) {
+                if (!MobileNumber.IsDetailKey && Empty(MobileNumber.FormValue)) {
+                    MobileNumber.AddErrorMessage(ConvertToString(MobileNumber.RequiredErrorMessage).Replace("%s", MobileNumber.Caption));
+                }
+            }
+            if (UserID.Required) {
+                if (!UserID.IsDetailKey && Empty(UserID.FormValue)) {
+                    UserID.AddErrorMessage(ConvertToString(UserID.RequiredErrorMessage).Replace("%s", UserID.Caption));
+                }
+            }
+            if (!CheckInteger(UserID.FormValue)) {
+                UserID.AddErrorMessage(UserID.GetErrorMessage(false));
+            }
+            if (Status.Required) {
+                if (!Status.IsDetailKey && Empty(Status.FormValue)) {
+                    Status.AddErrorMessage(ConvertToString(Status.RequiredErrorMessage).Replace("%s", Status.Caption));
+                }
+            }
+            if (CreatedBy.Required) {
+                if (!CreatedBy.IsDetailKey && Empty(CreatedBy.FormValue)) {
+                    CreatedBy.AddErrorMessage(ConvertToString(CreatedBy.RequiredErrorMessage).Replace("%s", CreatedBy.Caption));
+                }
+            }
+            if (!CheckInteger(CreatedBy.FormValue)) {
+                CreatedBy.AddErrorMessage(CreatedBy.GetErrorMessage(false));
+            }
+            if (CreatedDateTime.Required) {
+                if (!CreatedDateTime.IsDetailKey && Empty(CreatedDateTime.FormValue)) {
+                    CreatedDateTime.AddErrorMessage(ConvertToString(CreatedDateTime.RequiredErrorMessage).Replace("%s", CreatedDateTime.Caption));
+                }
+            }
+            if (!CheckDate(CreatedDateTime.FormValue, CreatedDateTime.FormatPattern)) {
+                CreatedDateTime.AddErrorMessage(CreatedDateTime.GetErrorMessage(false));
+            }
+            if (UpdatedBy.Required) {
+                if (!UpdatedBy.IsDetailKey && Empty(UpdatedBy.FormValue)) {
+                    UpdatedBy.AddErrorMessage(ConvertToString(UpdatedBy.RequiredErrorMessage).Replace("%s", UpdatedBy.Caption));
+                }
+            }
+            if (!CheckInteger(UpdatedBy.FormValue)) {
+                UpdatedBy.AddErrorMessage(UpdatedBy.GetErrorMessage(false));
+            }
+            if (UpdatedDateTime.Required) {
+                if (!UpdatedDateTime.IsDetailKey && Empty(UpdatedDateTime.FormValue)) {
+                    UpdatedDateTime.AddErrorMessage(ConvertToString(UpdatedDateTime.RequiredErrorMessage).Replace("%s", UpdatedDateTime.Caption));
+                }
+            }
+            if (!CheckDate(UpdatedDateTime.FormValue, UpdatedDateTime.FormatPattern)) {
+                UpdatedDateTime.AddErrorMessage(UpdatedDateTime.GetErrorMessage(false));
+            }
+
+            // Return validate result
+            validateForm = validateForm && !HasInvalidFields();
+
+            // Call Form CustomValidate event
+            string formCustomError = "";
+            validateForm = validateForm && FormCustomValidate(ref formCustomError);
+            if (!Empty(formCustomError))
+                FailureMessage = formCustomError;
+            return validateForm;
+        }
+        #pragma warning restore 1998
+
+        // Update record based on key values
+        #pragma warning disable 168, 219
+
+        protected async Task<JsonBoolResult> EditRow() { // DN
+            bool result = false;
+            Dictionary<string, object> rsold;
+            string oldKeyFilter = GetRecordFilter();
+            string filter = ApplyUserIDFilters(oldKeyFilter);
+
+            // Load old row
+            CurrentFilter = filter;
+            string sql = CurrentSql;
+            try {
+                using var rsedit = await Connection.GetDataReaderAsync(sql);
+                if (rsedit == null || !await rsedit.ReadAsync()) {
+                    FailureMessage = Language.Phrase("NoRecord"); // Set no record message
+                    return JsonBoolResult.FalseResult;
+                }
+                rsold = Connection.GetRow(rsedit);
+                LoadDbValues(rsold);
+            } catch (Exception e) {
+                if (Config.Debug)
+                    throw;
+                FailureMessage = e.Message;
+                return JsonBoolResult.FalseResult;
+            }
+
+            // Set new row
+            Dictionary<string, object> rsnew = new ();
+
+            // FirstName
+            FirstName.SetDbValue(rsnew, FirstName.CurrentValue, FirstName.ReadOnly);
+
+            // MiddleName
+            MiddleName.SetDbValue(rsnew, MiddleName.CurrentValue, MiddleName.ReadOnly);
+
+            // LastName
+            LastName.SetDbValue(rsnew, LastName.CurrentValue, LastName.ReadOnly);
+
+            // Gender
+            Gender.SetDbValue(rsnew, Gender.CurrentValue, Gender.ReadOnly);
+
+            // PlaceOfBirth
+            PlaceOfBirth.SetDbValue(rsnew, PlaceOfBirth.CurrentValue, PlaceOfBirth.ReadOnly);
+
+            // DateOfBirth
+            DateOfBirth.SetDbValue(rsnew, ConvertToDateTime(DateOfBirth.CurrentValue, DateOfBirth.FormatPattern), DateOfBirth.ReadOnly);
+
+            // PrimaryAddress
+            PrimaryAddress.SetDbValue(rsnew, PrimaryAddress.CurrentValue, PrimaryAddress.ReadOnly);
+
+            // PrimaryAddressCity
+            PrimaryAddressCity.SetDbValue(rsnew, PrimaryAddressCity.CurrentValue, PrimaryAddressCity.ReadOnly);
+
+            // PrimaryAddressPostCode
+            PrimaryAddressPostCode.SetDbValue(rsnew, PrimaryAddressPostCode.CurrentValue, PrimaryAddressPostCode.ReadOnly);
+
+            // PrimaryAddressCountryID
+            PrimaryAddressCountryID.SetDbValue(rsnew, PrimaryAddressCountryID.CurrentValue, PrimaryAddressCountryID.ReadOnly);
+
+            // AlternativeAddress
+            AlternativeAddress.SetDbValue(rsnew, AlternativeAddress.CurrentValue, AlternativeAddress.ReadOnly);
+
+            // AlternativeAddressCity
+            AlternativeAddressCity.SetDbValue(rsnew, AlternativeAddressCity.CurrentValue, AlternativeAddressCity.ReadOnly);
+
+            // AlternativeAddressPostCode
+            AlternativeAddressPostCode.SetDbValue(rsnew, AlternativeAddressPostCode.CurrentValue, AlternativeAddressPostCode.ReadOnly);
+
+            // AlternativeAddressCountryID
+            AlternativeAddressCountryID.SetDbValue(rsnew, AlternativeAddressCountryID.CurrentValue, AlternativeAddressCountryID.ReadOnly);
+
+            // MobileNumber
+            MobileNumber.SetDbValue(rsnew, MobileNumber.CurrentValue, MobileNumber.ReadOnly);
+
+            // UserID
+            UserID.SetDbValue(rsnew, UserID.CurrentValue, UserID.ReadOnly);
+
+            // Status
+            Status.SetDbValue(rsnew, Status.CurrentValue, Status.ReadOnly);
+
+            // CreatedBy
+            CreatedBy.SetDbValue(rsnew, CreatedBy.CurrentValue, CreatedBy.ReadOnly);
+
+            // CreatedDateTime
+            CreatedDateTime.SetDbValue(rsnew, ConvertToDateTimeOffset(CreatedDateTime.CurrentValue, DateTimeStyles.AssumeUniversal), CreatedDateTime.ReadOnly);
+
+            // UpdatedBy
+            UpdatedBy.SetDbValue(rsnew, UpdatedBy.CurrentValue, UpdatedBy.ReadOnly);
+
+            // UpdatedDateTime
+            UpdatedDateTime.SetDbValue(rsnew, ConvertToDateTimeOffset(UpdatedDateTime.CurrentValue, DateTimeStyles.AssumeUniversal), UpdatedDateTime.ReadOnly);
+
+            // Update current values
+            SetCurrentValues(rsnew);
+
+            // Call Row Updating event
+            bool updateRow = RowUpdating(rsold, rsnew);
+            if (updateRow) {
+                try {
+                    if (rsnew.Count > 0)
+                        result = await UpdateAsync(rsnew, null, rsold) > 0;
+                    else
+                        result = true;
+                    if (result) {
+                    }
+                } catch (Exception e) {
+                    if (Config.Debug)
+                        throw;
+                    FailureMessage = e.Message;
+                    return JsonBoolResult.FalseResult;
+                }
+            } else {
+                if (!Empty(SuccessMessage) || !Empty(FailureMessage)) {
+                    // Use the message, do nothing
+                } else if (!Empty(CancelMessage)) {
+                    FailureMessage = CancelMessage;
+                    CancelMessage = "";
+                } else {
+                    FailureMessage = Language.Phrase("UpdateCancelled");
+                }
+                result = false;
+            }
+
+            // Call Row Updated event
+            if (result)
+                RowUpdated(rsold, rsnew);
+
+            // Write JSON for API request
+            Dictionary<string, object> d = new ();
+            d.Add("success", result);
+            if (IsJsonResponse() && result) {
+                if (GetRecordFromDictionary(rsnew) is var row && row != null) {
+                    string table = TableVar;
+                    d.Add(table, row);
+                }
+                d.Add("action", Config.ApiEditAction);
+                d.Add("version", Config.ProductVersion);
+                return new JsonBoolResult(d, true);
+            }
+            return new JsonBoolResult(d, result);
+        }
+
+        // Set up Breadcrumb
+        protected void SetupBreadcrumb() {
+            var breadcrumb = new Breadcrumb();
+            string url = CurrentUrl();
+            breadcrumb.Add("list", TableVar, AppPath(AddMasterUrl("customerslist")), "", TableVar, true);
+            string pageId = "edit";
+            breadcrumb.Add("edit", pageId, url);
+            CurrentBreadcrumb = breadcrumb;
+        }
+
+        // Setup lookup options
+        public async Task SetupLookupOptions(DbField fld)
+        {
+            if (fld.Lookup == null)
+                return;
+            Func<string>? lookupFilter = null;
+            dynamic conn = Connection;
+            if (fld.Lookup.Options.Count is int c && c == 0) {
+                // Always call to Lookup.GetSql so that user can setup Lookup.Options in Lookup Selecting server event
+                var sql = fld.Lookup.GetSql(false, "", lookupFilter, this);
+
+                // Set up lookup cache
+                if (!fld.HasLookupOptions && fld.UseLookupCache && !Empty(sql) && fld.Lookup.ParentFields.Count == 0 && fld.Lookup.Options.Count == 0) {
+                    int totalCnt = await TryGetRecordCountAsync(sql, conn);
+                    if (totalCnt > fld.LookupCacheCount) // Total count > cache count, do not cache
+                        return;
+                    var dict = new Dictionary<string, Dictionary<string, object>>();
+                    var values = new List<object>();
+                    List<Dictionary<string, object>> rs = await conn.GetRowsAsync(sql);
+                    if (rs != null) {
+                        for (int i = 0; i < rs.Count; i++) {
+                            var row = rs[i];
+                            row = fld.Lookup?.RenderViewRow(row, Resolve(fld.Lookup.LinkTable));
+                            string key = row?.Values.First()?.ToString() ?? String.Empty;
+                            if (!dict.ContainsKey(key) && row != null)
+                                dict.Add(key, row);
+                        }
+                    }
+                    fld.Lookup?.SetOptions(dict);
+                }
+            }
+        }
+
+        // Close recordset
+        public void CloseRecordset()
+        {
+            using (Recordset) {} // Dispose
+        }
+
+        // Set up starting record parameters
+        public void SetupStartRecord()
+        {
+            // Exit if DisplayRecords = 0
+            if (DisplayRecords == 0)
+                return;
+            string pageNo = Get(Config.TablePageNumber);
+            string startRec = Get(Config.TableStartRec);
+            bool infiniteScroll = false;
+            string recordNo = !Empty(pageNo) ? pageNo : startRec; // Record number = page number or start record
+            if (!Empty(recordNo) && IsNumeric(recordNo))
+                StartRecord = ConvertToInt(recordNo);
+            else
+                StartRecord = StartRecordNumber;
+
+            // Check if correct start record counter
+            if (StartRecord <= 0) // Avoid invalid start record counter
+                StartRecord = 1; // Reset start record counter
+            else if (StartRecord > TotalRecords) // Avoid starting record > total records
+                StartRecord = ((TotalRecords - 1) / DisplayRecords) * DisplayRecords + 1; // Point to last page first record
+            else if ((StartRecord - 1) % DisplayRecords != 0)
+                StartRecord = ((StartRecord - 1) / DisplayRecords) * DisplayRecords + 1; // Point to page boundary
+            if (!infiniteScroll)
+                StartRecordNumber = StartRecord;
+        }
+
+        // Get page count
+        public int PageCount
+        {
+            get {
+                return ConvertToInt(Math.Ceiling((double)TotalRecords / DisplayRecords));
+            }
+        }
+
+        // Page Load event
+        public virtual void PageLoad() {
+            //Log("Page Load");
+        }
+
+        // Page Unload event
+        public virtual void PageUnload() {
+            //Log("Page Unload");
+        }
+
+        // Page Redirecting event
+        public virtual void PageRedirecting(ref string url) {
+            //url = newurl;
+        }
+
+        // Message Showing event
+        // type = ""|"success"|"failure"|"warning"
+        public virtual void MessageShowing(ref string msg, string type) {
+            // Note: Do not change msg outside the following 4 cases.
+            if (type == "success") {
+                //msg = "your success message";
+            } else if (type == "failure") {
+                //msg = "your failure message";
+            } else if (type == "warning") {
+                //msg = "your warning message";
+            } else {
+                //msg = "your message";
+            }
+        }
+
+        // Page Load event
+        public virtual void PageRender() {
+            //Log("Page Render");
+        }
+
+        // Page Data Rendering event
+        public virtual void PageDataRendering(ref string header) {
+            // Example:
+            //header = "your header";
+        }
+
+        // Page Data Rendered event
+        public virtual void PageDataRendered(ref string footer) {
+            // Example:
+            //footer = "your footer";
+        }
+
+        // Page Breaking event
+        public void PageBreaking(ref bool brk, ref string content) {
+            // Example:
+            //	brk = false; // Skip page break, or
+            //	content = "<div style=\"page-break-after:always;\">&nbsp;</div>"; // Modify page break content
+        }
+
+        // Form Custom Validate event
+        public virtual bool FormCustomValidate(ref string customError) {
+            //Return error message in customError
+            return true;
+        }
+    } // End page class
+} // End Partial class

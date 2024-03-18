@@ -1,0 +1,469 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (customersAdd.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!customersAdd.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+var currentTable = @Html.Raw(ConvertToJson(customersAdd.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { Customers: currentTable } });
+var currentPageID = ew.PAGE_ID = "add";
+var currentForm;
+var fCustomersadd;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("fCustomersadd")
+        .setPageId("add")
+
+        // Add fields
+        .setFields([
+
+            ["FirstName", [fields.FirstName.visible && fields.FirstName.required ? ew.Validators.required(fields.FirstName.caption) : null], fields.FirstName.isInvalid],
+            ["MiddleName", [fields.MiddleName.visible && fields.MiddleName.required ? ew.Validators.required(fields.MiddleName.caption) : null], fields.MiddleName.isInvalid],
+            ["LastName", [fields.LastName.visible && fields.LastName.required ? ew.Validators.required(fields.LastName.caption) : null], fields.LastName.isInvalid],
+            ["Gender", [fields.Gender.visible && fields.Gender.required ? ew.Validators.required(fields.Gender.caption) : null], fields.Gender.isInvalid],
+            ["PlaceOfBirth", [fields.PlaceOfBirth.visible && fields.PlaceOfBirth.required ? ew.Validators.required(fields.PlaceOfBirth.caption) : null], fields.PlaceOfBirth.isInvalid],
+            ["DateOfBirth", [fields.DateOfBirth.visible && fields.DateOfBirth.required ? ew.Validators.required(fields.DateOfBirth.caption) : null, ew.Validators.datetime(fields.DateOfBirth.clientFormatPattern)], fields.DateOfBirth.isInvalid],
+            ["PrimaryAddress", [fields.PrimaryAddress.visible && fields.PrimaryAddress.required ? ew.Validators.required(fields.PrimaryAddress.caption) : null], fields.PrimaryAddress.isInvalid],
+            ["PrimaryAddressCity", [fields.PrimaryAddressCity.visible && fields.PrimaryAddressCity.required ? ew.Validators.required(fields.PrimaryAddressCity.caption) : null], fields.PrimaryAddressCity.isInvalid],
+            ["PrimaryAddressPostCode", [fields.PrimaryAddressPostCode.visible && fields.PrimaryAddressPostCode.required ? ew.Validators.required(fields.PrimaryAddressPostCode.caption) : null], fields.PrimaryAddressPostCode.isInvalid],
+            ["PrimaryAddressCountryID", [fields.PrimaryAddressCountryID.visible && fields.PrimaryAddressCountryID.required ? ew.Validators.required(fields.PrimaryAddressCountryID.caption) : null, ew.Validators.integer], fields.PrimaryAddressCountryID.isInvalid],
+            ["AlternativeAddress", [fields.AlternativeAddress.visible && fields.AlternativeAddress.required ? ew.Validators.required(fields.AlternativeAddress.caption) : null], fields.AlternativeAddress.isInvalid],
+            ["AlternativeAddressCity", [fields.AlternativeAddressCity.visible && fields.AlternativeAddressCity.required ? ew.Validators.required(fields.AlternativeAddressCity.caption) : null], fields.AlternativeAddressCity.isInvalid],
+            ["AlternativeAddressPostCode", [fields.AlternativeAddressPostCode.visible && fields.AlternativeAddressPostCode.required ? ew.Validators.required(fields.AlternativeAddressPostCode.caption) : null], fields.AlternativeAddressPostCode.isInvalid],
+            ["AlternativeAddressCountryID", [fields.AlternativeAddressCountryID.visible && fields.AlternativeAddressCountryID.required ? ew.Validators.required(fields.AlternativeAddressCountryID.caption) : null, ew.Validators.integer], fields.AlternativeAddressCountryID.isInvalid],
+            ["MobileNumber", [fields.MobileNumber.visible && fields.MobileNumber.required ? ew.Validators.required(fields.MobileNumber.caption) : null], fields.MobileNumber.isInvalid],
+            ["UserID", [fields.UserID.visible && fields.UserID.required ? ew.Validators.required(fields.UserID.caption) : null, ew.Validators.integer], fields.UserID.isInvalid],
+            ["Status", [fields.Status.visible && fields.Status.required ? ew.Validators.required(fields.Status.caption) : null], fields.Status.isInvalid],
+            ["CreatedBy", [fields.CreatedBy.visible && fields.CreatedBy.required ? ew.Validators.required(fields.CreatedBy.caption) : null, ew.Validators.integer], fields.CreatedBy.isInvalid],
+            ["CreatedDateTime", [fields.CreatedDateTime.visible && fields.CreatedDateTime.required ? ew.Validators.required(fields.CreatedDateTime.caption) : null, ew.Validators.datetime(fields.CreatedDateTime.clientFormatPattern)], fields.CreatedDateTime.isInvalid],
+            ["UpdatedBy", [fields.UpdatedBy.visible && fields.UpdatedBy.required ? ew.Validators.required(fields.UpdatedBy.caption) : null, ew.Validators.integer], fields.UpdatedBy.isInvalid],
+            ["UpdatedDateTime", [fields.UpdatedDateTime.visible && fields.UpdatedDateTime.required ? ew.Validators.required(fields.UpdatedDateTime.caption) : null, ew.Validators.datetime(fields.UpdatedDateTime.clientFormatPattern)], fields.UpdatedDateTime.isInvalid]
+        ])
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@customersAdd.ShowPageHeader()
+@customersAdd.ShowMessages()
+<form name="fCustomersadd" id="fCustomersadd" class="@(customersAdd.FormClassName)" action="@AppPath(CurrentPageName())" method="post" novalidate autocomplete="off">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="insert">
+<input type="hidden" name="modal" value="@ConvertToInt(customersAdd.IsModal)">
+@if (IsJsonResponse()) {
+<input type="hidden" name="json" value="1">
+}
+<input type="hidden" name="@(customersAdd.OldKeyName)" value="@Html.Raw(customersAdd.OldKey)">
+<div class="ew-add-div"><!-- page* -->
+@if (customersAdd.FirstName.Visible) { // customersAdd.FirstName.Visible (begin)
+    <div id="r_FirstName" @Html.Raw(customersAdd.FirstName.RowAttributes)>
+        <label id="elh_Customers_FirstName" for="x_FirstName" class="@(customersAdd.LeftColumnClass)">@Html.Raw(customersAdd.FirstName.Caption)@Html.Raw(customersAdd.FirstName.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(customersAdd.RightColumnClass)"><div @Html.Raw(customersAdd.FirstName.CellAttributes)>
+<span id="el_Customers_FirstName">
+<input type="@(customersAdd.FirstName.InputTextType)" name="x_FirstName" id="x_FirstName" data-table="Customers" data-field="x_FirstName" value="@Html.Raw(customersAdd.FirstName.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(customersAdd.FirstName.PlaceHolder))" data-format-pattern="@(customersAdd.FirstName.FormatPattern)"@Html.Raw(customersAdd.FirstName.EditAttributes) aria-describedby="x_FirstName_help">
+@Html.Raw(customersAdd.FirstName.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(customersAdd.FirstName.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* customersAdd.FirstName.Visible (end) *@
+@if (customersAdd.MiddleName.Visible) { // customersAdd.MiddleName.Visible (begin)
+    <div id="r_MiddleName" @Html.Raw(customersAdd.MiddleName.RowAttributes)>
+        <label id="elh_Customers_MiddleName" for="x_MiddleName" class="@(customersAdd.LeftColumnClass)">@Html.Raw(customersAdd.MiddleName.Caption)@Html.Raw(customersAdd.MiddleName.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(customersAdd.RightColumnClass)"><div @Html.Raw(customersAdd.MiddleName.CellAttributes)>
+<span id="el_Customers_MiddleName">
+<input type="@(customersAdd.MiddleName.InputTextType)" name="x_MiddleName" id="x_MiddleName" data-table="Customers" data-field="x_MiddleName" value="@Html.Raw(customersAdd.MiddleName.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(customersAdd.MiddleName.PlaceHolder))" data-format-pattern="@(customersAdd.MiddleName.FormatPattern)"@Html.Raw(customersAdd.MiddleName.EditAttributes) aria-describedby="x_MiddleName_help">
+@Html.Raw(customersAdd.MiddleName.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(customersAdd.MiddleName.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* customersAdd.MiddleName.Visible (end) *@
+@if (customersAdd.LastName.Visible) { // customersAdd.LastName.Visible (begin)
+    <div id="r_LastName" @Html.Raw(customersAdd.LastName.RowAttributes)>
+        <label id="elh_Customers_LastName" for="x_LastName" class="@(customersAdd.LeftColumnClass)">@Html.Raw(customersAdd.LastName.Caption)@Html.Raw(customersAdd.LastName.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(customersAdd.RightColumnClass)"><div @Html.Raw(customersAdd.LastName.CellAttributes)>
+<span id="el_Customers_LastName">
+<input type="@(customersAdd.LastName.InputTextType)" name="x_LastName" id="x_LastName" data-table="Customers" data-field="x_LastName" value="@Html.Raw(customersAdd.LastName.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(customersAdd.LastName.PlaceHolder))" data-format-pattern="@(customersAdd.LastName.FormatPattern)"@Html.Raw(customersAdd.LastName.EditAttributes) aria-describedby="x_LastName_help">
+@Html.Raw(customersAdd.LastName.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(customersAdd.LastName.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* customersAdd.LastName.Visible (end) *@
+@if (customersAdd.Gender.Visible) { // customersAdd.Gender.Visible (begin)
+    <div id="r_Gender" @Html.Raw(customersAdd.Gender.RowAttributes)>
+        <label id="elh_Customers_Gender" for="x_Gender" class="@(customersAdd.LeftColumnClass)">@Html.Raw(customersAdd.Gender.Caption)@Html.Raw(customersAdd.Gender.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(customersAdd.RightColumnClass)"><div @Html.Raw(customersAdd.Gender.CellAttributes)>
+<span id="el_Customers_Gender">
+<input type="@(customersAdd.Gender.InputTextType)" name="x_Gender" id="x_Gender" data-table="Customers" data-field="x_Gender" value="@Html.Raw(customersAdd.Gender.EditValue)" size="30" maxlength="10" placeholder="@Html.Raw(HtmlEncode(customersAdd.Gender.PlaceHolder))" data-format-pattern="@(customersAdd.Gender.FormatPattern)"@Html.Raw(customersAdd.Gender.EditAttributes) aria-describedby="x_Gender_help">
+@Html.Raw(customersAdd.Gender.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(customersAdd.Gender.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* customersAdd.Gender.Visible (end) *@
+@if (customersAdd.PlaceOfBirth.Visible) { // customersAdd.PlaceOfBirth.Visible (begin)
+    <div id="r_PlaceOfBirth" @Html.Raw(customersAdd.PlaceOfBirth.RowAttributes)>
+        <label id="elh_Customers_PlaceOfBirth" for="x_PlaceOfBirth" class="@(customersAdd.LeftColumnClass)">@Html.Raw(customersAdd.PlaceOfBirth.Caption)@Html.Raw(customersAdd.PlaceOfBirth.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(customersAdd.RightColumnClass)"><div @Html.Raw(customersAdd.PlaceOfBirth.CellAttributes)>
+<span id="el_Customers_PlaceOfBirth">
+<input type="@(customersAdd.PlaceOfBirth.InputTextType)" name="x_PlaceOfBirth" id="x_PlaceOfBirth" data-table="Customers" data-field="x_PlaceOfBirth" value="@Html.Raw(customersAdd.PlaceOfBirth.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(customersAdd.PlaceOfBirth.PlaceHolder))" data-format-pattern="@(customersAdd.PlaceOfBirth.FormatPattern)"@Html.Raw(customersAdd.PlaceOfBirth.EditAttributes) aria-describedby="x_PlaceOfBirth_help">
+@Html.Raw(customersAdd.PlaceOfBirth.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(customersAdd.PlaceOfBirth.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* customersAdd.PlaceOfBirth.Visible (end) *@
+@if (customersAdd.DateOfBirth.Visible) { // customersAdd.DateOfBirth.Visible (begin)
+    <div id="r_DateOfBirth" @Html.Raw(customersAdd.DateOfBirth.RowAttributes)>
+        <label id="elh_Customers_DateOfBirth" for="x_DateOfBirth" class="@(customersAdd.LeftColumnClass)">@Html.Raw(customersAdd.DateOfBirth.Caption)@Html.Raw(customersAdd.DateOfBirth.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(customersAdd.RightColumnClass)"><div @Html.Raw(customersAdd.DateOfBirth.CellAttributes)>
+<span id="el_Customers_DateOfBirth">
+<input type="@(customersAdd.DateOfBirth.InputTextType)" name="x_DateOfBirth" id="x_DateOfBirth" data-table="Customers" data-field="x_DateOfBirth" value="@Html.Raw(customersAdd.DateOfBirth.EditValue)" placeholder="@Html.Raw(HtmlEncode(customersAdd.DateOfBirth.PlaceHolder))" data-format-pattern="@(customersAdd.DateOfBirth.FormatPattern)"@Html.Raw(customersAdd.DateOfBirth.EditAttributes) aria-describedby="x_DateOfBirth_help">
+@Html.Raw(customersAdd.DateOfBirth.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(customersAdd.DateOfBirth.GetErrorMessage())</div>
+@if (!customersAdd.DateOfBirth.ReadOnly && !customersAdd.DateOfBirth.Disabled && !customersAdd.DateOfBirth.EditAttrs.Is("readonly") && !customersAdd.DateOfBirth.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fCustomersadd", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fCustomersadd", "x_DateOfBirth", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+</div></div>
+    </div>
+} @* customersAdd.DateOfBirth.Visible (end) *@
+@if (customersAdd.PrimaryAddress.Visible) { // customersAdd.PrimaryAddress.Visible (begin)
+    <div id="r_PrimaryAddress" @Html.Raw(customersAdd.PrimaryAddress.RowAttributes)>
+        <label id="elh_Customers_PrimaryAddress" for="x_PrimaryAddress" class="@(customersAdd.LeftColumnClass)">@Html.Raw(customersAdd.PrimaryAddress.Caption)@Html.Raw(customersAdd.PrimaryAddress.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(customersAdd.RightColumnClass)"><div @Html.Raw(customersAdd.PrimaryAddress.CellAttributes)>
+<span id="el_Customers_PrimaryAddress">
+<textarea data-table="Customers" data-field="x_PrimaryAddress" name="x_PrimaryAddress" id="x_PrimaryAddress" cols="35" rows="4" placeholder="@Html.Raw(HtmlEncode(customersAdd.PrimaryAddress.PlaceHolder))"@Html.Raw(customersAdd.PrimaryAddress.EditAttributes) aria-describedby="x_PrimaryAddress_help">@(customersAdd.PrimaryAddress.EditValue)</textarea>
+@Html.Raw(customersAdd.PrimaryAddress.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(customersAdd.PrimaryAddress.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* customersAdd.PrimaryAddress.Visible (end) *@
+@if (customersAdd.PrimaryAddressCity.Visible) { // customersAdd.PrimaryAddressCity.Visible (begin)
+    <div id="r_PrimaryAddressCity" @Html.Raw(customersAdd.PrimaryAddressCity.RowAttributes)>
+        <label id="elh_Customers_PrimaryAddressCity" for="x_PrimaryAddressCity" class="@(customersAdd.LeftColumnClass)">@Html.Raw(customersAdd.PrimaryAddressCity.Caption)@Html.Raw(customersAdd.PrimaryAddressCity.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(customersAdd.RightColumnClass)"><div @Html.Raw(customersAdd.PrimaryAddressCity.CellAttributes)>
+<span id="el_Customers_PrimaryAddressCity">
+<input type="@(customersAdd.PrimaryAddressCity.InputTextType)" name="x_PrimaryAddressCity" id="x_PrimaryAddressCity" data-table="Customers" data-field="x_PrimaryAddressCity" value="@Html.Raw(customersAdd.PrimaryAddressCity.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(customersAdd.PrimaryAddressCity.PlaceHolder))" data-format-pattern="@(customersAdd.PrimaryAddressCity.FormatPattern)"@Html.Raw(customersAdd.PrimaryAddressCity.EditAttributes) aria-describedby="x_PrimaryAddressCity_help">
+@Html.Raw(customersAdd.PrimaryAddressCity.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(customersAdd.PrimaryAddressCity.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* customersAdd.PrimaryAddressCity.Visible (end) *@
+@if (customersAdd.PrimaryAddressPostCode.Visible) { // customersAdd.PrimaryAddressPostCode.Visible (begin)
+    <div id="r_PrimaryAddressPostCode" @Html.Raw(customersAdd.PrimaryAddressPostCode.RowAttributes)>
+        <label id="elh_Customers_PrimaryAddressPostCode" for="x_PrimaryAddressPostCode" class="@(customersAdd.LeftColumnClass)">@Html.Raw(customersAdd.PrimaryAddressPostCode.Caption)@Html.Raw(customersAdd.PrimaryAddressPostCode.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(customersAdd.RightColumnClass)"><div @Html.Raw(customersAdd.PrimaryAddressPostCode.CellAttributes)>
+<span id="el_Customers_PrimaryAddressPostCode">
+<input type="@(customersAdd.PrimaryAddressPostCode.InputTextType)" name="x_PrimaryAddressPostCode" id="x_PrimaryAddressPostCode" data-table="Customers" data-field="x_PrimaryAddressPostCode" value="@Html.Raw(customersAdd.PrimaryAddressPostCode.EditValue)" size="30" maxlength="10" placeholder="@Html.Raw(HtmlEncode(customersAdd.PrimaryAddressPostCode.PlaceHolder))" data-format-pattern="@(customersAdd.PrimaryAddressPostCode.FormatPattern)"@Html.Raw(customersAdd.PrimaryAddressPostCode.EditAttributes) aria-describedby="x_PrimaryAddressPostCode_help">
+@Html.Raw(customersAdd.PrimaryAddressPostCode.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(customersAdd.PrimaryAddressPostCode.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* customersAdd.PrimaryAddressPostCode.Visible (end) *@
+@if (customersAdd.PrimaryAddressCountryID.Visible) { // customersAdd.PrimaryAddressCountryID.Visible (begin)
+    <div id="r_PrimaryAddressCountryID" @Html.Raw(customersAdd.PrimaryAddressCountryID.RowAttributes)>
+        <label id="elh_Customers_PrimaryAddressCountryID" for="x_PrimaryAddressCountryID" class="@(customersAdd.LeftColumnClass)">@Html.Raw(customersAdd.PrimaryAddressCountryID.Caption)@Html.Raw(customersAdd.PrimaryAddressCountryID.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(customersAdd.RightColumnClass)"><div @Html.Raw(customersAdd.PrimaryAddressCountryID.CellAttributes)>
+<span id="el_Customers_PrimaryAddressCountryID">
+<input type="@(customersAdd.PrimaryAddressCountryID.InputTextType)" name="x_PrimaryAddressCountryID" id="x_PrimaryAddressCountryID" data-table="Customers" data-field="x_PrimaryAddressCountryID" value="@Html.Raw(customersAdd.PrimaryAddressCountryID.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(customersAdd.PrimaryAddressCountryID.PlaceHolder))" data-format-pattern="@(customersAdd.PrimaryAddressCountryID.FormatPattern)"@Html.Raw(customersAdd.PrimaryAddressCountryID.EditAttributes) aria-describedby="x_PrimaryAddressCountryID_help">
+@Html.Raw(customersAdd.PrimaryAddressCountryID.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(customersAdd.PrimaryAddressCountryID.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* customersAdd.PrimaryAddressCountryID.Visible (end) *@
+@if (customersAdd.AlternativeAddress.Visible) { // customersAdd.AlternativeAddress.Visible (begin)
+    <div id="r_AlternativeAddress" @Html.Raw(customersAdd.AlternativeAddress.RowAttributes)>
+        <label id="elh_Customers_AlternativeAddress" for="x_AlternativeAddress" class="@(customersAdd.LeftColumnClass)">@Html.Raw(customersAdd.AlternativeAddress.Caption)@Html.Raw(customersAdd.AlternativeAddress.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(customersAdd.RightColumnClass)"><div @Html.Raw(customersAdd.AlternativeAddress.CellAttributes)>
+<span id="el_Customers_AlternativeAddress">
+<textarea data-table="Customers" data-field="x_AlternativeAddress" name="x_AlternativeAddress" id="x_AlternativeAddress" cols="35" rows="4" placeholder="@Html.Raw(HtmlEncode(customersAdd.AlternativeAddress.PlaceHolder))"@Html.Raw(customersAdd.AlternativeAddress.EditAttributes) aria-describedby="x_AlternativeAddress_help">@(customersAdd.AlternativeAddress.EditValue)</textarea>
+@Html.Raw(customersAdd.AlternativeAddress.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(customersAdd.AlternativeAddress.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* customersAdd.AlternativeAddress.Visible (end) *@
+@if (customersAdd.AlternativeAddressCity.Visible) { // customersAdd.AlternativeAddressCity.Visible (begin)
+    <div id="r_AlternativeAddressCity" @Html.Raw(customersAdd.AlternativeAddressCity.RowAttributes)>
+        <label id="elh_Customers_AlternativeAddressCity" for="x_AlternativeAddressCity" class="@(customersAdd.LeftColumnClass)">@Html.Raw(customersAdd.AlternativeAddressCity.Caption)@Html.Raw(customersAdd.AlternativeAddressCity.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(customersAdd.RightColumnClass)"><div @Html.Raw(customersAdd.AlternativeAddressCity.CellAttributes)>
+<span id="el_Customers_AlternativeAddressCity">
+<input type="@(customersAdd.AlternativeAddressCity.InputTextType)" name="x_AlternativeAddressCity" id="x_AlternativeAddressCity" data-table="Customers" data-field="x_AlternativeAddressCity" value="@Html.Raw(customersAdd.AlternativeAddressCity.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(customersAdd.AlternativeAddressCity.PlaceHolder))" data-format-pattern="@(customersAdd.AlternativeAddressCity.FormatPattern)"@Html.Raw(customersAdd.AlternativeAddressCity.EditAttributes) aria-describedby="x_AlternativeAddressCity_help">
+@Html.Raw(customersAdd.AlternativeAddressCity.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(customersAdd.AlternativeAddressCity.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* customersAdd.AlternativeAddressCity.Visible (end) *@
+@if (customersAdd.AlternativeAddressPostCode.Visible) { // customersAdd.AlternativeAddressPostCode.Visible (begin)
+    <div id="r_AlternativeAddressPostCode" @Html.Raw(customersAdd.AlternativeAddressPostCode.RowAttributes)>
+        <label id="elh_Customers_AlternativeAddressPostCode" for="x_AlternativeAddressPostCode" class="@(customersAdd.LeftColumnClass)">@Html.Raw(customersAdd.AlternativeAddressPostCode.Caption)@Html.Raw(customersAdd.AlternativeAddressPostCode.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(customersAdd.RightColumnClass)"><div @Html.Raw(customersAdd.AlternativeAddressPostCode.CellAttributes)>
+<span id="el_Customers_AlternativeAddressPostCode">
+<input type="@(customersAdd.AlternativeAddressPostCode.InputTextType)" name="x_AlternativeAddressPostCode" id="x_AlternativeAddressPostCode" data-table="Customers" data-field="x_AlternativeAddressPostCode" value="@Html.Raw(customersAdd.AlternativeAddressPostCode.EditValue)" size="30" maxlength="10" placeholder="@Html.Raw(HtmlEncode(customersAdd.AlternativeAddressPostCode.PlaceHolder))" data-format-pattern="@(customersAdd.AlternativeAddressPostCode.FormatPattern)"@Html.Raw(customersAdd.AlternativeAddressPostCode.EditAttributes) aria-describedby="x_AlternativeAddressPostCode_help">
+@Html.Raw(customersAdd.AlternativeAddressPostCode.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(customersAdd.AlternativeAddressPostCode.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* customersAdd.AlternativeAddressPostCode.Visible (end) *@
+@if (customersAdd.AlternativeAddressCountryID.Visible) { // customersAdd.AlternativeAddressCountryID.Visible (begin)
+    <div id="r_AlternativeAddressCountryID" @Html.Raw(customersAdd.AlternativeAddressCountryID.RowAttributes)>
+        <label id="elh_Customers_AlternativeAddressCountryID" for="x_AlternativeAddressCountryID" class="@(customersAdd.LeftColumnClass)">@Html.Raw(customersAdd.AlternativeAddressCountryID.Caption)@Html.Raw(customersAdd.AlternativeAddressCountryID.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(customersAdd.RightColumnClass)"><div @Html.Raw(customersAdd.AlternativeAddressCountryID.CellAttributes)>
+<span id="el_Customers_AlternativeAddressCountryID">
+<input type="@(customersAdd.AlternativeAddressCountryID.InputTextType)" name="x_AlternativeAddressCountryID" id="x_AlternativeAddressCountryID" data-table="Customers" data-field="x_AlternativeAddressCountryID" value="@Html.Raw(customersAdd.AlternativeAddressCountryID.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(customersAdd.AlternativeAddressCountryID.PlaceHolder))" data-format-pattern="@(customersAdd.AlternativeAddressCountryID.FormatPattern)"@Html.Raw(customersAdd.AlternativeAddressCountryID.EditAttributes) aria-describedby="x_AlternativeAddressCountryID_help">
+@Html.Raw(customersAdd.AlternativeAddressCountryID.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(customersAdd.AlternativeAddressCountryID.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* customersAdd.AlternativeAddressCountryID.Visible (end) *@
+@if (customersAdd.MobileNumber.Visible) { // customersAdd.MobileNumber.Visible (begin)
+    <div id="r_MobileNumber" @Html.Raw(customersAdd.MobileNumber.RowAttributes)>
+        <label id="elh_Customers_MobileNumber" for="x_MobileNumber" class="@(customersAdd.LeftColumnClass)">@Html.Raw(customersAdd.MobileNumber.Caption)@Html.Raw(customersAdd.MobileNumber.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(customersAdd.RightColumnClass)"><div @Html.Raw(customersAdd.MobileNumber.CellAttributes)>
+<span id="el_Customers_MobileNumber">
+<input type="@(customersAdd.MobileNumber.InputTextType)" name="x_MobileNumber" id="x_MobileNumber" data-table="Customers" data-field="x_MobileNumber" value="@Html.Raw(customersAdd.MobileNumber.EditValue)" size="30" maxlength="20" placeholder="@Html.Raw(HtmlEncode(customersAdd.MobileNumber.PlaceHolder))" data-format-pattern="@(customersAdd.MobileNumber.FormatPattern)"@Html.Raw(customersAdd.MobileNumber.EditAttributes) aria-describedby="x_MobileNumber_help">
+@Html.Raw(customersAdd.MobileNumber.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(customersAdd.MobileNumber.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* customersAdd.MobileNumber.Visible (end) *@
+@if (customersAdd.UserID.Visible) { // customersAdd.UserID.Visible (begin)
+    <div id="r_UserID" @Html.Raw(customersAdd.UserID.RowAttributes)>
+        <label id="elh_Customers_UserID" for="x_UserID" class="@(customersAdd.LeftColumnClass)">@Html.Raw(customersAdd.UserID.Caption)@Html.Raw(customersAdd.UserID.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(customersAdd.RightColumnClass)"><div @Html.Raw(customersAdd.UserID.CellAttributes)>
+<span id="el_Customers_UserID">
+<input type="@(customersAdd.UserID.InputTextType)" name="x_UserID" id="x_UserID" data-table="Customers" data-field="x_UserID" value="@Html.Raw(customersAdd.UserID.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(customersAdd.UserID.PlaceHolder))" data-format-pattern="@(customersAdd.UserID.FormatPattern)"@Html.Raw(customersAdd.UserID.EditAttributes) aria-describedby="x_UserID_help">
+@Html.Raw(customersAdd.UserID.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(customersAdd.UserID.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* customersAdd.UserID.Visible (end) *@
+@if (customersAdd.Status.Visible) { // customersAdd.Status.Visible (begin)
+    <div id="r_Status" @Html.Raw(customersAdd.Status.RowAttributes)>
+        <label id="elh_Customers_Status" for="x_Status" class="@(customersAdd.LeftColumnClass)">@Html.Raw(customersAdd.Status.Caption)@Html.Raw(customersAdd.Status.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(customersAdd.RightColumnClass)"><div @Html.Raw(customersAdd.Status.CellAttributes)>
+<span id="el_Customers_Status">
+<input type="@(customersAdd.Status.InputTextType)" name="x_Status" id="x_Status" data-table="Customers" data-field="x_Status" value="@Html.Raw(customersAdd.Status.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(customersAdd.Status.PlaceHolder))" data-format-pattern="@(customersAdd.Status.FormatPattern)"@Html.Raw(customersAdd.Status.EditAttributes) aria-describedby="x_Status_help">
+@Html.Raw(customersAdd.Status.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(customersAdd.Status.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* customersAdd.Status.Visible (end) *@
+@if (customersAdd.CreatedBy.Visible) { // customersAdd.CreatedBy.Visible (begin)
+    <div id="r_CreatedBy" @Html.Raw(customersAdd.CreatedBy.RowAttributes)>
+        <label id="elh_Customers_CreatedBy" for="x_CreatedBy" class="@(customersAdd.LeftColumnClass)">@Html.Raw(customersAdd.CreatedBy.Caption)@Html.Raw(customersAdd.CreatedBy.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(customersAdd.RightColumnClass)"><div @Html.Raw(customersAdd.CreatedBy.CellAttributes)>
+<span id="el_Customers_CreatedBy">
+<input type="@(customersAdd.CreatedBy.InputTextType)" name="x_CreatedBy" id="x_CreatedBy" data-table="Customers" data-field="x_CreatedBy" value="@Html.Raw(customersAdd.CreatedBy.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(customersAdd.CreatedBy.PlaceHolder))" data-format-pattern="@(customersAdd.CreatedBy.FormatPattern)"@Html.Raw(customersAdd.CreatedBy.EditAttributes) aria-describedby="x_CreatedBy_help">
+@Html.Raw(customersAdd.CreatedBy.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(customersAdd.CreatedBy.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* customersAdd.CreatedBy.Visible (end) *@
+@if (customersAdd.CreatedDateTime.Visible) { // customersAdd.CreatedDateTime.Visible (begin)
+    <div id="r_CreatedDateTime" @Html.Raw(customersAdd.CreatedDateTime.RowAttributes)>
+        <label id="elh_Customers_CreatedDateTime" for="x_CreatedDateTime" class="@(customersAdd.LeftColumnClass)">@Html.Raw(customersAdd.CreatedDateTime.Caption)@Html.Raw(customersAdd.CreatedDateTime.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(customersAdd.RightColumnClass)"><div @Html.Raw(customersAdd.CreatedDateTime.CellAttributes)>
+<span id="el_Customers_CreatedDateTime">
+<input type="@(customersAdd.CreatedDateTime.InputTextType)" name="x_CreatedDateTime" id="x_CreatedDateTime" data-table="Customers" data-field="x_CreatedDateTime" value="@Html.Raw(customersAdd.CreatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(customersAdd.CreatedDateTime.PlaceHolder))" data-format-pattern="@(customersAdd.CreatedDateTime.FormatPattern)"@Html.Raw(customersAdd.CreatedDateTime.EditAttributes) aria-describedby="x_CreatedDateTime_help">
+@Html.Raw(customersAdd.CreatedDateTime.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(customersAdd.CreatedDateTime.GetErrorMessage())</div>
+@if (!customersAdd.CreatedDateTime.ReadOnly && !customersAdd.CreatedDateTime.Disabled && !customersAdd.CreatedDateTime.EditAttrs.Is("readonly") && !customersAdd.CreatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fCustomersadd", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fCustomersadd", "x_CreatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+</div></div>
+    </div>
+} @* customersAdd.CreatedDateTime.Visible (end) *@
+@if (customersAdd.UpdatedBy.Visible) { // customersAdd.UpdatedBy.Visible (begin)
+    <div id="r_UpdatedBy" @Html.Raw(customersAdd.UpdatedBy.RowAttributes)>
+        <label id="elh_Customers_UpdatedBy" for="x_UpdatedBy" class="@(customersAdd.LeftColumnClass)">@Html.Raw(customersAdd.UpdatedBy.Caption)@Html.Raw(customersAdd.UpdatedBy.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(customersAdd.RightColumnClass)"><div @Html.Raw(customersAdd.UpdatedBy.CellAttributes)>
+<span id="el_Customers_UpdatedBy">
+<input type="@(customersAdd.UpdatedBy.InputTextType)" name="x_UpdatedBy" id="x_UpdatedBy" data-table="Customers" data-field="x_UpdatedBy" value="@Html.Raw(customersAdd.UpdatedBy.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(customersAdd.UpdatedBy.PlaceHolder))" data-format-pattern="@(customersAdd.UpdatedBy.FormatPattern)"@Html.Raw(customersAdd.UpdatedBy.EditAttributes) aria-describedby="x_UpdatedBy_help">
+@Html.Raw(customersAdd.UpdatedBy.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(customersAdd.UpdatedBy.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* customersAdd.UpdatedBy.Visible (end) *@
+@if (customersAdd.UpdatedDateTime.Visible) { // customersAdd.UpdatedDateTime.Visible (begin)
+    <div id="r_UpdatedDateTime" @Html.Raw(customersAdd.UpdatedDateTime.RowAttributes)>
+        <label id="elh_Customers_UpdatedDateTime" for="x_UpdatedDateTime" class="@(customersAdd.LeftColumnClass)">@Html.Raw(customersAdd.UpdatedDateTime.Caption)@Html.Raw(customersAdd.UpdatedDateTime.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(customersAdd.RightColumnClass)"><div @Html.Raw(customersAdd.UpdatedDateTime.CellAttributes)>
+<span id="el_Customers_UpdatedDateTime">
+<input type="@(customersAdd.UpdatedDateTime.InputTextType)" name="x_UpdatedDateTime" id="x_UpdatedDateTime" data-table="Customers" data-field="x_UpdatedDateTime" value="@Html.Raw(customersAdd.UpdatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(customersAdd.UpdatedDateTime.PlaceHolder))" data-format-pattern="@(customersAdd.UpdatedDateTime.FormatPattern)"@Html.Raw(customersAdd.UpdatedDateTime.EditAttributes) aria-describedby="x_UpdatedDateTime_help">
+@Html.Raw(customersAdd.UpdatedDateTime.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(customersAdd.UpdatedDateTime.GetErrorMessage())</div>
+@if (!customersAdd.UpdatedDateTime.ReadOnly && !customersAdd.UpdatedDateTime.Disabled && !customersAdd.UpdatedDateTime.EditAttrs.Is("readonly") && !customersAdd.UpdatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fCustomersadd", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fCustomersadd", "x_UpdatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+</div></div>
+    </div>
+} @* customersAdd.UpdatedDateTime.Visible (end) *@
+</div><!-- /page* -->
+@{ customersAdd.CloseRecordset(); }
+@Html.Raw(customersAdd.IsModal ? "<template class=\"ew-modal-buttons\">" : "<div class=\"row ew-buttons\">")<!-- buttons .row -->
+    <div class="@(customersAdd.OffsetColumnClass)"><!-- buttons offset -->
+    <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fCustomersadd">@Html.Raw(Language.Phrase("AddBtn"))</button>
+@if (IsJsonResponse()) {
+    <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" data-bs-dismiss="modal">@Html.Raw(Language.Phrase("CancelBtn"))</button>
+} else {
+    <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" form="fCustomersadd" data-href="@AppPath(customersAdd.ReturnUrl)">@Html.Raw(Language.Phrase("CancelBtn"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(customersAdd.IsModal ? "</template>" : "</div>")<!-- /buttons .row -->
+</form>
+@customersAdd.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("Customers");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>

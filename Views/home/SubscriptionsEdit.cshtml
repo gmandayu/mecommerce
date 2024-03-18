@@ -1,0 +1,197 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (subscriptionsEdit.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!subscriptionsEdit.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@subscriptionsEdit.ShowPageHeader()
+@subscriptionsEdit.ShowMessages()
+<main class="edit">
+<form name="fSubscriptionsedit" id="fSubscriptionsedit" class="@(subscriptionsEdit.FormClassName)" action="@AppPath(CurrentPageName())" method="post" novalidate autocomplete="off">
+<script>
+var currentTable = @Html.Raw(ConvertToJson(subscriptionsEdit.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { Subscriptions: currentTable } });
+var currentPageID = ew.PAGE_ID = "edit";
+var currentForm;
+var fSubscriptionsedit;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("fSubscriptionsedit")
+        .setPageId("edit")
+
+        // Add fields
+        .setFields([
+
+            ["Id", [fields.Id.visible && fields.Id.required ? ew.Validators.required(fields.Id.caption) : null], fields.Id.isInvalid],
+            ["_User", [fields._User.visible && fields._User.required ? ew.Validators.required(fields._User.caption) : null], fields._User.isInvalid],
+            ["Endpoint", [fields.Endpoint.visible && fields.Endpoint.required ? ew.Validators.required(fields.Endpoint.caption) : null], fields.Endpoint.isInvalid],
+            ["PublicKey", [fields.PublicKey.visible && fields.PublicKey.required ? ew.Validators.required(fields.PublicKey.caption) : null], fields.PublicKey.isInvalid],
+            ["AuthenticationToken", [fields.AuthenticationToken.visible && fields.AuthenticationToken.required ? ew.Validators.required(fields.AuthenticationToken.caption) : null], fields.AuthenticationToken.isInvalid],
+            ["ContentEncoding", [fields.ContentEncoding.visible && fields.ContentEncoding.required ? ew.Validators.required(fields.ContentEncoding.caption) : null], fields.ContentEncoding.isInvalid]
+        ])
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="update">
+<input type="hidden" name="modal" value="@ConvertToInt(subscriptionsEdit.IsModal)">
+@if (IsJsonResponse()) {
+<input type="hidden" name="json" value="1">
+}
+<input type="hidden" name="@(subscriptionsEdit.OldKeyName)" value="@Html.Raw(subscriptionsEdit.OldKey)">
+<div class="ew-edit-div"><!-- page* -->
+@if (subscriptionsEdit.Id.Visible) { // subscriptionsEdit.Id.Visible (begin)
+    <div id="r_Id" @Html.Raw(subscriptionsEdit.Id.RowAttributes)>
+        <label id="elh_Subscriptions_Id" class="@(subscriptionsEdit.LeftColumnClass)">@Html.Raw(subscriptionsEdit.Id.Caption)@Html.Raw(subscriptionsEdit.Id.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(subscriptionsEdit.RightColumnClass)"><div @Html.Raw(subscriptionsEdit.Id.CellAttributes)>
+<span id="el_Subscriptions_Id">
+<span @Html.Raw(subscriptionsEdit.Id.ViewAttributes)>
+<input type="text" readonly class="form-control-plaintext" value="@Html.Raw(RemoveHtml(ConvertToString(subscriptionsEdit.Id.EditValue)))"></span>
+<input type="hidden" data-table="Subscriptions" data-field="x_Id" data-hidden="1" name="x_Id" id="x_Id" value="@Html.Raw(HtmlEncode(subscriptionsEdit.Id.CurrentValue))">
+</span>
+</div></div>
+    </div>
+} @* subscriptionsEdit.Id.Visible (end) *@
+@if (subscriptionsEdit._User.Visible) { // subscriptionsEdit._User.Visible (begin)
+    <div id="r__User" @Html.Raw(subscriptionsEdit._User.RowAttributes)>
+        <label id="elh_Subscriptions__User" for="x__User" class="@(subscriptionsEdit.LeftColumnClass)">@Html.Raw(subscriptionsEdit._User.Caption)@Html.Raw(subscriptionsEdit._User.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(subscriptionsEdit.RightColumnClass)"><div @Html.Raw(subscriptionsEdit._User.CellAttributes)>
+<span id="el_Subscriptions__User">
+<input type="@(subscriptionsEdit._User.InputTextType)" name="x__User" id="x__User" data-table="Subscriptions" data-field="x__User" value="@Html.Raw(subscriptionsEdit._User.EditValue)" size="30" maxlength="255" placeholder="@Html.Raw(HtmlEncode(subscriptionsEdit._User.PlaceHolder))" data-format-pattern="@(subscriptionsEdit._User.FormatPattern)"@Html.Raw(subscriptionsEdit._User.EditAttributes) aria-describedby="x__User_help">
+@Html.Raw(subscriptionsEdit._User.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(subscriptionsEdit._User.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* subscriptionsEdit._User.Visible (end) *@
+@if (subscriptionsEdit.Endpoint.Visible) { // subscriptionsEdit.Endpoint.Visible (begin)
+    <div id="r_Endpoint" @Html.Raw(subscriptionsEdit.Endpoint.RowAttributes)>
+        <label id="elh_Subscriptions_Endpoint" for="x_Endpoint" class="@(subscriptionsEdit.LeftColumnClass)">@Html.Raw(subscriptionsEdit.Endpoint.Caption)@Html.Raw(subscriptionsEdit.Endpoint.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(subscriptionsEdit.RightColumnClass)"><div @Html.Raw(subscriptionsEdit.Endpoint.CellAttributes)>
+<span id="el_Subscriptions_Endpoint">
+<textarea data-table="Subscriptions" data-field="x_Endpoint" name="x_Endpoint" id="x_Endpoint" cols="35" rows="4" placeholder="@Html.Raw(HtmlEncode(subscriptionsEdit.Endpoint.PlaceHolder))"@Html.Raw(subscriptionsEdit.Endpoint.EditAttributes) aria-describedby="x_Endpoint_help">@(subscriptionsEdit.Endpoint.EditValue)</textarea>
+@Html.Raw(subscriptionsEdit.Endpoint.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(subscriptionsEdit.Endpoint.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* subscriptionsEdit.Endpoint.Visible (end) *@
+@if (subscriptionsEdit.PublicKey.Visible) { // subscriptionsEdit.PublicKey.Visible (begin)
+    <div id="r_PublicKey" @Html.Raw(subscriptionsEdit.PublicKey.RowAttributes)>
+        <label id="elh_Subscriptions_PublicKey" for="x_PublicKey" class="@(subscriptionsEdit.LeftColumnClass)">@Html.Raw(subscriptionsEdit.PublicKey.Caption)@Html.Raw(subscriptionsEdit.PublicKey.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(subscriptionsEdit.RightColumnClass)"><div @Html.Raw(subscriptionsEdit.PublicKey.CellAttributes)>
+<span id="el_Subscriptions_PublicKey">
+<input type="@(subscriptionsEdit.PublicKey.InputTextType)" name="x_PublicKey" id="x_PublicKey" data-table="Subscriptions" data-field="x_PublicKey" value="@Html.Raw(subscriptionsEdit.PublicKey.EditValue)" size="30" maxlength="255" placeholder="@Html.Raw(HtmlEncode(subscriptionsEdit.PublicKey.PlaceHolder))" data-format-pattern="@(subscriptionsEdit.PublicKey.FormatPattern)"@Html.Raw(subscriptionsEdit.PublicKey.EditAttributes) aria-describedby="x_PublicKey_help">
+@Html.Raw(subscriptionsEdit.PublicKey.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(subscriptionsEdit.PublicKey.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* subscriptionsEdit.PublicKey.Visible (end) *@
+@if (subscriptionsEdit.AuthenticationToken.Visible) { // subscriptionsEdit.AuthenticationToken.Visible (begin)
+    <div id="r_AuthenticationToken" @Html.Raw(subscriptionsEdit.AuthenticationToken.RowAttributes)>
+        <label id="elh_Subscriptions_AuthenticationToken" for="x_AuthenticationToken" class="@(subscriptionsEdit.LeftColumnClass)">@Html.Raw(subscriptionsEdit.AuthenticationToken.Caption)@Html.Raw(subscriptionsEdit.AuthenticationToken.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(subscriptionsEdit.RightColumnClass)"><div @Html.Raw(subscriptionsEdit.AuthenticationToken.CellAttributes)>
+<span id="el_Subscriptions_AuthenticationToken">
+<input type="@(subscriptionsEdit.AuthenticationToken.InputTextType)" name="x_AuthenticationToken" id="x_AuthenticationToken" data-table="Subscriptions" data-field="x_AuthenticationToken" value="@Html.Raw(subscriptionsEdit.AuthenticationToken.EditValue)" size="30" maxlength="255" placeholder="@Html.Raw(HtmlEncode(subscriptionsEdit.AuthenticationToken.PlaceHolder))" data-format-pattern="@(subscriptionsEdit.AuthenticationToken.FormatPattern)"@Html.Raw(subscriptionsEdit.AuthenticationToken.EditAttributes) aria-describedby="x_AuthenticationToken_help">
+@Html.Raw(subscriptionsEdit.AuthenticationToken.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(subscriptionsEdit.AuthenticationToken.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* subscriptionsEdit.AuthenticationToken.Visible (end) *@
+@if (subscriptionsEdit.ContentEncoding.Visible) { // subscriptionsEdit.ContentEncoding.Visible (begin)
+    <div id="r_ContentEncoding" @Html.Raw(subscriptionsEdit.ContentEncoding.RowAttributes)>
+        <label id="elh_Subscriptions_ContentEncoding" for="x_ContentEncoding" class="@(subscriptionsEdit.LeftColumnClass)">@Html.Raw(subscriptionsEdit.ContentEncoding.Caption)@Html.Raw(subscriptionsEdit.ContentEncoding.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(subscriptionsEdit.RightColumnClass)"><div @Html.Raw(subscriptionsEdit.ContentEncoding.CellAttributes)>
+<span id="el_Subscriptions_ContentEncoding">
+<input type="@(subscriptionsEdit.ContentEncoding.InputTextType)" name="x_ContentEncoding" id="x_ContentEncoding" data-table="Subscriptions" data-field="x_ContentEncoding" value="@Html.Raw(subscriptionsEdit.ContentEncoding.EditValue)" size="30" maxlength="255" placeholder="@Html.Raw(HtmlEncode(subscriptionsEdit.ContentEncoding.PlaceHolder))" data-format-pattern="@(subscriptionsEdit.ContentEncoding.FormatPattern)"@Html.Raw(subscriptionsEdit.ContentEncoding.EditAttributes) aria-describedby="x_ContentEncoding_help">
+@Html.Raw(subscriptionsEdit.ContentEncoding.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(subscriptionsEdit.ContentEncoding.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* subscriptionsEdit.ContentEncoding.Visible (end) *@
+</div><!-- /page* -->
+@{ subscriptionsEdit.CloseRecordset(); }
+@Html.Raw(subscriptionsEdit.IsModal ? "<template class=\"ew-modal-buttons\">" : "<div class=\"row ew-buttons\">")<!-- buttons .row -->
+    <div class="@(subscriptionsEdit.OffsetColumnClass)"><!-- buttons offset -->
+    <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fSubscriptionsedit">@Html.Raw(Language.Phrase("SaveBtn"))</button>
+@if (IsJsonResponse()) {
+    <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" data-bs-dismiss="modal">@Html.Raw(Language.Phrase("CancelBtn"))</button>
+} else {
+    <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" form="fSubscriptionsedit" data-href="@AppPath(subscriptionsEdit.ReturnUrl)">@Html.Raw(Language.Phrase("CancelBtn"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(subscriptionsEdit.IsModal ? "</template>" : "</div>")<!-- /buttons .row -->
+</form>
+@if (!subscriptionsEdit.IsModal) {
+<div><!-- DN -->
+@subscriptionsEdit.Pager.Render()
+</div>
+}
+</main>
+@subscriptionsEdit.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("Subscriptions");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>

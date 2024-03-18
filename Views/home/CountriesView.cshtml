@@ -1,0 +1,202 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (countriesView.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!countriesView.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!countriesView.IsExport()) {
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!countriesView.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+    @countriesView.ExportOptions.RenderBody()
+    @countriesView.OtherOptions.RenderBody()
+</div>
+}
+@countriesView.ShowPageHeader()
+@countriesView.ShowMessages()
+<main class="view">
+<form name="fCountriesview" id="fCountriesview" class="ew-form ew-view-form overlay-wrapper" action="@AppPath(CurrentPageName())" method="post" novalidate autocomplete="off">
+@if (!countriesView.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(countriesView.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { Countries: currentTable } });
+var currentPageID = ew.PAGE_ID = "view";
+var currentForm;
+var fCountriesview;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("fCountriesview")
+        .setPageId("view")
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+}
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="modal" value="@ConvertToInt(countriesView.IsModal)">
+<table class="@(countriesView.TableClass)">
+@if (countriesView.CountryID.Visible) { // countriesView.CountryID.Visible (begin)
+    <tr id="r_CountryID" @Html.Raw(countriesView.CountryID.RowAttributes)>
+        <td class="@(countriesView.TableLeftColumnClass)"><span id="elh_Countries_CountryID">@Html.Raw(countriesView.CountryID.Caption)</span></td>
+        <td data-name="CountryID" @Html.Raw(countriesView.CountryID.CellAttributes)>
+<span id="el_Countries_CountryID">
+<span @Html.Raw(countriesView.CountryID.ViewAttributes)>
+@Html.Raw(countriesView.CountryID.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* countriesView.CountryID.Visible (end) *@
+@if (countriesView.ISO.Visible) { // countriesView.ISO.Visible (begin)
+    <tr id="r_ISO" @Html.Raw(countriesView.ISO.RowAttributes)>
+        <td class="@(countriesView.TableLeftColumnClass)"><span id="elh_Countries_ISO">@Html.Raw(countriesView.ISO.Caption)</span></td>
+        <td data-name="ISO" @Html.Raw(countriesView.ISO.CellAttributes)>
+<span id="el_Countries_ISO">
+<span @Html.Raw(countriesView.ISO.ViewAttributes)>
+@Html.Raw(countriesView.ISO.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* countriesView.ISO.Visible (end) *@
+@if (countriesView._Name.Visible) { // countriesView._Name.Visible (begin)
+    <tr id="r__Name" @Html.Raw(countriesView._Name.RowAttributes)>
+        <td class="@(countriesView.TableLeftColumnClass)"><span id="elh_Countries__Name">@Html.Raw(countriesView._Name.Caption)</span></td>
+        <td data-name="_Name" @Html.Raw(countriesView._Name.CellAttributes)>
+<span id="el_Countries__Name">
+<span @Html.Raw(countriesView._Name.ViewAttributes)>
+@Html.Raw(countriesView._Name.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* countriesView._Name.Visible (end) *@
+@if (countriesView.NiceName.Visible) { // countriesView.NiceName.Visible (begin)
+    <tr id="r_NiceName" @Html.Raw(countriesView.NiceName.RowAttributes)>
+        <td class="@(countriesView.TableLeftColumnClass)"><span id="elh_Countries_NiceName">@Html.Raw(countriesView.NiceName.Caption)</span></td>
+        <td data-name="NiceName" @Html.Raw(countriesView.NiceName.CellAttributes)>
+<span id="el_Countries_NiceName">
+<span @Html.Raw(countriesView.NiceName.ViewAttributes)>
+@Html.Raw(countriesView.NiceName.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* countriesView.NiceName.Visible (end) *@
+@if (countriesView.ISO3.Visible) { // countriesView.ISO3.Visible (begin)
+    <tr id="r_ISO3" @Html.Raw(countriesView.ISO3.RowAttributes)>
+        <td class="@(countriesView.TableLeftColumnClass)"><span id="elh_Countries_ISO3">@Html.Raw(countriesView.ISO3.Caption)</span></td>
+        <td data-name="ISO3" @Html.Raw(countriesView.ISO3.CellAttributes)>
+<span id="el_Countries_ISO3">
+<span @Html.Raw(countriesView.ISO3.ViewAttributes)>
+@Html.Raw(countriesView.ISO3.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* countriesView.ISO3.Visible (end) *@
+@if (countriesView.NumCode.Visible) { // countriesView.NumCode.Visible (begin)
+    <tr id="r_NumCode" @Html.Raw(countriesView.NumCode.RowAttributes)>
+        <td class="@(countriesView.TableLeftColumnClass)"><span id="elh_Countries_NumCode">@Html.Raw(countriesView.NumCode.Caption)</span></td>
+        <td data-name="NumCode" @Html.Raw(countriesView.NumCode.CellAttributes)>
+<span id="el_Countries_NumCode">
+<span @Html.Raw(countriesView.NumCode.ViewAttributes)>
+@Html.Raw(countriesView.NumCode.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* countriesView.NumCode.Visible (end) *@
+@if (countriesView.PhoneCode.Visible) { // countriesView.PhoneCode.Visible (begin)
+    <tr id="r_PhoneCode" @Html.Raw(countriesView.PhoneCode.RowAttributes)>
+        <td class="@(countriesView.TableLeftColumnClass)"><span id="elh_Countries_PhoneCode">@Html.Raw(countriesView.PhoneCode.Caption)</span></td>
+        <td data-name="PhoneCode" @Html.Raw(countriesView.PhoneCode.CellAttributes)>
+<span id="el_Countries_PhoneCode">
+<span @Html.Raw(countriesView.PhoneCode.ViewAttributes)>
+@Html.Raw(countriesView.PhoneCode.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* countriesView.PhoneCode.Visible (end) *@
+@if (countriesView.CreatedBy.Visible) { // countriesView.CreatedBy.Visible (begin)
+    <tr id="r_CreatedBy" @Html.Raw(countriesView.CreatedBy.RowAttributes)>
+        <td class="@(countriesView.TableLeftColumnClass)"><span id="elh_Countries_CreatedBy">@Html.Raw(countriesView.CreatedBy.Caption)</span></td>
+        <td data-name="CreatedBy" @Html.Raw(countriesView.CreatedBy.CellAttributes)>
+<span id="el_Countries_CreatedBy">
+<span @Html.Raw(countriesView.CreatedBy.ViewAttributes)>
+@Html.Raw(countriesView.CreatedBy.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* countriesView.CreatedBy.Visible (end) *@
+@if (countriesView.CreatedDateTime.Visible) { // countriesView.CreatedDateTime.Visible (begin)
+    <tr id="r_CreatedDateTime" @Html.Raw(countriesView.CreatedDateTime.RowAttributes)>
+        <td class="@(countriesView.TableLeftColumnClass)"><span id="elh_Countries_CreatedDateTime">@Html.Raw(countriesView.CreatedDateTime.Caption)</span></td>
+        <td data-name="CreatedDateTime" @Html.Raw(countriesView.CreatedDateTime.CellAttributes)>
+<span id="el_Countries_CreatedDateTime">
+<span @Html.Raw(countriesView.CreatedDateTime.ViewAttributes)>
+@Html.Raw(countriesView.CreatedDateTime.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* countriesView.CreatedDateTime.Visible (end) *@
+@if (countriesView.UpdatedBy.Visible) { // countriesView.UpdatedBy.Visible (begin)
+    <tr id="r_UpdatedBy" @Html.Raw(countriesView.UpdatedBy.RowAttributes)>
+        <td class="@(countriesView.TableLeftColumnClass)"><span id="elh_Countries_UpdatedBy">@Html.Raw(countriesView.UpdatedBy.Caption)</span></td>
+        <td data-name="UpdatedBy" @Html.Raw(countriesView.UpdatedBy.CellAttributes)>
+<span id="el_Countries_UpdatedBy">
+<span @Html.Raw(countriesView.UpdatedBy.ViewAttributes)>
+@Html.Raw(countriesView.UpdatedBy.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* countriesView.UpdatedBy.Visible (end) *@
+@if (countriesView.UpdatedDateTime.Visible) { // countriesView.UpdatedDateTime.Visible (begin)
+    <tr id="r_UpdatedDateTime" @Html.Raw(countriesView.UpdatedDateTime.RowAttributes)>
+        <td class="@(countriesView.TableLeftColumnClass)"><span id="elh_Countries_UpdatedDateTime">@Html.Raw(countriesView.UpdatedDateTime.Caption)</span></td>
+        <td data-name="UpdatedDateTime" @Html.Raw(countriesView.UpdatedDateTime.CellAttributes)>
+<span id="el_Countries_UpdatedDateTime">
+<span @Html.Raw(countriesView.UpdatedDateTime.ViewAttributes)>
+@Html.Raw(countriesView.UpdatedDateTime.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* countriesView.UpdatedDateTime.Visible (end) *@
+</table>
+@{ countriesView.CloseRecordset(); }
+</form>
+@if (!countriesView.IsModal) {
+if (!countriesView.IsExport()) {
+<div><!-- DN -->
+@countriesView.Pager.Render()
+</div>
+}
+}
+</main>
+@countriesView.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!countriesView.IsExport()) {
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>
+}

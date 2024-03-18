@@ -1,0 +1,489 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (customersEdit.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!customersEdit.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@customersEdit.ShowPageHeader()
+@customersEdit.ShowMessages()
+<main class="edit">
+<form name="fCustomersedit" id="fCustomersedit" class="@(customersEdit.FormClassName)" action="@AppPath(CurrentPageName())" method="post" novalidate autocomplete="off">
+<script>
+var currentTable = @Html.Raw(ConvertToJson(customersEdit.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { Customers: currentTable } });
+var currentPageID = ew.PAGE_ID = "edit";
+var currentForm;
+var fCustomersedit;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("fCustomersedit")
+        .setPageId("edit")
+
+        // Add fields
+        .setFields([
+
+            ["CustomerID", [fields.CustomerID.visible && fields.CustomerID.required ? ew.Validators.required(fields.CustomerID.caption) : null], fields.CustomerID.isInvalid],
+            ["FirstName", [fields.FirstName.visible && fields.FirstName.required ? ew.Validators.required(fields.FirstName.caption) : null], fields.FirstName.isInvalid],
+            ["MiddleName", [fields.MiddleName.visible && fields.MiddleName.required ? ew.Validators.required(fields.MiddleName.caption) : null], fields.MiddleName.isInvalid],
+            ["LastName", [fields.LastName.visible && fields.LastName.required ? ew.Validators.required(fields.LastName.caption) : null], fields.LastName.isInvalid],
+            ["Gender", [fields.Gender.visible && fields.Gender.required ? ew.Validators.required(fields.Gender.caption) : null], fields.Gender.isInvalid],
+            ["PlaceOfBirth", [fields.PlaceOfBirth.visible && fields.PlaceOfBirth.required ? ew.Validators.required(fields.PlaceOfBirth.caption) : null], fields.PlaceOfBirth.isInvalid],
+            ["DateOfBirth", [fields.DateOfBirth.visible && fields.DateOfBirth.required ? ew.Validators.required(fields.DateOfBirth.caption) : null, ew.Validators.datetime(fields.DateOfBirth.clientFormatPattern)], fields.DateOfBirth.isInvalid],
+            ["PrimaryAddress", [fields.PrimaryAddress.visible && fields.PrimaryAddress.required ? ew.Validators.required(fields.PrimaryAddress.caption) : null], fields.PrimaryAddress.isInvalid],
+            ["PrimaryAddressCity", [fields.PrimaryAddressCity.visible && fields.PrimaryAddressCity.required ? ew.Validators.required(fields.PrimaryAddressCity.caption) : null], fields.PrimaryAddressCity.isInvalid],
+            ["PrimaryAddressPostCode", [fields.PrimaryAddressPostCode.visible && fields.PrimaryAddressPostCode.required ? ew.Validators.required(fields.PrimaryAddressPostCode.caption) : null], fields.PrimaryAddressPostCode.isInvalid],
+            ["PrimaryAddressCountryID", [fields.PrimaryAddressCountryID.visible && fields.PrimaryAddressCountryID.required ? ew.Validators.required(fields.PrimaryAddressCountryID.caption) : null, ew.Validators.integer], fields.PrimaryAddressCountryID.isInvalid],
+            ["AlternativeAddress", [fields.AlternativeAddress.visible && fields.AlternativeAddress.required ? ew.Validators.required(fields.AlternativeAddress.caption) : null], fields.AlternativeAddress.isInvalid],
+            ["AlternativeAddressCity", [fields.AlternativeAddressCity.visible && fields.AlternativeAddressCity.required ? ew.Validators.required(fields.AlternativeAddressCity.caption) : null], fields.AlternativeAddressCity.isInvalid],
+            ["AlternativeAddressPostCode", [fields.AlternativeAddressPostCode.visible && fields.AlternativeAddressPostCode.required ? ew.Validators.required(fields.AlternativeAddressPostCode.caption) : null], fields.AlternativeAddressPostCode.isInvalid],
+            ["AlternativeAddressCountryID", [fields.AlternativeAddressCountryID.visible && fields.AlternativeAddressCountryID.required ? ew.Validators.required(fields.AlternativeAddressCountryID.caption) : null, ew.Validators.integer], fields.AlternativeAddressCountryID.isInvalid],
+            ["MobileNumber", [fields.MobileNumber.visible && fields.MobileNumber.required ? ew.Validators.required(fields.MobileNumber.caption) : null], fields.MobileNumber.isInvalid],
+            ["UserID", [fields.UserID.visible && fields.UserID.required ? ew.Validators.required(fields.UserID.caption) : null, ew.Validators.integer], fields.UserID.isInvalid],
+            ["Status", [fields.Status.visible && fields.Status.required ? ew.Validators.required(fields.Status.caption) : null], fields.Status.isInvalid],
+            ["CreatedBy", [fields.CreatedBy.visible && fields.CreatedBy.required ? ew.Validators.required(fields.CreatedBy.caption) : null, ew.Validators.integer], fields.CreatedBy.isInvalid],
+            ["CreatedDateTime", [fields.CreatedDateTime.visible && fields.CreatedDateTime.required ? ew.Validators.required(fields.CreatedDateTime.caption) : null, ew.Validators.datetime(fields.CreatedDateTime.clientFormatPattern)], fields.CreatedDateTime.isInvalid],
+            ["UpdatedBy", [fields.UpdatedBy.visible && fields.UpdatedBy.required ? ew.Validators.required(fields.UpdatedBy.caption) : null, ew.Validators.integer], fields.UpdatedBy.isInvalid],
+            ["UpdatedDateTime", [fields.UpdatedDateTime.visible && fields.UpdatedDateTime.required ? ew.Validators.required(fields.UpdatedDateTime.caption) : null, ew.Validators.datetime(fields.UpdatedDateTime.clientFormatPattern)], fields.UpdatedDateTime.isInvalid]
+        ])
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="update">
+<input type="hidden" name="modal" value="@ConvertToInt(customersEdit.IsModal)">
+@if (IsJsonResponse()) {
+<input type="hidden" name="json" value="1">
+}
+<input type="hidden" name="@(customersEdit.OldKeyName)" value="@Html.Raw(customersEdit.OldKey)">
+<div class="ew-edit-div"><!-- page* -->
+@if (customersEdit.CustomerID.Visible) { // customersEdit.CustomerID.Visible (begin)
+    <div id="r_CustomerID" @Html.Raw(customersEdit.CustomerID.RowAttributes)>
+        <label id="elh_Customers_CustomerID" class="@(customersEdit.LeftColumnClass)">@Html.Raw(customersEdit.CustomerID.Caption)@Html.Raw(customersEdit.CustomerID.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(customersEdit.RightColumnClass)"><div @Html.Raw(customersEdit.CustomerID.CellAttributes)>
+<span id="el_Customers_CustomerID">
+<span @Html.Raw(customersEdit.CustomerID.ViewAttributes)>
+<input type="text" readonly class="form-control-plaintext" value="@Html.Raw(RemoveHtml(ConvertToString(customersEdit.CustomerID.EditValue)))"></span>
+<input type="hidden" data-table="Customers" data-field="x_CustomerID" data-hidden="1" name="x_CustomerID" id="x_CustomerID" value="@Html.Raw(HtmlEncode(customersEdit.CustomerID.CurrentValue))">
+</span>
+</div></div>
+    </div>
+} @* customersEdit.CustomerID.Visible (end) *@
+@if (customersEdit.FirstName.Visible) { // customersEdit.FirstName.Visible (begin)
+    <div id="r_FirstName" @Html.Raw(customersEdit.FirstName.RowAttributes)>
+        <label id="elh_Customers_FirstName" for="x_FirstName" class="@(customersEdit.LeftColumnClass)">@Html.Raw(customersEdit.FirstName.Caption)@Html.Raw(customersEdit.FirstName.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(customersEdit.RightColumnClass)"><div @Html.Raw(customersEdit.FirstName.CellAttributes)>
+<span id="el_Customers_FirstName">
+<input type="@(customersEdit.FirstName.InputTextType)" name="x_FirstName" id="x_FirstName" data-table="Customers" data-field="x_FirstName" value="@Html.Raw(customersEdit.FirstName.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(customersEdit.FirstName.PlaceHolder))" data-format-pattern="@(customersEdit.FirstName.FormatPattern)"@Html.Raw(customersEdit.FirstName.EditAttributes) aria-describedby="x_FirstName_help">
+@Html.Raw(customersEdit.FirstName.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(customersEdit.FirstName.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* customersEdit.FirstName.Visible (end) *@
+@if (customersEdit.MiddleName.Visible) { // customersEdit.MiddleName.Visible (begin)
+    <div id="r_MiddleName" @Html.Raw(customersEdit.MiddleName.RowAttributes)>
+        <label id="elh_Customers_MiddleName" for="x_MiddleName" class="@(customersEdit.LeftColumnClass)">@Html.Raw(customersEdit.MiddleName.Caption)@Html.Raw(customersEdit.MiddleName.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(customersEdit.RightColumnClass)"><div @Html.Raw(customersEdit.MiddleName.CellAttributes)>
+<span id="el_Customers_MiddleName">
+<input type="@(customersEdit.MiddleName.InputTextType)" name="x_MiddleName" id="x_MiddleName" data-table="Customers" data-field="x_MiddleName" value="@Html.Raw(customersEdit.MiddleName.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(customersEdit.MiddleName.PlaceHolder))" data-format-pattern="@(customersEdit.MiddleName.FormatPattern)"@Html.Raw(customersEdit.MiddleName.EditAttributes) aria-describedby="x_MiddleName_help">
+@Html.Raw(customersEdit.MiddleName.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(customersEdit.MiddleName.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* customersEdit.MiddleName.Visible (end) *@
+@if (customersEdit.LastName.Visible) { // customersEdit.LastName.Visible (begin)
+    <div id="r_LastName" @Html.Raw(customersEdit.LastName.RowAttributes)>
+        <label id="elh_Customers_LastName" for="x_LastName" class="@(customersEdit.LeftColumnClass)">@Html.Raw(customersEdit.LastName.Caption)@Html.Raw(customersEdit.LastName.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(customersEdit.RightColumnClass)"><div @Html.Raw(customersEdit.LastName.CellAttributes)>
+<span id="el_Customers_LastName">
+<input type="@(customersEdit.LastName.InputTextType)" name="x_LastName" id="x_LastName" data-table="Customers" data-field="x_LastName" value="@Html.Raw(customersEdit.LastName.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(customersEdit.LastName.PlaceHolder))" data-format-pattern="@(customersEdit.LastName.FormatPattern)"@Html.Raw(customersEdit.LastName.EditAttributes) aria-describedby="x_LastName_help">
+@Html.Raw(customersEdit.LastName.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(customersEdit.LastName.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* customersEdit.LastName.Visible (end) *@
+@if (customersEdit.Gender.Visible) { // customersEdit.Gender.Visible (begin)
+    <div id="r_Gender" @Html.Raw(customersEdit.Gender.RowAttributes)>
+        <label id="elh_Customers_Gender" for="x_Gender" class="@(customersEdit.LeftColumnClass)">@Html.Raw(customersEdit.Gender.Caption)@Html.Raw(customersEdit.Gender.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(customersEdit.RightColumnClass)"><div @Html.Raw(customersEdit.Gender.CellAttributes)>
+<span id="el_Customers_Gender">
+<input type="@(customersEdit.Gender.InputTextType)" name="x_Gender" id="x_Gender" data-table="Customers" data-field="x_Gender" value="@Html.Raw(customersEdit.Gender.EditValue)" size="30" maxlength="10" placeholder="@Html.Raw(HtmlEncode(customersEdit.Gender.PlaceHolder))" data-format-pattern="@(customersEdit.Gender.FormatPattern)"@Html.Raw(customersEdit.Gender.EditAttributes) aria-describedby="x_Gender_help">
+@Html.Raw(customersEdit.Gender.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(customersEdit.Gender.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* customersEdit.Gender.Visible (end) *@
+@if (customersEdit.PlaceOfBirth.Visible) { // customersEdit.PlaceOfBirth.Visible (begin)
+    <div id="r_PlaceOfBirth" @Html.Raw(customersEdit.PlaceOfBirth.RowAttributes)>
+        <label id="elh_Customers_PlaceOfBirth" for="x_PlaceOfBirth" class="@(customersEdit.LeftColumnClass)">@Html.Raw(customersEdit.PlaceOfBirth.Caption)@Html.Raw(customersEdit.PlaceOfBirth.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(customersEdit.RightColumnClass)"><div @Html.Raw(customersEdit.PlaceOfBirth.CellAttributes)>
+<span id="el_Customers_PlaceOfBirth">
+<input type="@(customersEdit.PlaceOfBirth.InputTextType)" name="x_PlaceOfBirth" id="x_PlaceOfBirth" data-table="Customers" data-field="x_PlaceOfBirth" value="@Html.Raw(customersEdit.PlaceOfBirth.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(customersEdit.PlaceOfBirth.PlaceHolder))" data-format-pattern="@(customersEdit.PlaceOfBirth.FormatPattern)"@Html.Raw(customersEdit.PlaceOfBirth.EditAttributes) aria-describedby="x_PlaceOfBirth_help">
+@Html.Raw(customersEdit.PlaceOfBirth.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(customersEdit.PlaceOfBirth.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* customersEdit.PlaceOfBirth.Visible (end) *@
+@if (customersEdit.DateOfBirth.Visible) { // customersEdit.DateOfBirth.Visible (begin)
+    <div id="r_DateOfBirth" @Html.Raw(customersEdit.DateOfBirth.RowAttributes)>
+        <label id="elh_Customers_DateOfBirth" for="x_DateOfBirth" class="@(customersEdit.LeftColumnClass)">@Html.Raw(customersEdit.DateOfBirth.Caption)@Html.Raw(customersEdit.DateOfBirth.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(customersEdit.RightColumnClass)"><div @Html.Raw(customersEdit.DateOfBirth.CellAttributes)>
+<span id="el_Customers_DateOfBirth">
+<input type="@(customersEdit.DateOfBirth.InputTextType)" name="x_DateOfBirth" id="x_DateOfBirth" data-table="Customers" data-field="x_DateOfBirth" value="@Html.Raw(customersEdit.DateOfBirth.EditValue)" placeholder="@Html.Raw(HtmlEncode(customersEdit.DateOfBirth.PlaceHolder))" data-format-pattern="@(customersEdit.DateOfBirth.FormatPattern)"@Html.Raw(customersEdit.DateOfBirth.EditAttributes) aria-describedby="x_DateOfBirth_help">
+@Html.Raw(customersEdit.DateOfBirth.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(customersEdit.DateOfBirth.GetErrorMessage())</div>
+@if (!customersEdit.DateOfBirth.ReadOnly && !customersEdit.DateOfBirth.Disabled && !customersEdit.DateOfBirth.EditAttrs.Is("readonly") && !customersEdit.DateOfBirth.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fCustomersedit", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fCustomersedit", "x_DateOfBirth", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+</div></div>
+    </div>
+} @* customersEdit.DateOfBirth.Visible (end) *@
+@if (customersEdit.PrimaryAddress.Visible) { // customersEdit.PrimaryAddress.Visible (begin)
+    <div id="r_PrimaryAddress" @Html.Raw(customersEdit.PrimaryAddress.RowAttributes)>
+        <label id="elh_Customers_PrimaryAddress" for="x_PrimaryAddress" class="@(customersEdit.LeftColumnClass)">@Html.Raw(customersEdit.PrimaryAddress.Caption)@Html.Raw(customersEdit.PrimaryAddress.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(customersEdit.RightColumnClass)"><div @Html.Raw(customersEdit.PrimaryAddress.CellAttributes)>
+<span id="el_Customers_PrimaryAddress">
+<textarea data-table="Customers" data-field="x_PrimaryAddress" name="x_PrimaryAddress" id="x_PrimaryAddress" cols="35" rows="4" placeholder="@Html.Raw(HtmlEncode(customersEdit.PrimaryAddress.PlaceHolder))"@Html.Raw(customersEdit.PrimaryAddress.EditAttributes) aria-describedby="x_PrimaryAddress_help">@(customersEdit.PrimaryAddress.EditValue)</textarea>
+@Html.Raw(customersEdit.PrimaryAddress.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(customersEdit.PrimaryAddress.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* customersEdit.PrimaryAddress.Visible (end) *@
+@if (customersEdit.PrimaryAddressCity.Visible) { // customersEdit.PrimaryAddressCity.Visible (begin)
+    <div id="r_PrimaryAddressCity" @Html.Raw(customersEdit.PrimaryAddressCity.RowAttributes)>
+        <label id="elh_Customers_PrimaryAddressCity" for="x_PrimaryAddressCity" class="@(customersEdit.LeftColumnClass)">@Html.Raw(customersEdit.PrimaryAddressCity.Caption)@Html.Raw(customersEdit.PrimaryAddressCity.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(customersEdit.RightColumnClass)"><div @Html.Raw(customersEdit.PrimaryAddressCity.CellAttributes)>
+<span id="el_Customers_PrimaryAddressCity">
+<input type="@(customersEdit.PrimaryAddressCity.InputTextType)" name="x_PrimaryAddressCity" id="x_PrimaryAddressCity" data-table="Customers" data-field="x_PrimaryAddressCity" value="@Html.Raw(customersEdit.PrimaryAddressCity.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(customersEdit.PrimaryAddressCity.PlaceHolder))" data-format-pattern="@(customersEdit.PrimaryAddressCity.FormatPattern)"@Html.Raw(customersEdit.PrimaryAddressCity.EditAttributes) aria-describedby="x_PrimaryAddressCity_help">
+@Html.Raw(customersEdit.PrimaryAddressCity.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(customersEdit.PrimaryAddressCity.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* customersEdit.PrimaryAddressCity.Visible (end) *@
+@if (customersEdit.PrimaryAddressPostCode.Visible) { // customersEdit.PrimaryAddressPostCode.Visible (begin)
+    <div id="r_PrimaryAddressPostCode" @Html.Raw(customersEdit.PrimaryAddressPostCode.RowAttributes)>
+        <label id="elh_Customers_PrimaryAddressPostCode" for="x_PrimaryAddressPostCode" class="@(customersEdit.LeftColumnClass)">@Html.Raw(customersEdit.PrimaryAddressPostCode.Caption)@Html.Raw(customersEdit.PrimaryAddressPostCode.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(customersEdit.RightColumnClass)"><div @Html.Raw(customersEdit.PrimaryAddressPostCode.CellAttributes)>
+<span id="el_Customers_PrimaryAddressPostCode">
+<input type="@(customersEdit.PrimaryAddressPostCode.InputTextType)" name="x_PrimaryAddressPostCode" id="x_PrimaryAddressPostCode" data-table="Customers" data-field="x_PrimaryAddressPostCode" value="@Html.Raw(customersEdit.PrimaryAddressPostCode.EditValue)" size="30" maxlength="10" placeholder="@Html.Raw(HtmlEncode(customersEdit.PrimaryAddressPostCode.PlaceHolder))" data-format-pattern="@(customersEdit.PrimaryAddressPostCode.FormatPattern)"@Html.Raw(customersEdit.PrimaryAddressPostCode.EditAttributes) aria-describedby="x_PrimaryAddressPostCode_help">
+@Html.Raw(customersEdit.PrimaryAddressPostCode.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(customersEdit.PrimaryAddressPostCode.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* customersEdit.PrimaryAddressPostCode.Visible (end) *@
+@if (customersEdit.PrimaryAddressCountryID.Visible) { // customersEdit.PrimaryAddressCountryID.Visible (begin)
+    <div id="r_PrimaryAddressCountryID" @Html.Raw(customersEdit.PrimaryAddressCountryID.RowAttributes)>
+        <label id="elh_Customers_PrimaryAddressCountryID" for="x_PrimaryAddressCountryID" class="@(customersEdit.LeftColumnClass)">@Html.Raw(customersEdit.PrimaryAddressCountryID.Caption)@Html.Raw(customersEdit.PrimaryAddressCountryID.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(customersEdit.RightColumnClass)"><div @Html.Raw(customersEdit.PrimaryAddressCountryID.CellAttributes)>
+<span id="el_Customers_PrimaryAddressCountryID">
+<input type="@(customersEdit.PrimaryAddressCountryID.InputTextType)" name="x_PrimaryAddressCountryID" id="x_PrimaryAddressCountryID" data-table="Customers" data-field="x_PrimaryAddressCountryID" value="@Html.Raw(customersEdit.PrimaryAddressCountryID.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(customersEdit.PrimaryAddressCountryID.PlaceHolder))" data-format-pattern="@(customersEdit.PrimaryAddressCountryID.FormatPattern)"@Html.Raw(customersEdit.PrimaryAddressCountryID.EditAttributes) aria-describedby="x_PrimaryAddressCountryID_help">
+@Html.Raw(customersEdit.PrimaryAddressCountryID.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(customersEdit.PrimaryAddressCountryID.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* customersEdit.PrimaryAddressCountryID.Visible (end) *@
+@if (customersEdit.AlternativeAddress.Visible) { // customersEdit.AlternativeAddress.Visible (begin)
+    <div id="r_AlternativeAddress" @Html.Raw(customersEdit.AlternativeAddress.RowAttributes)>
+        <label id="elh_Customers_AlternativeAddress" for="x_AlternativeAddress" class="@(customersEdit.LeftColumnClass)">@Html.Raw(customersEdit.AlternativeAddress.Caption)@Html.Raw(customersEdit.AlternativeAddress.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(customersEdit.RightColumnClass)"><div @Html.Raw(customersEdit.AlternativeAddress.CellAttributes)>
+<span id="el_Customers_AlternativeAddress">
+<textarea data-table="Customers" data-field="x_AlternativeAddress" name="x_AlternativeAddress" id="x_AlternativeAddress" cols="35" rows="4" placeholder="@Html.Raw(HtmlEncode(customersEdit.AlternativeAddress.PlaceHolder))"@Html.Raw(customersEdit.AlternativeAddress.EditAttributes) aria-describedby="x_AlternativeAddress_help">@(customersEdit.AlternativeAddress.EditValue)</textarea>
+@Html.Raw(customersEdit.AlternativeAddress.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(customersEdit.AlternativeAddress.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* customersEdit.AlternativeAddress.Visible (end) *@
+@if (customersEdit.AlternativeAddressCity.Visible) { // customersEdit.AlternativeAddressCity.Visible (begin)
+    <div id="r_AlternativeAddressCity" @Html.Raw(customersEdit.AlternativeAddressCity.RowAttributes)>
+        <label id="elh_Customers_AlternativeAddressCity" for="x_AlternativeAddressCity" class="@(customersEdit.LeftColumnClass)">@Html.Raw(customersEdit.AlternativeAddressCity.Caption)@Html.Raw(customersEdit.AlternativeAddressCity.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(customersEdit.RightColumnClass)"><div @Html.Raw(customersEdit.AlternativeAddressCity.CellAttributes)>
+<span id="el_Customers_AlternativeAddressCity">
+<input type="@(customersEdit.AlternativeAddressCity.InputTextType)" name="x_AlternativeAddressCity" id="x_AlternativeAddressCity" data-table="Customers" data-field="x_AlternativeAddressCity" value="@Html.Raw(customersEdit.AlternativeAddressCity.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(customersEdit.AlternativeAddressCity.PlaceHolder))" data-format-pattern="@(customersEdit.AlternativeAddressCity.FormatPattern)"@Html.Raw(customersEdit.AlternativeAddressCity.EditAttributes) aria-describedby="x_AlternativeAddressCity_help">
+@Html.Raw(customersEdit.AlternativeAddressCity.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(customersEdit.AlternativeAddressCity.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* customersEdit.AlternativeAddressCity.Visible (end) *@
+@if (customersEdit.AlternativeAddressPostCode.Visible) { // customersEdit.AlternativeAddressPostCode.Visible (begin)
+    <div id="r_AlternativeAddressPostCode" @Html.Raw(customersEdit.AlternativeAddressPostCode.RowAttributes)>
+        <label id="elh_Customers_AlternativeAddressPostCode" for="x_AlternativeAddressPostCode" class="@(customersEdit.LeftColumnClass)">@Html.Raw(customersEdit.AlternativeAddressPostCode.Caption)@Html.Raw(customersEdit.AlternativeAddressPostCode.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(customersEdit.RightColumnClass)"><div @Html.Raw(customersEdit.AlternativeAddressPostCode.CellAttributes)>
+<span id="el_Customers_AlternativeAddressPostCode">
+<input type="@(customersEdit.AlternativeAddressPostCode.InputTextType)" name="x_AlternativeAddressPostCode" id="x_AlternativeAddressPostCode" data-table="Customers" data-field="x_AlternativeAddressPostCode" value="@Html.Raw(customersEdit.AlternativeAddressPostCode.EditValue)" size="30" maxlength="10" placeholder="@Html.Raw(HtmlEncode(customersEdit.AlternativeAddressPostCode.PlaceHolder))" data-format-pattern="@(customersEdit.AlternativeAddressPostCode.FormatPattern)"@Html.Raw(customersEdit.AlternativeAddressPostCode.EditAttributes) aria-describedby="x_AlternativeAddressPostCode_help">
+@Html.Raw(customersEdit.AlternativeAddressPostCode.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(customersEdit.AlternativeAddressPostCode.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* customersEdit.AlternativeAddressPostCode.Visible (end) *@
+@if (customersEdit.AlternativeAddressCountryID.Visible) { // customersEdit.AlternativeAddressCountryID.Visible (begin)
+    <div id="r_AlternativeAddressCountryID" @Html.Raw(customersEdit.AlternativeAddressCountryID.RowAttributes)>
+        <label id="elh_Customers_AlternativeAddressCountryID" for="x_AlternativeAddressCountryID" class="@(customersEdit.LeftColumnClass)">@Html.Raw(customersEdit.AlternativeAddressCountryID.Caption)@Html.Raw(customersEdit.AlternativeAddressCountryID.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(customersEdit.RightColumnClass)"><div @Html.Raw(customersEdit.AlternativeAddressCountryID.CellAttributes)>
+<span id="el_Customers_AlternativeAddressCountryID">
+<input type="@(customersEdit.AlternativeAddressCountryID.InputTextType)" name="x_AlternativeAddressCountryID" id="x_AlternativeAddressCountryID" data-table="Customers" data-field="x_AlternativeAddressCountryID" value="@Html.Raw(customersEdit.AlternativeAddressCountryID.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(customersEdit.AlternativeAddressCountryID.PlaceHolder))" data-format-pattern="@(customersEdit.AlternativeAddressCountryID.FormatPattern)"@Html.Raw(customersEdit.AlternativeAddressCountryID.EditAttributes) aria-describedby="x_AlternativeAddressCountryID_help">
+@Html.Raw(customersEdit.AlternativeAddressCountryID.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(customersEdit.AlternativeAddressCountryID.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* customersEdit.AlternativeAddressCountryID.Visible (end) *@
+@if (customersEdit.MobileNumber.Visible) { // customersEdit.MobileNumber.Visible (begin)
+    <div id="r_MobileNumber" @Html.Raw(customersEdit.MobileNumber.RowAttributes)>
+        <label id="elh_Customers_MobileNumber" for="x_MobileNumber" class="@(customersEdit.LeftColumnClass)">@Html.Raw(customersEdit.MobileNumber.Caption)@Html.Raw(customersEdit.MobileNumber.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(customersEdit.RightColumnClass)"><div @Html.Raw(customersEdit.MobileNumber.CellAttributes)>
+<span id="el_Customers_MobileNumber">
+<input type="@(customersEdit.MobileNumber.InputTextType)" name="x_MobileNumber" id="x_MobileNumber" data-table="Customers" data-field="x_MobileNumber" value="@Html.Raw(customersEdit.MobileNumber.EditValue)" size="30" maxlength="20" placeholder="@Html.Raw(HtmlEncode(customersEdit.MobileNumber.PlaceHolder))" data-format-pattern="@(customersEdit.MobileNumber.FormatPattern)"@Html.Raw(customersEdit.MobileNumber.EditAttributes) aria-describedby="x_MobileNumber_help">
+@Html.Raw(customersEdit.MobileNumber.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(customersEdit.MobileNumber.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* customersEdit.MobileNumber.Visible (end) *@
+@if (customersEdit.UserID.Visible) { // customersEdit.UserID.Visible (begin)
+    <div id="r_UserID" @Html.Raw(customersEdit.UserID.RowAttributes)>
+        <label id="elh_Customers_UserID" for="x_UserID" class="@(customersEdit.LeftColumnClass)">@Html.Raw(customersEdit.UserID.Caption)@Html.Raw(customersEdit.UserID.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(customersEdit.RightColumnClass)"><div @Html.Raw(customersEdit.UserID.CellAttributes)>
+<span id="el_Customers_UserID">
+<input type="@(customersEdit.UserID.InputTextType)" name="x_UserID" id="x_UserID" data-table="Customers" data-field="x_UserID" value="@Html.Raw(customersEdit.UserID.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(customersEdit.UserID.PlaceHolder))" data-format-pattern="@(customersEdit.UserID.FormatPattern)"@Html.Raw(customersEdit.UserID.EditAttributes) aria-describedby="x_UserID_help">
+@Html.Raw(customersEdit.UserID.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(customersEdit.UserID.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* customersEdit.UserID.Visible (end) *@
+@if (customersEdit.Status.Visible) { // customersEdit.Status.Visible (begin)
+    <div id="r_Status" @Html.Raw(customersEdit.Status.RowAttributes)>
+        <label id="elh_Customers_Status" for="x_Status" class="@(customersEdit.LeftColumnClass)">@Html.Raw(customersEdit.Status.Caption)@Html.Raw(customersEdit.Status.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(customersEdit.RightColumnClass)"><div @Html.Raw(customersEdit.Status.CellAttributes)>
+<span id="el_Customers_Status">
+<input type="@(customersEdit.Status.InputTextType)" name="x_Status" id="x_Status" data-table="Customers" data-field="x_Status" value="@Html.Raw(customersEdit.Status.EditValue)" size="30" maxlength="50" placeholder="@Html.Raw(HtmlEncode(customersEdit.Status.PlaceHolder))" data-format-pattern="@(customersEdit.Status.FormatPattern)"@Html.Raw(customersEdit.Status.EditAttributes) aria-describedby="x_Status_help">
+@Html.Raw(customersEdit.Status.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(customersEdit.Status.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* customersEdit.Status.Visible (end) *@
+@if (customersEdit.CreatedBy.Visible) { // customersEdit.CreatedBy.Visible (begin)
+    <div id="r_CreatedBy" @Html.Raw(customersEdit.CreatedBy.RowAttributes)>
+        <label id="elh_Customers_CreatedBy" for="x_CreatedBy" class="@(customersEdit.LeftColumnClass)">@Html.Raw(customersEdit.CreatedBy.Caption)@Html.Raw(customersEdit.CreatedBy.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(customersEdit.RightColumnClass)"><div @Html.Raw(customersEdit.CreatedBy.CellAttributes)>
+<span id="el_Customers_CreatedBy">
+<input type="@(customersEdit.CreatedBy.InputTextType)" name="x_CreatedBy" id="x_CreatedBy" data-table="Customers" data-field="x_CreatedBy" value="@Html.Raw(customersEdit.CreatedBy.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(customersEdit.CreatedBy.PlaceHolder))" data-format-pattern="@(customersEdit.CreatedBy.FormatPattern)"@Html.Raw(customersEdit.CreatedBy.EditAttributes) aria-describedby="x_CreatedBy_help">
+@Html.Raw(customersEdit.CreatedBy.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(customersEdit.CreatedBy.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* customersEdit.CreatedBy.Visible (end) *@
+@if (customersEdit.CreatedDateTime.Visible) { // customersEdit.CreatedDateTime.Visible (begin)
+    <div id="r_CreatedDateTime" @Html.Raw(customersEdit.CreatedDateTime.RowAttributes)>
+        <label id="elh_Customers_CreatedDateTime" for="x_CreatedDateTime" class="@(customersEdit.LeftColumnClass)">@Html.Raw(customersEdit.CreatedDateTime.Caption)@Html.Raw(customersEdit.CreatedDateTime.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(customersEdit.RightColumnClass)"><div @Html.Raw(customersEdit.CreatedDateTime.CellAttributes)>
+<span id="el_Customers_CreatedDateTime">
+<input type="@(customersEdit.CreatedDateTime.InputTextType)" name="x_CreatedDateTime" id="x_CreatedDateTime" data-table="Customers" data-field="x_CreatedDateTime" value="@Html.Raw(customersEdit.CreatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(customersEdit.CreatedDateTime.PlaceHolder))" data-format-pattern="@(customersEdit.CreatedDateTime.FormatPattern)"@Html.Raw(customersEdit.CreatedDateTime.EditAttributes) aria-describedby="x_CreatedDateTime_help">
+@Html.Raw(customersEdit.CreatedDateTime.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(customersEdit.CreatedDateTime.GetErrorMessage())</div>
+@if (!customersEdit.CreatedDateTime.ReadOnly && !customersEdit.CreatedDateTime.Disabled && !customersEdit.CreatedDateTime.EditAttrs.Is("readonly") && !customersEdit.CreatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fCustomersedit", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fCustomersedit", "x_CreatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+</div></div>
+    </div>
+} @* customersEdit.CreatedDateTime.Visible (end) *@
+@if (customersEdit.UpdatedBy.Visible) { // customersEdit.UpdatedBy.Visible (begin)
+    <div id="r_UpdatedBy" @Html.Raw(customersEdit.UpdatedBy.RowAttributes)>
+        <label id="elh_Customers_UpdatedBy" for="x_UpdatedBy" class="@(customersEdit.LeftColumnClass)">@Html.Raw(customersEdit.UpdatedBy.Caption)@Html.Raw(customersEdit.UpdatedBy.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(customersEdit.RightColumnClass)"><div @Html.Raw(customersEdit.UpdatedBy.CellAttributes)>
+<span id="el_Customers_UpdatedBy">
+<input type="@(customersEdit.UpdatedBy.InputTextType)" name="x_UpdatedBy" id="x_UpdatedBy" data-table="Customers" data-field="x_UpdatedBy" value="@Html.Raw(customersEdit.UpdatedBy.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(customersEdit.UpdatedBy.PlaceHolder))" data-format-pattern="@(customersEdit.UpdatedBy.FormatPattern)"@Html.Raw(customersEdit.UpdatedBy.EditAttributes) aria-describedby="x_UpdatedBy_help">
+@Html.Raw(customersEdit.UpdatedBy.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(customersEdit.UpdatedBy.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* customersEdit.UpdatedBy.Visible (end) *@
+@if (customersEdit.UpdatedDateTime.Visible) { // customersEdit.UpdatedDateTime.Visible (begin)
+    <div id="r_UpdatedDateTime" @Html.Raw(customersEdit.UpdatedDateTime.RowAttributes)>
+        <label id="elh_Customers_UpdatedDateTime" for="x_UpdatedDateTime" class="@(customersEdit.LeftColumnClass)">@Html.Raw(customersEdit.UpdatedDateTime.Caption)@Html.Raw(customersEdit.UpdatedDateTime.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(customersEdit.RightColumnClass)"><div @Html.Raw(customersEdit.UpdatedDateTime.CellAttributes)>
+<span id="el_Customers_UpdatedDateTime">
+<input type="@(customersEdit.UpdatedDateTime.InputTextType)" name="x_UpdatedDateTime" id="x_UpdatedDateTime" data-table="Customers" data-field="x_UpdatedDateTime" value="@Html.Raw(customersEdit.UpdatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(customersEdit.UpdatedDateTime.PlaceHolder))" data-format-pattern="@(customersEdit.UpdatedDateTime.FormatPattern)"@Html.Raw(customersEdit.UpdatedDateTime.EditAttributes) aria-describedby="x_UpdatedDateTime_help">
+@Html.Raw(customersEdit.UpdatedDateTime.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(customersEdit.UpdatedDateTime.GetErrorMessage())</div>
+@if (!customersEdit.UpdatedDateTime.ReadOnly && !customersEdit.UpdatedDateTime.Disabled && !customersEdit.UpdatedDateTime.EditAttrs.Is("readonly") && !customersEdit.UpdatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fCustomersedit", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fCustomersedit", "x_UpdatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+</div></div>
+    </div>
+} @* customersEdit.UpdatedDateTime.Visible (end) *@
+</div><!-- /page* -->
+@{ customersEdit.CloseRecordset(); }
+@Html.Raw(customersEdit.IsModal ? "<template class=\"ew-modal-buttons\">" : "<div class=\"row ew-buttons\">")<!-- buttons .row -->
+    <div class="@(customersEdit.OffsetColumnClass)"><!-- buttons offset -->
+    <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fCustomersedit">@Html.Raw(Language.Phrase("SaveBtn"))</button>
+@if (IsJsonResponse()) {
+    <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" data-bs-dismiss="modal">@Html.Raw(Language.Phrase("CancelBtn"))</button>
+} else {
+    <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" form="fCustomersedit" data-href="@AppPath(customersEdit.ReturnUrl)">@Html.Raw(Language.Phrase("CancelBtn"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(customersEdit.IsModal ? "</template>" : "</div>")<!-- /buttons .row -->
+</form>
+@if (!customersEdit.IsModal) {
+<div><!-- DN -->
+@customersEdit.Pager.Render()
+</div>
+}
+</main>
+@customersEdit.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("Customers");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>

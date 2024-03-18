@@ -1,0 +1,318 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (countriesEdit.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!countriesEdit.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@countriesEdit.ShowPageHeader()
+@countriesEdit.ShowMessages()
+<main class="edit">
+<form name="fCountriesedit" id="fCountriesedit" class="@(countriesEdit.FormClassName)" action="@AppPath(CurrentPageName())" method="post" novalidate autocomplete="off">
+<script>
+var currentTable = @Html.Raw(ConvertToJson(countriesEdit.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { Countries: currentTable } });
+var currentPageID = ew.PAGE_ID = "edit";
+var currentForm;
+var fCountriesedit;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("fCountriesedit")
+        .setPageId("edit")
+
+        // Add fields
+        .setFields([
+
+            ["CountryID", [fields.CountryID.visible && fields.CountryID.required ? ew.Validators.required(fields.CountryID.caption) : null], fields.CountryID.isInvalid],
+            ["ISO", [fields.ISO.visible && fields.ISO.required ? ew.Validators.required(fields.ISO.caption) : null], fields.ISO.isInvalid],
+            ["_Name", [fields._Name.visible && fields._Name.required ? ew.Validators.required(fields._Name.caption) : null], fields._Name.isInvalid],
+            ["NiceName", [fields.NiceName.visible && fields.NiceName.required ? ew.Validators.required(fields.NiceName.caption) : null], fields.NiceName.isInvalid],
+            ["ISO3", [fields.ISO3.visible && fields.ISO3.required ? ew.Validators.required(fields.ISO3.caption) : null], fields.ISO3.isInvalid],
+            ["NumCode", [fields.NumCode.visible && fields.NumCode.required ? ew.Validators.required(fields.NumCode.caption) : null, ew.Validators.integer], fields.NumCode.isInvalid],
+            ["PhoneCode", [fields.PhoneCode.visible && fields.PhoneCode.required ? ew.Validators.required(fields.PhoneCode.caption) : null, ew.Validators.integer], fields.PhoneCode.isInvalid],
+            ["CreatedBy", [fields.CreatedBy.visible && fields.CreatedBy.required ? ew.Validators.required(fields.CreatedBy.caption) : null, ew.Validators.integer], fields.CreatedBy.isInvalid],
+            ["CreatedDateTime", [fields.CreatedDateTime.visible && fields.CreatedDateTime.required ? ew.Validators.required(fields.CreatedDateTime.caption) : null, ew.Validators.datetime(fields.CreatedDateTime.clientFormatPattern)], fields.CreatedDateTime.isInvalid],
+            ["UpdatedBy", [fields.UpdatedBy.visible && fields.UpdatedBy.required ? ew.Validators.required(fields.UpdatedBy.caption) : null, ew.Validators.integer], fields.UpdatedBy.isInvalid],
+            ["UpdatedDateTime", [fields.UpdatedDateTime.visible && fields.UpdatedDateTime.required ? ew.Validators.required(fields.UpdatedDateTime.caption) : null, ew.Validators.datetime(fields.UpdatedDateTime.clientFormatPattern)], fields.UpdatedDateTime.isInvalid]
+        ])
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
+        // Dynamic selection lists
+        .setLists({
+        })
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="update">
+<input type="hidden" name="modal" value="@ConvertToInt(countriesEdit.IsModal)">
+@if (IsJsonResponse()) {
+<input type="hidden" name="json" value="1">
+}
+<input type="hidden" name="@(countriesEdit.OldKeyName)" value="@Html.Raw(countriesEdit.OldKey)">
+<div class="ew-edit-div"><!-- page* -->
+@if (countriesEdit.CountryID.Visible) { // countriesEdit.CountryID.Visible (begin)
+    <div id="r_CountryID" @Html.Raw(countriesEdit.CountryID.RowAttributes)>
+        <label id="elh_Countries_CountryID" class="@(countriesEdit.LeftColumnClass)">@Html.Raw(countriesEdit.CountryID.Caption)@Html.Raw(countriesEdit.CountryID.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(countriesEdit.RightColumnClass)"><div @Html.Raw(countriesEdit.CountryID.CellAttributes)>
+<span id="el_Countries_CountryID">
+<span @Html.Raw(countriesEdit.CountryID.ViewAttributes)>
+<input type="text" readonly class="form-control-plaintext" value="@Html.Raw(RemoveHtml(ConvertToString(countriesEdit.CountryID.EditValue)))"></span>
+<input type="hidden" data-table="Countries" data-field="x_CountryID" data-hidden="1" name="x_CountryID" id="x_CountryID" value="@Html.Raw(HtmlEncode(countriesEdit.CountryID.CurrentValue))">
+</span>
+</div></div>
+    </div>
+} @* countriesEdit.CountryID.Visible (end) *@
+@if (countriesEdit.ISO.Visible) { // countriesEdit.ISO.Visible (begin)
+    <div id="r_ISO" @Html.Raw(countriesEdit.ISO.RowAttributes)>
+        <label id="elh_Countries_ISO" for="x_ISO" class="@(countriesEdit.LeftColumnClass)">@Html.Raw(countriesEdit.ISO.Caption)@Html.Raw(countriesEdit.ISO.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(countriesEdit.RightColumnClass)"><div @Html.Raw(countriesEdit.ISO.CellAttributes)>
+<span id="el_Countries_ISO">
+<input type="@(countriesEdit.ISO.InputTextType)" name="x_ISO" id="x_ISO" data-table="Countries" data-field="x_ISO" value="@Html.Raw(countriesEdit.ISO.EditValue)" size="30" maxlength="2" placeholder="@Html.Raw(HtmlEncode(countriesEdit.ISO.PlaceHolder))" data-format-pattern="@(countriesEdit.ISO.FormatPattern)"@Html.Raw(countriesEdit.ISO.EditAttributes) aria-describedby="x_ISO_help">
+@Html.Raw(countriesEdit.ISO.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(countriesEdit.ISO.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* countriesEdit.ISO.Visible (end) *@
+@if (countriesEdit._Name.Visible) { // countriesEdit._Name.Visible (begin)
+    <div id="r__Name" @Html.Raw(countriesEdit._Name.RowAttributes)>
+        <label id="elh_Countries__Name" for="x__Name" class="@(countriesEdit.LeftColumnClass)">@Html.Raw(countriesEdit._Name.Caption)@Html.Raw(countriesEdit._Name.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(countriesEdit.RightColumnClass)"><div @Html.Raw(countriesEdit._Name.CellAttributes)>
+<span id="el_Countries__Name">
+<input type="@(countriesEdit._Name.InputTextType)" name="x__Name" id="x__Name" data-table="Countries" data-field="x__Name" value="@Html.Raw(countriesEdit._Name.EditValue)" size="30" maxlength="80" placeholder="@Html.Raw(HtmlEncode(countriesEdit._Name.PlaceHolder))" data-format-pattern="@(countriesEdit._Name.FormatPattern)"@Html.Raw(countriesEdit._Name.EditAttributes) aria-describedby="x__Name_help">
+@Html.Raw(countriesEdit._Name.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(countriesEdit._Name.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* countriesEdit._Name.Visible (end) *@
+@if (countriesEdit.NiceName.Visible) { // countriesEdit.NiceName.Visible (begin)
+    <div id="r_NiceName" @Html.Raw(countriesEdit.NiceName.RowAttributes)>
+        <label id="elh_Countries_NiceName" for="x_NiceName" class="@(countriesEdit.LeftColumnClass)">@Html.Raw(countriesEdit.NiceName.Caption)@Html.Raw(countriesEdit.NiceName.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(countriesEdit.RightColumnClass)"><div @Html.Raw(countriesEdit.NiceName.CellAttributes)>
+<span id="el_Countries_NiceName">
+<input type="@(countriesEdit.NiceName.InputTextType)" name="x_NiceName" id="x_NiceName" data-table="Countries" data-field="x_NiceName" value="@Html.Raw(countriesEdit.NiceName.EditValue)" size="30" maxlength="80" placeholder="@Html.Raw(HtmlEncode(countriesEdit.NiceName.PlaceHolder))" data-format-pattern="@(countriesEdit.NiceName.FormatPattern)"@Html.Raw(countriesEdit.NiceName.EditAttributes) aria-describedby="x_NiceName_help">
+@Html.Raw(countriesEdit.NiceName.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(countriesEdit.NiceName.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* countriesEdit.NiceName.Visible (end) *@
+@if (countriesEdit.ISO3.Visible) { // countriesEdit.ISO3.Visible (begin)
+    <div id="r_ISO3" @Html.Raw(countriesEdit.ISO3.RowAttributes)>
+        <label id="elh_Countries_ISO3" for="x_ISO3" class="@(countriesEdit.LeftColumnClass)">@Html.Raw(countriesEdit.ISO3.Caption)@Html.Raw(countriesEdit.ISO3.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(countriesEdit.RightColumnClass)"><div @Html.Raw(countriesEdit.ISO3.CellAttributes)>
+<span id="el_Countries_ISO3">
+<input type="@(countriesEdit.ISO3.InputTextType)" name="x_ISO3" id="x_ISO3" data-table="Countries" data-field="x_ISO3" value="@Html.Raw(countriesEdit.ISO3.EditValue)" size="30" maxlength="3" placeholder="@Html.Raw(HtmlEncode(countriesEdit.ISO3.PlaceHolder))" data-format-pattern="@(countriesEdit.ISO3.FormatPattern)"@Html.Raw(countriesEdit.ISO3.EditAttributes) aria-describedby="x_ISO3_help">
+@Html.Raw(countriesEdit.ISO3.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(countriesEdit.ISO3.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* countriesEdit.ISO3.Visible (end) *@
+@if (countriesEdit.NumCode.Visible) { // countriesEdit.NumCode.Visible (begin)
+    <div id="r_NumCode" @Html.Raw(countriesEdit.NumCode.RowAttributes)>
+        <label id="elh_Countries_NumCode" for="x_NumCode" class="@(countriesEdit.LeftColumnClass)">@Html.Raw(countriesEdit.NumCode.Caption)@Html.Raw(countriesEdit.NumCode.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(countriesEdit.RightColumnClass)"><div @Html.Raw(countriesEdit.NumCode.CellAttributes)>
+<span id="el_Countries_NumCode">
+<input type="@(countriesEdit.NumCode.InputTextType)" name="x_NumCode" id="x_NumCode" data-table="Countries" data-field="x_NumCode" value="@Html.Raw(countriesEdit.NumCode.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(countriesEdit.NumCode.PlaceHolder))" data-format-pattern="@(countriesEdit.NumCode.FormatPattern)"@Html.Raw(countriesEdit.NumCode.EditAttributes) aria-describedby="x_NumCode_help">
+@Html.Raw(countriesEdit.NumCode.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(countriesEdit.NumCode.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* countriesEdit.NumCode.Visible (end) *@
+@if (countriesEdit.PhoneCode.Visible) { // countriesEdit.PhoneCode.Visible (begin)
+    <div id="r_PhoneCode" @Html.Raw(countriesEdit.PhoneCode.RowAttributes)>
+        <label id="elh_Countries_PhoneCode" for="x_PhoneCode" class="@(countriesEdit.LeftColumnClass)">@Html.Raw(countriesEdit.PhoneCode.Caption)@Html.Raw(countriesEdit.PhoneCode.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(countriesEdit.RightColumnClass)"><div @Html.Raw(countriesEdit.PhoneCode.CellAttributes)>
+<span id="el_Countries_PhoneCode">
+<input type="@(countriesEdit.PhoneCode.InputTextType)" name="x_PhoneCode" id="x_PhoneCode" data-table="Countries" data-field="x_PhoneCode" value="@Html.Raw(countriesEdit.PhoneCode.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(countriesEdit.PhoneCode.PlaceHolder))" data-format-pattern="@(countriesEdit.PhoneCode.FormatPattern)"@Html.Raw(countriesEdit.PhoneCode.EditAttributes) aria-describedby="x_PhoneCode_help">
+@Html.Raw(countriesEdit.PhoneCode.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(countriesEdit.PhoneCode.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* countriesEdit.PhoneCode.Visible (end) *@
+@if (countriesEdit.CreatedBy.Visible) { // countriesEdit.CreatedBy.Visible (begin)
+    <div id="r_CreatedBy" @Html.Raw(countriesEdit.CreatedBy.RowAttributes)>
+        <label id="elh_Countries_CreatedBy" for="x_CreatedBy" class="@(countriesEdit.LeftColumnClass)">@Html.Raw(countriesEdit.CreatedBy.Caption)@Html.Raw(countriesEdit.CreatedBy.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(countriesEdit.RightColumnClass)"><div @Html.Raw(countriesEdit.CreatedBy.CellAttributes)>
+<span id="el_Countries_CreatedBy">
+<input type="@(countriesEdit.CreatedBy.InputTextType)" name="x_CreatedBy" id="x_CreatedBy" data-table="Countries" data-field="x_CreatedBy" value="@Html.Raw(countriesEdit.CreatedBy.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(countriesEdit.CreatedBy.PlaceHolder))" data-format-pattern="@(countriesEdit.CreatedBy.FormatPattern)"@Html.Raw(countriesEdit.CreatedBy.EditAttributes) aria-describedby="x_CreatedBy_help">
+@Html.Raw(countriesEdit.CreatedBy.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(countriesEdit.CreatedBy.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* countriesEdit.CreatedBy.Visible (end) *@
+@if (countriesEdit.CreatedDateTime.Visible) { // countriesEdit.CreatedDateTime.Visible (begin)
+    <div id="r_CreatedDateTime" @Html.Raw(countriesEdit.CreatedDateTime.RowAttributes)>
+        <label id="elh_Countries_CreatedDateTime" for="x_CreatedDateTime" class="@(countriesEdit.LeftColumnClass)">@Html.Raw(countriesEdit.CreatedDateTime.Caption)@Html.Raw(countriesEdit.CreatedDateTime.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(countriesEdit.RightColumnClass)"><div @Html.Raw(countriesEdit.CreatedDateTime.CellAttributes)>
+<span id="el_Countries_CreatedDateTime">
+<input type="@(countriesEdit.CreatedDateTime.InputTextType)" name="x_CreatedDateTime" id="x_CreatedDateTime" data-table="Countries" data-field="x_CreatedDateTime" value="@Html.Raw(countriesEdit.CreatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(countriesEdit.CreatedDateTime.PlaceHolder))" data-format-pattern="@(countriesEdit.CreatedDateTime.FormatPattern)"@Html.Raw(countriesEdit.CreatedDateTime.EditAttributes) aria-describedby="x_CreatedDateTime_help">
+@Html.Raw(countriesEdit.CreatedDateTime.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(countriesEdit.CreatedDateTime.GetErrorMessage())</div>
+@if (!countriesEdit.CreatedDateTime.ReadOnly && !countriesEdit.CreatedDateTime.Disabled && !countriesEdit.CreatedDateTime.EditAttrs.Is("readonly") && !countriesEdit.CreatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fCountriesedit", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fCountriesedit", "x_CreatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+</div></div>
+    </div>
+} @* countriesEdit.CreatedDateTime.Visible (end) *@
+@if (countriesEdit.UpdatedBy.Visible) { // countriesEdit.UpdatedBy.Visible (begin)
+    <div id="r_UpdatedBy" @Html.Raw(countriesEdit.UpdatedBy.RowAttributes)>
+        <label id="elh_Countries_UpdatedBy" for="x_UpdatedBy" class="@(countriesEdit.LeftColumnClass)">@Html.Raw(countriesEdit.UpdatedBy.Caption)@Html.Raw(countriesEdit.UpdatedBy.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(countriesEdit.RightColumnClass)"><div @Html.Raw(countriesEdit.UpdatedBy.CellAttributes)>
+<span id="el_Countries_UpdatedBy">
+<input type="@(countriesEdit.UpdatedBy.InputTextType)" name="x_UpdatedBy" id="x_UpdatedBy" data-table="Countries" data-field="x_UpdatedBy" value="@Html.Raw(countriesEdit.UpdatedBy.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(countriesEdit.UpdatedBy.PlaceHolder))" data-format-pattern="@(countriesEdit.UpdatedBy.FormatPattern)"@Html.Raw(countriesEdit.UpdatedBy.EditAttributes) aria-describedby="x_UpdatedBy_help">
+@Html.Raw(countriesEdit.UpdatedBy.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(countriesEdit.UpdatedBy.GetErrorMessage())</div>
+</span>
+</div></div>
+    </div>
+} @* countriesEdit.UpdatedBy.Visible (end) *@
+@if (countriesEdit.UpdatedDateTime.Visible) { // countriesEdit.UpdatedDateTime.Visible (begin)
+    <div id="r_UpdatedDateTime" @Html.Raw(countriesEdit.UpdatedDateTime.RowAttributes)>
+        <label id="elh_Countries_UpdatedDateTime" for="x_UpdatedDateTime" class="@(countriesEdit.LeftColumnClass)">@Html.Raw(countriesEdit.UpdatedDateTime.Caption)@Html.Raw(countriesEdit.UpdatedDateTime.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
+        <div class="@(countriesEdit.RightColumnClass)"><div @Html.Raw(countriesEdit.UpdatedDateTime.CellAttributes)>
+<span id="el_Countries_UpdatedDateTime">
+<input type="@(countriesEdit.UpdatedDateTime.InputTextType)" name="x_UpdatedDateTime" id="x_UpdatedDateTime" data-table="Countries" data-field="x_UpdatedDateTime" value="@Html.Raw(countriesEdit.UpdatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(countriesEdit.UpdatedDateTime.PlaceHolder))" data-format-pattern="@(countriesEdit.UpdatedDateTime.FormatPattern)"@Html.Raw(countriesEdit.UpdatedDateTime.EditAttributes) aria-describedby="x_UpdatedDateTime_help">
+@Html.Raw(countriesEdit.UpdatedDateTime.GetCustomMessage)
+<div class="invalid-feedback">@Html.Raw(countriesEdit.UpdatedDateTime.GetErrorMessage())</div>
+@if (!countriesEdit.UpdatedDateTime.ReadOnly && !countriesEdit.UpdatedDateTime.Disabled && !countriesEdit.UpdatedDateTime.EditAttrs.Is("readonly") && !countriesEdit.UpdatedDateTime.EditAttrs.Is("disabled")) {
+<script>
+loadjs.ready(["fCountriesedit", "datetimepicker"], function () {
+    let format = "@Html.Raw(DateFormat(0))", // DN
+        options = {
+                localization: {
+                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
+                    hourCycle: format.match(/H/) ? "h24" : "h12",
+                    format,
+                    ...ew.language.phrase("datetimepicker")
+                },
+                display: {
+                    icons: {
+                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
+                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
+                    },
+                    components: {
+                        hours: !!format.match(/h/i),
+                        minutes: !!format.match(/m/),
+                        seconds: !!format.match(/s/i)
+                    },
+                    theme: ew.isDark() ? "dark" : "auto"
+                }
+            };
+    ew.createDateTimePicker("fCountriesedit", "x_UpdatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
+});
+</script>
+}
+</span>
+</div></div>
+    </div>
+} @* countriesEdit.UpdatedDateTime.Visible (end) *@
+</div><!-- /page* -->
+@{ countriesEdit.CloseRecordset(); }
+@Html.Raw(countriesEdit.IsModal ? "<template class=\"ew-modal-buttons\">" : "<div class=\"row ew-buttons\">")<!-- buttons .row -->
+    <div class="@(countriesEdit.OffsetColumnClass)"><!-- buttons offset -->
+    <button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit" form="fCountriesedit">@Html.Raw(Language.Phrase("SaveBtn"))</button>
+@if (IsJsonResponse()) {
+    <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" data-bs-dismiss="modal">@Html.Raw(Language.Phrase("CancelBtn"))</button>
+} else {
+    <button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" form="fCountriesedit" data-href="@AppPath(countriesEdit.ReturnUrl)">@Html.Raw(Language.Phrase("CancelBtn"))</button>
+}
+    </div><!-- /buttons offset -->
+@Html.Raw(countriesEdit.IsModal ? "</template>" : "</div>")<!-- /buttons .row -->
+</form>
+@if (!countriesEdit.IsModal) {
+<div><!-- DN -->
+@countriesEdit.Pager.Render()
+</div>
+}
+</main>
+@countriesEdit.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("Countries");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>

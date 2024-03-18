@@ -1,0 +1,155 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (subscriptionsDelete.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!subscriptionsDelete.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+var currentTable = @Html.Raw(ConvertToJson(subscriptionsDelete.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { Subscriptions: currentTable } });
+var currentPageID = ew.PAGE_ID = "delete";
+var currentForm;
+var fSubscriptionsdelete;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("fSubscriptionsdelete")
+        .setPageId("delete")
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@subscriptionsDelete.ShowPageHeader()
+@subscriptionsDelete.ShowMessages()
+<form name="fSubscriptionsdelete" id="fSubscriptionsdelete" class="ew-form ew-delete-form" action="@AppPath(CurrentPageName())" method="post" novalidate autocomplete="off">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="delete">
+@foreach (string key in subscriptionsDelete.RecordKeys) {
+<input type="hidden" name="key_m[]" value="@key">
+}
+<div class="card ew-card ew-grid @(subscriptionsDelete.TableGridClass)">
+<div class="card-body ew-grid-middle-panel @(subscriptionsDelete.TableContainerClass)" style="@(subscriptionsDelete.TableContainerStyle)">
+<table class="@(subscriptionsDelete.TableClass)">
+    <thead>
+    <tr class="ew-table-header">
+@if (subscriptionsDelete.Id.Visible) { // subscriptionsDelete.Id.Visible (begin)
+        <th class="@Html.Raw(subscriptionsDelete.Id.HeaderCellClass)"><span id="elh_Subscriptions_Id" class="Subscriptions_Id">@Html.Raw(subscriptionsDelete.Id.Caption)</span></th>
+} @* subscriptionsDelete.Id.Visible (end) *@
+@if (subscriptionsDelete._User.Visible) { // subscriptionsDelete._User.Visible (begin)
+        <th class="@Html.Raw(subscriptionsDelete._User.HeaderCellClass)"><span id="elh_Subscriptions__User" class="Subscriptions__User">@Html.Raw(subscriptionsDelete._User.Caption)</span></th>
+} @* subscriptionsDelete._User.Visible (end) *@
+@if (subscriptionsDelete.PublicKey.Visible) { // subscriptionsDelete.PublicKey.Visible (begin)
+        <th class="@Html.Raw(subscriptionsDelete.PublicKey.HeaderCellClass)"><span id="elh_Subscriptions_PublicKey" class="Subscriptions_PublicKey">@Html.Raw(subscriptionsDelete.PublicKey.Caption)</span></th>
+} @* subscriptionsDelete.PublicKey.Visible (end) *@
+@if (subscriptionsDelete.AuthenticationToken.Visible) { // subscriptionsDelete.AuthenticationToken.Visible (begin)
+        <th class="@Html.Raw(subscriptionsDelete.AuthenticationToken.HeaderCellClass)"><span id="elh_Subscriptions_AuthenticationToken" class="Subscriptions_AuthenticationToken">@Html.Raw(subscriptionsDelete.AuthenticationToken.Caption)</span></th>
+} @* subscriptionsDelete.AuthenticationToken.Visible (end) *@
+@if (subscriptionsDelete.ContentEncoding.Visible) { // subscriptionsDelete.ContentEncoding.Visible (begin)
+        <th class="@Html.Raw(subscriptionsDelete.ContentEncoding.HeaderCellClass)"><span id="elh_Subscriptions_ContentEncoding" class="Subscriptions_ContentEncoding">@Html.Raw(subscriptionsDelete.ContentEncoding.Caption)</span></th>
+} @* subscriptionsDelete.ContentEncoding.Visible (end) *@
+    </tr>
+    </thead>
+    <tbody>
+@{ subscriptionsDelete.RecordCount = 0; }
+@while (subscriptionsDelete.Recordset != null && await subscriptionsDelete.Recordset.ReadAsync()) { // DN
+    subscriptionsDelete.RecordCount++;
+    subscriptionsDelete.RowCount++;
+
+    // Set row properties
+    subscriptionsDelete.ResetAttributes();
+    subscriptionsDelete.RowType = RowType.View; // View
+
+    // Get the field contents
+    await subscriptionsDelete.LoadRowValues(subscriptionsDelete.Recordset);
+
+    // Render row
+    await subscriptionsDelete.RenderRow();
+    <tr @Html.Raw(subscriptionsDelete.RowAttributes)>
+@if (subscriptionsDelete.Id.Visible) { // subscriptionsDelete.Id.Visible (begin)
+        <td @Html.Raw(subscriptionsDelete.Id.CellAttributes)>
+<span id="">
+<span @Html.Raw(subscriptionsDelete.Id.ViewAttributes)>
+@Html.Raw(subscriptionsDelete.Id.GetViewValue())</span>
+</span></td>
+} @* subscriptionsDelete.Id.Visible (end) *@
+@if (subscriptionsDelete._User.Visible) { // subscriptionsDelete._User.Visible (begin)
+        <td @Html.Raw(subscriptionsDelete._User.CellAttributes)>
+<span id="">
+<span @Html.Raw(subscriptionsDelete._User.ViewAttributes)>
+@Html.Raw(subscriptionsDelete._User.GetViewValue())</span>
+</span></td>
+} @* subscriptionsDelete._User.Visible (end) *@
+@if (subscriptionsDelete.PublicKey.Visible) { // subscriptionsDelete.PublicKey.Visible (begin)
+        <td @Html.Raw(subscriptionsDelete.PublicKey.CellAttributes)>
+<span id="">
+<span @Html.Raw(subscriptionsDelete.PublicKey.ViewAttributes)>
+@Html.Raw(subscriptionsDelete.PublicKey.GetViewValue())</span>
+</span></td>
+} @* subscriptionsDelete.PublicKey.Visible (end) *@
+@if (subscriptionsDelete.AuthenticationToken.Visible) { // subscriptionsDelete.AuthenticationToken.Visible (begin)
+        <td @Html.Raw(subscriptionsDelete.AuthenticationToken.CellAttributes)>
+<span id="">
+<span @Html.Raw(subscriptionsDelete.AuthenticationToken.ViewAttributes)>
+@Html.Raw(subscriptionsDelete.AuthenticationToken.GetViewValue())</span>
+</span></td>
+} @* subscriptionsDelete.AuthenticationToken.Visible (end) *@
+@if (subscriptionsDelete.ContentEncoding.Visible) { // subscriptionsDelete.ContentEncoding.Visible (begin)
+        <td @Html.Raw(subscriptionsDelete.ContentEncoding.CellAttributes)>
+<span id="">
+<span @Html.Raw(subscriptionsDelete.ContentEncoding.ViewAttributes)>
+@Html.Raw(subscriptionsDelete.ContentEncoding.GetViewValue())</span>
+</span></td>
+} @* subscriptionsDelete.ContentEncoding.Visible (end) *@
+    </tr>
+}
+@{ subscriptionsDelete.CloseRecordset(); }
+</tbody>
+</table>
+</div>
+</div>
+<div class="ew-buttons ew-desktop-buttons">
+<button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit">@Html.Raw(Language.Phrase("DeleteBtn"))</button>
+<button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" data-href="@AppPath(subscriptionsDelete.ReturnUrl)">@Html.Raw(Language.Phrase("CancelBtn"))</button>
+</div>
+</form>
+@subscriptionsDelete.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>

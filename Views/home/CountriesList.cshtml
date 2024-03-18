@@ -1,0 +1,361 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (countriesList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!countriesList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!countriesList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(countriesList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { Countries: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(countriesList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(countriesList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(countriesList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(countriesList.FormKeyCountName)")
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!countriesList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (countriesList.TotalRecords > 0 && countriesList.ExportOptions.Visible) {
+    countriesList.ExportOptions.Render("body");
+}
+@if (countriesList.ImportOptions.Visible) {
+    countriesList.ImportOptions.Render("body");
+}
+@if (countriesList.SearchOptions.Visible) {
+    countriesList.SearchOptions.Render("body");
+}
+@if (countriesList.FilterOptions.Visible) {
+    countriesList.FilterOptions.Render("body");
+}
+</div>
+}
+@if (!countriesList.IsModal) {
+<form name="fCountriessrch" id="fCountriessrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" novalidate autocomplete="off">
+<div id="fCountriessrch_search_panel" class="mb-2 mb-sm-0 @(countriesList.SearchPanelClass)"><!-- .ew-search-panel -->
+<script>
+var currentTable = @Html.Raw(ConvertToJson(countriesList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { Countries: currentTable } });
+var currentForm;
+var fCountriessrch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fCountriessrch")
+        .setPageId("list")
+@if (countriesList.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Dynamic selection lists
+        .setLists({
+        })
+
+        // Filters
+        .setFilterList(@Html.Raw(await countriesList.GetFilterList()))
+
+        // Init search panel as collapsed
+        .setInitSearchPanel(true)
+        .build();
+    window[form.id] = form;
+    currentSearchForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<input type="hidden" name="cmd" value="search">
+@if (Security.CanSearch) {
+if (!countriesList.IsExport() && Empty(countriesList.CurrentAction) && countriesList.HasSearchFields()) { @* Show search form (begin) *@
+<div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0">
+    <div class="col-sm-auto px-0 pe-sm-2">
+        <div class="ew-basic-search input-group">
+            <input type="search" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control ew-basic-search-keyword" value="@Html.Raw(HtmlEncode(countriesList.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))" aria-label="@(HtmlEncode(Language.Phrase("Search")))">
+            <input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" class="ew-basic-search-type" value="@(HtmlEncode(countriesList.BasicSearch.SessionType))">
+            <button type="button" data-bs-toggle="dropdown" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false">
+                <span id="searchtype">@Html.Raw(countriesList.BasicSearch.TypeNameShort)</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <button type="button" class="dropdown-item@(countriesList.BasicSearch.SessionType == "" ? " active" : "")" form="fCountriessrch" data-ew-action="search-type">@Html.Raw(Language.Phrase("QuickSearchAuto"))</button>
+                <button type="button" class="dropdown-item@(countriesList.BasicSearch.SessionType == "=" ? " active" : "")" form="fCountriessrch" data-ew-action="search-type" data-search-type="=">@Html.Raw(Language.Phrase("QuickSearchExact"))</button>
+                <button type="button" class="dropdown-item@(countriesList.BasicSearch.SessionType == "AND" ? " active" : "")" form="fCountriessrch" data-ew-action="search-type" data-search-type="AND">@Html.Raw(Language.Phrase("QuickSearchAll"))</button>
+                <button type="button" class="dropdown-item@(countriesList.BasicSearch.SessionType == "OR" ? " active" : "")" form="fCountriessrch" data-ew-action="search-type" data-search-type="OR">@Html.Raw(Language.Phrase("QuickSearchAny"))</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-auto mb-3">
+        <button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+    </div>
+</div>
+</div><!-- /.ew-extended-search -->
+} @* Show search form (end) *@
+}
+</div><!-- /.ew-search-panel -->
+</form>
+}
+@countriesList.ShowPageHeader()
+@countriesList.ShowMessages()
+<main class="list @(countriesList.TotalRecords == 0 && !countriesList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (countriesList.TotalRecords > 0 || !Empty(countriesList.CurrentAction)) {
+<div class="card ew-card ew-grid@(countriesList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(countriesList.TableGridClass)">
+<form name="@(countriesList.FormName)" id="@(countriesList.FormName)" class="ew-form ew-list-form" action="@AppPath(countriesList.PageName)" method="post" novalidate autocomplete="off">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (countriesList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div id="gmp_Countries" class="card-body ew-grid-middle-panel @(countriesList.TableContainerClass)" style="@(countriesList.TableContainerStyle)">
+@if (countriesList.TotalRecords > 0 || countriesList.IsGridEdit || countriesList.IsMultiEdit) {
+<table id="tbl_Countrieslist" class="@(countriesList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    countriesList.RowType = RowType.Header;
+
+    // Render list options
+    await countriesList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@countriesList.ListOptions.RenderHeader("left")
+@if (countriesList.CountryID.Visible) { // countriesList.CountryID.Visible (begin)
+        <th data-name="CountryID" class="@(countriesList.CountryID.HeaderCellClass)"><div id="elh_Countries_CountryID" class="Countries_CountryID">@Html.Raw(countriesList.RenderFieldHeader(countriesList.CountryID))</div></th>
+} @* countriesList.CountryID.Visible (end) *@
+@if (countriesList.ISO.Visible) { // countriesList.ISO.Visible (begin)
+        <th data-name="ISO" class="@(countriesList.ISO.HeaderCellClass)"><div id="elh_Countries_ISO" class="Countries_ISO">@Html.Raw(countriesList.RenderFieldHeader(countriesList.ISO))</div></th>
+} @* countriesList.ISO.Visible (end) *@
+@if (countriesList._Name.Visible) { // countriesList._Name.Visible (begin)
+        <th data-name="_Name" class="@(countriesList._Name.HeaderCellClass)"><div id="elh_Countries__Name" class="Countries__Name">@Html.Raw(countriesList.RenderFieldHeader(countriesList._Name))</div></th>
+} @* countriesList._Name.Visible (end) *@
+@if (countriesList.NiceName.Visible) { // countriesList.NiceName.Visible (begin)
+        <th data-name="NiceName" class="@(countriesList.NiceName.HeaderCellClass)"><div id="elh_Countries_NiceName" class="Countries_NiceName">@Html.Raw(countriesList.RenderFieldHeader(countriesList.NiceName))</div></th>
+} @* countriesList.NiceName.Visible (end) *@
+@if (countriesList.ISO3.Visible) { // countriesList.ISO3.Visible (begin)
+        <th data-name="ISO3" class="@(countriesList.ISO3.HeaderCellClass)"><div id="elh_Countries_ISO3" class="Countries_ISO3">@Html.Raw(countriesList.RenderFieldHeader(countriesList.ISO3))</div></th>
+} @* countriesList.ISO3.Visible (end) *@
+@if (countriesList.NumCode.Visible) { // countriesList.NumCode.Visible (begin)
+        <th data-name="NumCode" class="@(countriesList.NumCode.HeaderCellClass)"><div id="elh_Countries_NumCode" class="Countries_NumCode">@Html.Raw(countriesList.RenderFieldHeader(countriesList.NumCode))</div></th>
+} @* countriesList.NumCode.Visible (end) *@
+@if (countriesList.PhoneCode.Visible) { // countriesList.PhoneCode.Visible (begin)
+        <th data-name="PhoneCode" class="@(countriesList.PhoneCode.HeaderCellClass)"><div id="elh_Countries_PhoneCode" class="Countries_PhoneCode">@Html.Raw(countriesList.RenderFieldHeader(countriesList.PhoneCode))</div></th>
+} @* countriesList.PhoneCode.Visible (end) *@
+@if (countriesList.CreatedBy.Visible) { // countriesList.CreatedBy.Visible (begin)
+        <th data-name="CreatedBy" class="@(countriesList.CreatedBy.HeaderCellClass)"><div id="elh_Countries_CreatedBy" class="Countries_CreatedBy">@Html.Raw(countriesList.RenderFieldHeader(countriesList.CreatedBy))</div></th>
+} @* countriesList.CreatedBy.Visible (end) *@
+@if (countriesList.CreatedDateTime.Visible) { // countriesList.CreatedDateTime.Visible (begin)
+        <th data-name="CreatedDateTime" class="@(countriesList.CreatedDateTime.HeaderCellClass)"><div id="elh_Countries_CreatedDateTime" class="Countries_CreatedDateTime">@Html.Raw(countriesList.RenderFieldHeader(countriesList.CreatedDateTime))</div></th>
+} @* countriesList.CreatedDateTime.Visible (end) *@
+@if (countriesList.UpdatedBy.Visible) { // countriesList.UpdatedBy.Visible (begin)
+        <th data-name="UpdatedBy" class="@(countriesList.UpdatedBy.HeaderCellClass)"><div id="elh_Countries_UpdatedBy" class="Countries_UpdatedBy">@Html.Raw(countriesList.RenderFieldHeader(countriesList.UpdatedBy))</div></th>
+} @* countriesList.UpdatedBy.Visible (end) *@
+@if (countriesList.UpdatedDateTime.Visible) { // countriesList.UpdatedDateTime.Visible (begin)
+        <th data-name="UpdatedDateTime" class="@(countriesList.UpdatedDateTime.HeaderCellClass)"><div id="elh_Countries_UpdatedDateTime" class="Countries_UpdatedDateTime">@Html.Raw(countriesList.RenderFieldHeader(countriesList.UpdatedDateTime))</div></th>
+} @* countriesList.UpdatedDateTime.Visible (end) *@
+@* Render list options (header, right) *@
+@countriesList.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(countriesList.PageNumber)">
+@{
+    await countriesList.SetupGrid();
+    bool eof = countriesList.Recordset == null; // DN
+}
+@while (countriesList.RecordCount < countriesList.StopRecord || SameString(countriesList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(countriesList.RowIndex, "$rowindex$") &&
+        (!countriesList.IsGridAdd || countriesList.CurrentMode == "copy") &&
+        (!((countriesList.IsCopy || countriesList.IsAdd) && countriesList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await countriesList.Recordset.ReadAsync();
+    countriesList.RecordCount++;
+    if (countriesList.RecordCount >= countriesList.StartRecord) {
+        await countriesList.SetupRow();
+    <tr @Html.Raw(countriesList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @countriesList.ListOptions.RenderBody("left", countriesList.RowCount)
+    @if (countriesList.CountryID.Visible) { // countriesList.CountryID.Visible (begin)
+        <td data-name="CountryID" @Html.Raw(countriesList.CountryID.CellAttributes)>
+<span id="el@(countriesList.RowIndex == "$rowindex$" ? "$rowindex$" : countriesList.RowCount)_Countries_CountryID" class="el_Countries_CountryID">
+<span @Html.Raw(countriesList.CountryID.ViewAttributes)>
+@Html.Raw(countriesList.CountryID.GetViewValue())</span>
+</span>
+</td>
+    } @* countriesList.CountryID.Visible (end) *@
+    @if (countriesList.ISO.Visible) { // countriesList.ISO.Visible (begin)
+        <td data-name="ISO" @Html.Raw(countriesList.ISO.CellAttributes)>
+<span id="el@(countriesList.RowIndex == "$rowindex$" ? "$rowindex$" : countriesList.RowCount)_Countries_ISO" class="el_Countries_ISO">
+<span @Html.Raw(countriesList.ISO.ViewAttributes)>
+@Html.Raw(countriesList.ISO.GetViewValue())</span>
+</span>
+</td>
+    } @* countriesList.ISO.Visible (end) *@
+    @if (countriesList._Name.Visible) { // countriesList._Name.Visible (begin)
+        <td data-name="_Name" @Html.Raw(countriesList._Name.CellAttributes)>
+<span id="el@(countriesList.RowIndex == "$rowindex$" ? "$rowindex$" : countriesList.RowCount)_Countries__Name" class="el_Countries__Name">
+<span @Html.Raw(countriesList._Name.ViewAttributes)>
+@Html.Raw(countriesList._Name.GetViewValue())</span>
+</span>
+</td>
+    } @* countriesList._Name.Visible (end) *@
+    @if (countriesList.NiceName.Visible) { // countriesList.NiceName.Visible (begin)
+        <td data-name="NiceName" @Html.Raw(countriesList.NiceName.CellAttributes)>
+<span id="el@(countriesList.RowIndex == "$rowindex$" ? "$rowindex$" : countriesList.RowCount)_Countries_NiceName" class="el_Countries_NiceName">
+<span @Html.Raw(countriesList.NiceName.ViewAttributes)>
+@Html.Raw(countriesList.NiceName.GetViewValue())</span>
+</span>
+</td>
+    } @* countriesList.NiceName.Visible (end) *@
+    @if (countriesList.ISO3.Visible) { // countriesList.ISO3.Visible (begin)
+        <td data-name="ISO3" @Html.Raw(countriesList.ISO3.CellAttributes)>
+<span id="el@(countriesList.RowIndex == "$rowindex$" ? "$rowindex$" : countriesList.RowCount)_Countries_ISO3" class="el_Countries_ISO3">
+<span @Html.Raw(countriesList.ISO3.ViewAttributes)>
+@Html.Raw(countriesList.ISO3.GetViewValue())</span>
+</span>
+</td>
+    } @* countriesList.ISO3.Visible (end) *@
+    @if (countriesList.NumCode.Visible) { // countriesList.NumCode.Visible (begin)
+        <td data-name="NumCode" @Html.Raw(countriesList.NumCode.CellAttributes)>
+<span id="el@(countriesList.RowIndex == "$rowindex$" ? "$rowindex$" : countriesList.RowCount)_Countries_NumCode" class="el_Countries_NumCode">
+<span @Html.Raw(countriesList.NumCode.ViewAttributes)>
+@Html.Raw(countriesList.NumCode.GetViewValue())</span>
+</span>
+</td>
+    } @* countriesList.NumCode.Visible (end) *@
+    @if (countriesList.PhoneCode.Visible) { // countriesList.PhoneCode.Visible (begin)
+        <td data-name="PhoneCode" @Html.Raw(countriesList.PhoneCode.CellAttributes)>
+<span id="el@(countriesList.RowIndex == "$rowindex$" ? "$rowindex$" : countriesList.RowCount)_Countries_PhoneCode" class="el_Countries_PhoneCode">
+<span @Html.Raw(countriesList.PhoneCode.ViewAttributes)>
+@Html.Raw(countriesList.PhoneCode.GetViewValue())</span>
+</span>
+</td>
+    } @* countriesList.PhoneCode.Visible (end) *@
+    @if (countriesList.CreatedBy.Visible) { // countriesList.CreatedBy.Visible (begin)
+        <td data-name="CreatedBy" @Html.Raw(countriesList.CreatedBy.CellAttributes)>
+<span id="el@(countriesList.RowIndex == "$rowindex$" ? "$rowindex$" : countriesList.RowCount)_Countries_CreatedBy" class="el_Countries_CreatedBy">
+<span @Html.Raw(countriesList.CreatedBy.ViewAttributes)>
+@Html.Raw(countriesList.CreatedBy.GetViewValue())</span>
+</span>
+</td>
+    } @* countriesList.CreatedBy.Visible (end) *@
+    @if (countriesList.CreatedDateTime.Visible) { // countriesList.CreatedDateTime.Visible (begin)
+        <td data-name="CreatedDateTime" @Html.Raw(countriesList.CreatedDateTime.CellAttributes)>
+<span id="el@(countriesList.RowIndex == "$rowindex$" ? "$rowindex$" : countriesList.RowCount)_Countries_CreatedDateTime" class="el_Countries_CreatedDateTime">
+<span @Html.Raw(countriesList.CreatedDateTime.ViewAttributes)>
+@Html.Raw(countriesList.CreatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* countriesList.CreatedDateTime.Visible (end) *@
+    @if (countriesList.UpdatedBy.Visible) { // countriesList.UpdatedBy.Visible (begin)
+        <td data-name="UpdatedBy" @Html.Raw(countriesList.UpdatedBy.CellAttributes)>
+<span id="el@(countriesList.RowIndex == "$rowindex$" ? "$rowindex$" : countriesList.RowCount)_Countries_UpdatedBy" class="el_Countries_UpdatedBy">
+<span @Html.Raw(countriesList.UpdatedBy.ViewAttributes)>
+@Html.Raw(countriesList.UpdatedBy.GetViewValue())</span>
+</span>
+</td>
+    } @* countriesList.UpdatedBy.Visible (end) *@
+    @if (countriesList.UpdatedDateTime.Visible) { // countriesList.UpdatedDateTime.Visible (begin)
+        <td data-name="UpdatedDateTime" @Html.Raw(countriesList.UpdatedDateTime.CellAttributes)>
+<span id="el@(countriesList.RowIndex == "$rowindex$" ? "$rowindex$" : countriesList.RowCount)_Countries_UpdatedDateTime" class="el_Countries_UpdatedDateTime">
+<span @Html.Raw(countriesList.UpdatedDateTime.ViewAttributes)>
+@Html.Raw(countriesList.UpdatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* countriesList.UpdatedDateTime.Visible (end) *@
+    @* Render list options (body, right) *@
+    @countriesList.ListOptions.RenderBody("right", countriesList.RowCount)
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(countriesList.RowIndex, "$rowindex$"))
+        countriesList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((countriesList.IsCopy || countriesList.IsAdd) && countriesList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        countriesList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(countriesList.CurrentAction) && !countriesList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ countriesList.CloseRecordset(); }
+@if (!countriesList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!countriesList.IsGridAdd && !(countriesList.IsGridEdit && countriesList.ModalGridEdit) && !countriesList.IsMultiEdit) {
+@Html.Raw(countriesList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@countriesList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@countriesList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@countriesList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!countriesList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("Countries");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>
+}

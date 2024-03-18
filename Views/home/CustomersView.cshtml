@@ -1,0 +1,312 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (customersView.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!customersView.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!customersView.IsExport()) {
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!customersView.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+    @customersView.ExportOptions.RenderBody()
+    @customersView.OtherOptions.RenderBody()
+</div>
+}
+@customersView.ShowPageHeader()
+@customersView.ShowMessages()
+<main class="view">
+<form name="fCustomersview" id="fCustomersview" class="ew-form ew-view-form overlay-wrapper" action="@AppPath(CurrentPageName())" method="post" novalidate autocomplete="off">
+@if (!customersView.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(customersView.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { Customers: currentTable } });
+var currentPageID = ew.PAGE_ID = "view";
+var currentForm;
+var fCustomersview;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("fCustomersview")
+        .setPageId("view")
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+}
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="modal" value="@ConvertToInt(customersView.IsModal)">
+<table class="@(customersView.TableClass)">
+@if (customersView.CustomerID.Visible) { // customersView.CustomerID.Visible (begin)
+    <tr id="r_CustomerID" @Html.Raw(customersView.CustomerID.RowAttributes)>
+        <td class="@(customersView.TableLeftColumnClass)"><span id="elh_Customers_CustomerID">@Html.Raw(customersView.CustomerID.Caption)</span></td>
+        <td data-name="CustomerID" @Html.Raw(customersView.CustomerID.CellAttributes)>
+<span id="el_Customers_CustomerID">
+<span @Html.Raw(customersView.CustomerID.ViewAttributes)>
+@Html.Raw(customersView.CustomerID.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* customersView.CustomerID.Visible (end) *@
+@if (customersView.FirstName.Visible) { // customersView.FirstName.Visible (begin)
+    <tr id="r_FirstName" @Html.Raw(customersView.FirstName.RowAttributes)>
+        <td class="@(customersView.TableLeftColumnClass)"><span id="elh_Customers_FirstName">@Html.Raw(customersView.FirstName.Caption)</span></td>
+        <td data-name="FirstName" @Html.Raw(customersView.FirstName.CellAttributes)>
+<span id="el_Customers_FirstName">
+<span @Html.Raw(customersView.FirstName.ViewAttributes)>
+@Html.Raw(customersView.FirstName.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* customersView.FirstName.Visible (end) *@
+@if (customersView.MiddleName.Visible) { // customersView.MiddleName.Visible (begin)
+    <tr id="r_MiddleName" @Html.Raw(customersView.MiddleName.RowAttributes)>
+        <td class="@(customersView.TableLeftColumnClass)"><span id="elh_Customers_MiddleName">@Html.Raw(customersView.MiddleName.Caption)</span></td>
+        <td data-name="MiddleName" @Html.Raw(customersView.MiddleName.CellAttributes)>
+<span id="el_Customers_MiddleName">
+<span @Html.Raw(customersView.MiddleName.ViewAttributes)>
+@Html.Raw(customersView.MiddleName.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* customersView.MiddleName.Visible (end) *@
+@if (customersView.LastName.Visible) { // customersView.LastName.Visible (begin)
+    <tr id="r_LastName" @Html.Raw(customersView.LastName.RowAttributes)>
+        <td class="@(customersView.TableLeftColumnClass)"><span id="elh_Customers_LastName">@Html.Raw(customersView.LastName.Caption)</span></td>
+        <td data-name="LastName" @Html.Raw(customersView.LastName.CellAttributes)>
+<span id="el_Customers_LastName">
+<span @Html.Raw(customersView.LastName.ViewAttributes)>
+@Html.Raw(customersView.LastName.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* customersView.LastName.Visible (end) *@
+@if (customersView.Gender.Visible) { // customersView.Gender.Visible (begin)
+    <tr id="r_Gender" @Html.Raw(customersView.Gender.RowAttributes)>
+        <td class="@(customersView.TableLeftColumnClass)"><span id="elh_Customers_Gender">@Html.Raw(customersView.Gender.Caption)</span></td>
+        <td data-name="Gender" @Html.Raw(customersView.Gender.CellAttributes)>
+<span id="el_Customers_Gender">
+<span @Html.Raw(customersView.Gender.ViewAttributes)>
+@Html.Raw(customersView.Gender.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* customersView.Gender.Visible (end) *@
+@if (customersView.PlaceOfBirth.Visible) { // customersView.PlaceOfBirth.Visible (begin)
+    <tr id="r_PlaceOfBirth" @Html.Raw(customersView.PlaceOfBirth.RowAttributes)>
+        <td class="@(customersView.TableLeftColumnClass)"><span id="elh_Customers_PlaceOfBirth">@Html.Raw(customersView.PlaceOfBirth.Caption)</span></td>
+        <td data-name="PlaceOfBirth" @Html.Raw(customersView.PlaceOfBirth.CellAttributes)>
+<span id="el_Customers_PlaceOfBirth">
+<span @Html.Raw(customersView.PlaceOfBirth.ViewAttributes)>
+@Html.Raw(customersView.PlaceOfBirth.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* customersView.PlaceOfBirth.Visible (end) *@
+@if (customersView.DateOfBirth.Visible) { // customersView.DateOfBirth.Visible (begin)
+    <tr id="r_DateOfBirth" @Html.Raw(customersView.DateOfBirth.RowAttributes)>
+        <td class="@(customersView.TableLeftColumnClass)"><span id="elh_Customers_DateOfBirth">@Html.Raw(customersView.DateOfBirth.Caption)</span></td>
+        <td data-name="DateOfBirth" @Html.Raw(customersView.DateOfBirth.CellAttributes)>
+<span id="el_Customers_DateOfBirth">
+<span @Html.Raw(customersView.DateOfBirth.ViewAttributes)>
+@Html.Raw(customersView.DateOfBirth.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* customersView.DateOfBirth.Visible (end) *@
+@if (customersView.PrimaryAddress.Visible) { // customersView.PrimaryAddress.Visible (begin)
+    <tr id="r_PrimaryAddress" @Html.Raw(customersView.PrimaryAddress.RowAttributes)>
+        <td class="@(customersView.TableLeftColumnClass)"><span id="elh_Customers_PrimaryAddress">@Html.Raw(customersView.PrimaryAddress.Caption)</span></td>
+        <td data-name="PrimaryAddress" @Html.Raw(customersView.PrimaryAddress.CellAttributes)>
+<span id="el_Customers_PrimaryAddress">
+<span @Html.Raw(customersView.PrimaryAddress.ViewAttributes)>
+@Html.Raw(customersView.PrimaryAddress.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* customersView.PrimaryAddress.Visible (end) *@
+@if (customersView.PrimaryAddressCity.Visible) { // customersView.PrimaryAddressCity.Visible (begin)
+    <tr id="r_PrimaryAddressCity" @Html.Raw(customersView.PrimaryAddressCity.RowAttributes)>
+        <td class="@(customersView.TableLeftColumnClass)"><span id="elh_Customers_PrimaryAddressCity">@Html.Raw(customersView.PrimaryAddressCity.Caption)</span></td>
+        <td data-name="PrimaryAddressCity" @Html.Raw(customersView.PrimaryAddressCity.CellAttributes)>
+<span id="el_Customers_PrimaryAddressCity">
+<span @Html.Raw(customersView.PrimaryAddressCity.ViewAttributes)>
+@Html.Raw(customersView.PrimaryAddressCity.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* customersView.PrimaryAddressCity.Visible (end) *@
+@if (customersView.PrimaryAddressPostCode.Visible) { // customersView.PrimaryAddressPostCode.Visible (begin)
+    <tr id="r_PrimaryAddressPostCode" @Html.Raw(customersView.PrimaryAddressPostCode.RowAttributes)>
+        <td class="@(customersView.TableLeftColumnClass)"><span id="elh_Customers_PrimaryAddressPostCode">@Html.Raw(customersView.PrimaryAddressPostCode.Caption)</span></td>
+        <td data-name="PrimaryAddressPostCode" @Html.Raw(customersView.PrimaryAddressPostCode.CellAttributes)>
+<span id="el_Customers_PrimaryAddressPostCode">
+<span @Html.Raw(customersView.PrimaryAddressPostCode.ViewAttributes)>
+@Html.Raw(customersView.PrimaryAddressPostCode.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* customersView.PrimaryAddressPostCode.Visible (end) *@
+@if (customersView.PrimaryAddressCountryID.Visible) { // customersView.PrimaryAddressCountryID.Visible (begin)
+    <tr id="r_PrimaryAddressCountryID" @Html.Raw(customersView.PrimaryAddressCountryID.RowAttributes)>
+        <td class="@(customersView.TableLeftColumnClass)"><span id="elh_Customers_PrimaryAddressCountryID">@Html.Raw(customersView.PrimaryAddressCountryID.Caption)</span></td>
+        <td data-name="PrimaryAddressCountryID" @Html.Raw(customersView.PrimaryAddressCountryID.CellAttributes)>
+<span id="el_Customers_PrimaryAddressCountryID">
+<span @Html.Raw(customersView.PrimaryAddressCountryID.ViewAttributes)>
+@Html.Raw(customersView.PrimaryAddressCountryID.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* customersView.PrimaryAddressCountryID.Visible (end) *@
+@if (customersView.AlternativeAddress.Visible) { // customersView.AlternativeAddress.Visible (begin)
+    <tr id="r_AlternativeAddress" @Html.Raw(customersView.AlternativeAddress.RowAttributes)>
+        <td class="@(customersView.TableLeftColumnClass)"><span id="elh_Customers_AlternativeAddress">@Html.Raw(customersView.AlternativeAddress.Caption)</span></td>
+        <td data-name="AlternativeAddress" @Html.Raw(customersView.AlternativeAddress.CellAttributes)>
+<span id="el_Customers_AlternativeAddress">
+<span @Html.Raw(customersView.AlternativeAddress.ViewAttributes)>
+@Html.Raw(customersView.AlternativeAddress.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* customersView.AlternativeAddress.Visible (end) *@
+@if (customersView.AlternativeAddressCity.Visible) { // customersView.AlternativeAddressCity.Visible (begin)
+    <tr id="r_AlternativeAddressCity" @Html.Raw(customersView.AlternativeAddressCity.RowAttributes)>
+        <td class="@(customersView.TableLeftColumnClass)"><span id="elh_Customers_AlternativeAddressCity">@Html.Raw(customersView.AlternativeAddressCity.Caption)</span></td>
+        <td data-name="AlternativeAddressCity" @Html.Raw(customersView.AlternativeAddressCity.CellAttributes)>
+<span id="el_Customers_AlternativeAddressCity">
+<span @Html.Raw(customersView.AlternativeAddressCity.ViewAttributes)>
+@Html.Raw(customersView.AlternativeAddressCity.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* customersView.AlternativeAddressCity.Visible (end) *@
+@if (customersView.AlternativeAddressPostCode.Visible) { // customersView.AlternativeAddressPostCode.Visible (begin)
+    <tr id="r_AlternativeAddressPostCode" @Html.Raw(customersView.AlternativeAddressPostCode.RowAttributes)>
+        <td class="@(customersView.TableLeftColumnClass)"><span id="elh_Customers_AlternativeAddressPostCode">@Html.Raw(customersView.AlternativeAddressPostCode.Caption)</span></td>
+        <td data-name="AlternativeAddressPostCode" @Html.Raw(customersView.AlternativeAddressPostCode.CellAttributes)>
+<span id="el_Customers_AlternativeAddressPostCode">
+<span @Html.Raw(customersView.AlternativeAddressPostCode.ViewAttributes)>
+@Html.Raw(customersView.AlternativeAddressPostCode.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* customersView.AlternativeAddressPostCode.Visible (end) *@
+@if (customersView.AlternativeAddressCountryID.Visible) { // customersView.AlternativeAddressCountryID.Visible (begin)
+    <tr id="r_AlternativeAddressCountryID" @Html.Raw(customersView.AlternativeAddressCountryID.RowAttributes)>
+        <td class="@(customersView.TableLeftColumnClass)"><span id="elh_Customers_AlternativeAddressCountryID">@Html.Raw(customersView.AlternativeAddressCountryID.Caption)</span></td>
+        <td data-name="AlternativeAddressCountryID" @Html.Raw(customersView.AlternativeAddressCountryID.CellAttributes)>
+<span id="el_Customers_AlternativeAddressCountryID">
+<span @Html.Raw(customersView.AlternativeAddressCountryID.ViewAttributes)>
+@Html.Raw(customersView.AlternativeAddressCountryID.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* customersView.AlternativeAddressCountryID.Visible (end) *@
+@if (customersView.MobileNumber.Visible) { // customersView.MobileNumber.Visible (begin)
+    <tr id="r_MobileNumber" @Html.Raw(customersView.MobileNumber.RowAttributes)>
+        <td class="@(customersView.TableLeftColumnClass)"><span id="elh_Customers_MobileNumber">@Html.Raw(customersView.MobileNumber.Caption)</span></td>
+        <td data-name="MobileNumber" @Html.Raw(customersView.MobileNumber.CellAttributes)>
+<span id="el_Customers_MobileNumber">
+<span @Html.Raw(customersView.MobileNumber.ViewAttributes)>
+@Html.Raw(customersView.MobileNumber.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* customersView.MobileNumber.Visible (end) *@
+@if (customersView.UserID.Visible) { // customersView.UserID.Visible (begin)
+    <tr id="r_UserID" @Html.Raw(customersView.UserID.RowAttributes)>
+        <td class="@(customersView.TableLeftColumnClass)"><span id="elh_Customers_UserID">@Html.Raw(customersView.UserID.Caption)</span></td>
+        <td data-name="UserID" @Html.Raw(customersView.UserID.CellAttributes)>
+<span id="el_Customers_UserID">
+<span @Html.Raw(customersView.UserID.ViewAttributes)>
+@Html.Raw(customersView.UserID.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* customersView.UserID.Visible (end) *@
+@if (customersView.Status.Visible) { // customersView.Status.Visible (begin)
+    <tr id="r_Status" @Html.Raw(customersView.Status.RowAttributes)>
+        <td class="@(customersView.TableLeftColumnClass)"><span id="elh_Customers_Status">@Html.Raw(customersView.Status.Caption)</span></td>
+        <td data-name="Status" @Html.Raw(customersView.Status.CellAttributes)>
+<span id="el_Customers_Status">
+<span @Html.Raw(customersView.Status.ViewAttributes)>
+@Html.Raw(customersView.Status.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* customersView.Status.Visible (end) *@
+@if (customersView.CreatedBy.Visible) { // customersView.CreatedBy.Visible (begin)
+    <tr id="r_CreatedBy" @Html.Raw(customersView.CreatedBy.RowAttributes)>
+        <td class="@(customersView.TableLeftColumnClass)"><span id="elh_Customers_CreatedBy">@Html.Raw(customersView.CreatedBy.Caption)</span></td>
+        <td data-name="CreatedBy" @Html.Raw(customersView.CreatedBy.CellAttributes)>
+<span id="el_Customers_CreatedBy">
+<span @Html.Raw(customersView.CreatedBy.ViewAttributes)>
+@Html.Raw(customersView.CreatedBy.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* customersView.CreatedBy.Visible (end) *@
+@if (customersView.CreatedDateTime.Visible) { // customersView.CreatedDateTime.Visible (begin)
+    <tr id="r_CreatedDateTime" @Html.Raw(customersView.CreatedDateTime.RowAttributes)>
+        <td class="@(customersView.TableLeftColumnClass)"><span id="elh_Customers_CreatedDateTime">@Html.Raw(customersView.CreatedDateTime.Caption)</span></td>
+        <td data-name="CreatedDateTime" @Html.Raw(customersView.CreatedDateTime.CellAttributes)>
+<span id="el_Customers_CreatedDateTime">
+<span @Html.Raw(customersView.CreatedDateTime.ViewAttributes)>
+@Html.Raw(customersView.CreatedDateTime.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* customersView.CreatedDateTime.Visible (end) *@
+@if (customersView.UpdatedBy.Visible) { // customersView.UpdatedBy.Visible (begin)
+    <tr id="r_UpdatedBy" @Html.Raw(customersView.UpdatedBy.RowAttributes)>
+        <td class="@(customersView.TableLeftColumnClass)"><span id="elh_Customers_UpdatedBy">@Html.Raw(customersView.UpdatedBy.Caption)</span></td>
+        <td data-name="UpdatedBy" @Html.Raw(customersView.UpdatedBy.CellAttributes)>
+<span id="el_Customers_UpdatedBy">
+<span @Html.Raw(customersView.UpdatedBy.ViewAttributes)>
+@Html.Raw(customersView.UpdatedBy.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* customersView.UpdatedBy.Visible (end) *@
+@if (customersView.UpdatedDateTime.Visible) { // customersView.UpdatedDateTime.Visible (begin)
+    <tr id="r_UpdatedDateTime" @Html.Raw(customersView.UpdatedDateTime.RowAttributes)>
+        <td class="@(customersView.TableLeftColumnClass)"><span id="elh_Customers_UpdatedDateTime">@Html.Raw(customersView.UpdatedDateTime.Caption)</span></td>
+        <td data-name="UpdatedDateTime" @Html.Raw(customersView.UpdatedDateTime.CellAttributes)>
+<span id="el_Customers_UpdatedDateTime">
+<span @Html.Raw(customersView.UpdatedDateTime.ViewAttributes)>
+@Html.Raw(customersView.UpdatedDateTime.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* customersView.UpdatedDateTime.Visible (end) *@
+</table>
+@{ customersView.CloseRecordset(); }
+</form>
+@if (!customersView.IsModal) {
+if (!customersView.IsExport()) {
+<div><!-- DN -->
+@customersView.Pager.Render()
+</div>
+}
+}
+</main>
+@customersView.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!customersView.IsExport()) {
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>
+}

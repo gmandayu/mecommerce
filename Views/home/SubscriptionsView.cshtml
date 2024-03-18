@@ -1,0 +1,152 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (subscriptionsView.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!subscriptionsView.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!subscriptionsView.IsExport()) {
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!subscriptionsView.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+    @subscriptionsView.ExportOptions.RenderBody()
+    @subscriptionsView.OtherOptions.RenderBody()
+</div>
+}
+@subscriptionsView.ShowPageHeader()
+@subscriptionsView.ShowMessages()
+<main class="view">
+<form name="fSubscriptionsview" id="fSubscriptionsview" class="ew-form ew-view-form overlay-wrapper" action="@AppPath(CurrentPageName())" method="post" novalidate autocomplete="off">
+@if (!subscriptionsView.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(subscriptionsView.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { Subscriptions: currentTable } });
+var currentPageID = ew.PAGE_ID = "view";
+var currentForm;
+var fSubscriptionsview;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("fSubscriptionsview")
+        .setPageId("view")
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+}
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="modal" value="@ConvertToInt(subscriptionsView.IsModal)">
+<table class="@(subscriptionsView.TableClass)">
+@if (subscriptionsView.Id.Visible) { // subscriptionsView.Id.Visible (begin)
+    <tr id="r_Id" @Html.Raw(subscriptionsView.Id.RowAttributes)>
+        <td class="@(subscriptionsView.TableLeftColumnClass)"><span id="elh_Subscriptions_Id">@Html.Raw(subscriptionsView.Id.Caption)</span></td>
+        <td data-name="Id" @Html.Raw(subscriptionsView.Id.CellAttributes)>
+<span id="el_Subscriptions_Id">
+<span @Html.Raw(subscriptionsView.Id.ViewAttributes)>
+@Html.Raw(subscriptionsView.Id.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* subscriptionsView.Id.Visible (end) *@
+@if (subscriptionsView._User.Visible) { // subscriptionsView._User.Visible (begin)
+    <tr id="r__User" @Html.Raw(subscriptionsView._User.RowAttributes)>
+        <td class="@(subscriptionsView.TableLeftColumnClass)"><span id="elh_Subscriptions__User">@Html.Raw(subscriptionsView._User.Caption)</span></td>
+        <td data-name="_User" @Html.Raw(subscriptionsView._User.CellAttributes)>
+<span id="el_Subscriptions__User">
+<span @Html.Raw(subscriptionsView._User.ViewAttributes)>
+@Html.Raw(subscriptionsView._User.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* subscriptionsView._User.Visible (end) *@
+@if (subscriptionsView.Endpoint.Visible) { // subscriptionsView.Endpoint.Visible (begin)
+    <tr id="r_Endpoint" @Html.Raw(subscriptionsView.Endpoint.RowAttributes)>
+        <td class="@(subscriptionsView.TableLeftColumnClass)"><span id="elh_Subscriptions_Endpoint">@Html.Raw(subscriptionsView.Endpoint.Caption)</span></td>
+        <td data-name="Endpoint" @Html.Raw(subscriptionsView.Endpoint.CellAttributes)>
+<span id="el_Subscriptions_Endpoint">
+<span @Html.Raw(subscriptionsView.Endpoint.ViewAttributes)>
+@Html.Raw(subscriptionsView.Endpoint.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* subscriptionsView.Endpoint.Visible (end) *@
+@if (subscriptionsView.PublicKey.Visible) { // subscriptionsView.PublicKey.Visible (begin)
+    <tr id="r_PublicKey" @Html.Raw(subscriptionsView.PublicKey.RowAttributes)>
+        <td class="@(subscriptionsView.TableLeftColumnClass)"><span id="elh_Subscriptions_PublicKey">@Html.Raw(subscriptionsView.PublicKey.Caption)</span></td>
+        <td data-name="PublicKey" @Html.Raw(subscriptionsView.PublicKey.CellAttributes)>
+<span id="el_Subscriptions_PublicKey">
+<span @Html.Raw(subscriptionsView.PublicKey.ViewAttributes)>
+@Html.Raw(subscriptionsView.PublicKey.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* subscriptionsView.PublicKey.Visible (end) *@
+@if (subscriptionsView.AuthenticationToken.Visible) { // subscriptionsView.AuthenticationToken.Visible (begin)
+    <tr id="r_AuthenticationToken" @Html.Raw(subscriptionsView.AuthenticationToken.RowAttributes)>
+        <td class="@(subscriptionsView.TableLeftColumnClass)"><span id="elh_Subscriptions_AuthenticationToken">@Html.Raw(subscriptionsView.AuthenticationToken.Caption)</span></td>
+        <td data-name="AuthenticationToken" @Html.Raw(subscriptionsView.AuthenticationToken.CellAttributes)>
+<span id="el_Subscriptions_AuthenticationToken">
+<span @Html.Raw(subscriptionsView.AuthenticationToken.ViewAttributes)>
+@Html.Raw(subscriptionsView.AuthenticationToken.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* subscriptionsView.AuthenticationToken.Visible (end) *@
+@if (subscriptionsView.ContentEncoding.Visible) { // subscriptionsView.ContentEncoding.Visible (begin)
+    <tr id="r_ContentEncoding" @Html.Raw(subscriptionsView.ContentEncoding.RowAttributes)>
+        <td class="@(subscriptionsView.TableLeftColumnClass)"><span id="elh_Subscriptions_ContentEncoding">@Html.Raw(subscriptionsView.ContentEncoding.Caption)</span></td>
+        <td data-name="ContentEncoding" @Html.Raw(subscriptionsView.ContentEncoding.CellAttributes)>
+<span id="el_Subscriptions_ContentEncoding">
+<span @Html.Raw(subscriptionsView.ContentEncoding.ViewAttributes)>
+@Html.Raw(subscriptionsView.ContentEncoding.GetViewValue())</span>
+</span></td>
+    </tr>
+} @* subscriptionsView.ContentEncoding.Visible (end) *@
+</table>
+@{ subscriptionsView.CloseRecordset(); }
+</form>
+@if (!subscriptionsView.IsModal) {
+if (!subscriptionsView.IsExport()) {
+<div><!-- DN -->
+@subscriptionsView.Pager.Render()
+</div>
+}
+}
+</main>
+@subscriptionsView.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!subscriptionsView.IsExport()) {
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>
+}

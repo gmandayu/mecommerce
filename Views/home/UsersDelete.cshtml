@@ -1,0 +1,218 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (usersDelete.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!usersDelete.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+<script>
+var currentTable = @Html.Raw(ConvertToJson(usersDelete.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { Users: currentTable } });
+var currentPageID = ew.PAGE_ID = "delete";
+var currentForm;
+var fUsersdelete;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("fUsersdelete")
+        .setPageId("delete")
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+@usersDelete.ShowPageHeader()
+@usersDelete.ShowMessages()
+<form name="fUsersdelete" id="fUsersdelete" class="ew-form ew-delete-form" action="@AppPath(CurrentPageName())" method="post" novalidate autocomplete="off">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+<input type="hidden" name="action" id="action" value="delete">
+@foreach (string key in usersDelete.RecordKeys) {
+<input type="hidden" name="key_m[]" value="@key">
+}
+<div class="card ew-card ew-grid @(usersDelete.TableGridClass)">
+<div class="card-body ew-grid-middle-panel @(usersDelete.TableContainerClass)" style="@(usersDelete.TableContainerStyle)">
+<table class="@(usersDelete.TableClass)">
+    <thead>
+    <tr class="ew-table-header">
+@if (usersDelete.UserID.Visible) { // usersDelete.UserID.Visible (begin)
+        <th class="@Html.Raw(usersDelete.UserID.HeaderCellClass)"><span id="elh_Users_UserID" class="Users_UserID">@Html.Raw(usersDelete.UserID.Caption)</span></th>
+} @* usersDelete.UserID.Visible (end) *@
+@if (usersDelete._Email.Visible) { // usersDelete._Email.Visible (begin)
+        <th class="@Html.Raw(usersDelete._Email.HeaderCellClass)"><span id="elh_Users__Email" class="Users__Email">@Html.Raw(usersDelete._Email.Caption)</span></th>
+} @* usersDelete._Email.Visible (end) *@
+@if (usersDelete.MobileNumber.Visible) { // usersDelete.MobileNumber.Visible (begin)
+        <th class="@Html.Raw(usersDelete.MobileNumber.HeaderCellClass)"><span id="elh_Users_MobileNumber" class="Users_MobileNumber">@Html.Raw(usersDelete.MobileNumber.Caption)</span></th>
+} @* usersDelete.MobileNumber.Visible (end) *@
+@if (usersDelete._Username.Visible) { // usersDelete._Username.Visible (begin)
+        <th class="@Html.Raw(usersDelete._Username.HeaderCellClass)"><span id="elh_Users__Username" class="Users__Username">@Html.Raw(usersDelete._Username.Caption)</span></th>
+} @* usersDelete._Username.Visible (end) *@
+@if (usersDelete.Password.Visible) { // usersDelete.Password.Visible (begin)
+        <th class="@Html.Raw(usersDelete.Password.HeaderCellClass)"><span id="elh_Users_Password" class="Users_Password">@Html.Raw(usersDelete.Password.Caption)</span></th>
+} @* usersDelete.Password.Visible (end) *@
+@if (usersDelete.IsActive.Visible) { // usersDelete.IsActive.Visible (begin)
+        <th class="@Html.Raw(usersDelete.IsActive.HeaderCellClass)"><span id="elh_Users_IsActive" class="Users_IsActive">@Html.Raw(usersDelete.IsActive.Caption)</span></th>
+} @* usersDelete.IsActive.Visible (end) *@
+@if (usersDelete.UserLevelID.Visible) { // usersDelete.UserLevelID.Visible (begin)
+        <th class="@Html.Raw(usersDelete.UserLevelID.HeaderCellClass)"><span id="elh_Users_UserLevelID" class="Users_UserLevelID">@Html.Raw(usersDelete.UserLevelID.Caption)</span></th>
+} @* usersDelete.UserLevelID.Visible (end) *@
+@if (usersDelete.CreatedBy.Visible) { // usersDelete.CreatedBy.Visible (begin)
+        <th class="@Html.Raw(usersDelete.CreatedBy.HeaderCellClass)"><span id="elh_Users_CreatedBy" class="Users_CreatedBy">@Html.Raw(usersDelete.CreatedBy.Caption)</span></th>
+} @* usersDelete.CreatedBy.Visible (end) *@
+@if (usersDelete.CreatedDateTime.Visible) { // usersDelete.CreatedDateTime.Visible (begin)
+        <th class="@Html.Raw(usersDelete.CreatedDateTime.HeaderCellClass)"><span id="elh_Users_CreatedDateTime" class="Users_CreatedDateTime">@Html.Raw(usersDelete.CreatedDateTime.Caption)</span></th>
+} @* usersDelete.CreatedDateTime.Visible (end) *@
+@if (usersDelete.UpdatedBy.Visible) { // usersDelete.UpdatedBy.Visible (begin)
+        <th class="@Html.Raw(usersDelete.UpdatedBy.HeaderCellClass)"><span id="elh_Users_UpdatedBy" class="Users_UpdatedBy">@Html.Raw(usersDelete.UpdatedBy.Caption)</span></th>
+} @* usersDelete.UpdatedBy.Visible (end) *@
+@if (usersDelete.UpdatedDateTime.Visible) { // usersDelete.UpdatedDateTime.Visible (begin)
+        <th class="@Html.Raw(usersDelete.UpdatedDateTime.HeaderCellClass)"><span id="elh_Users_UpdatedDateTime" class="Users_UpdatedDateTime">@Html.Raw(usersDelete.UpdatedDateTime.Caption)</span></th>
+} @* usersDelete.UpdatedDateTime.Visible (end) *@
+    </tr>
+    </thead>
+    <tbody>
+@{ usersDelete.RecordCount = 0; }
+@while (usersDelete.Recordset != null && await usersDelete.Recordset.ReadAsync()) { // DN
+    usersDelete.RecordCount++;
+    usersDelete.RowCount++;
+
+    // Set row properties
+    usersDelete.ResetAttributes();
+    usersDelete.RowType = RowType.View; // View
+
+    // Get the field contents
+    await usersDelete.LoadRowValues(usersDelete.Recordset);
+
+    // Render row
+    await usersDelete.RenderRow();
+    <tr @Html.Raw(usersDelete.RowAttributes)>
+@if (usersDelete.UserID.Visible) { // usersDelete.UserID.Visible (begin)
+        <td @Html.Raw(usersDelete.UserID.CellAttributes)>
+<span id="">
+<span @Html.Raw(usersDelete.UserID.ViewAttributes)>
+@Html.Raw(usersDelete.UserID.GetViewValue())</span>
+</span></td>
+} @* usersDelete.UserID.Visible (end) *@
+@if (usersDelete._Email.Visible) { // usersDelete._Email.Visible (begin)
+        <td @Html.Raw(usersDelete._Email.CellAttributes)>
+<span id="">
+<span @Html.Raw(usersDelete._Email.ViewAttributes)>
+@Html.Raw(usersDelete._Email.GetViewValue())</span>
+</span></td>
+} @* usersDelete._Email.Visible (end) *@
+@if (usersDelete.MobileNumber.Visible) { // usersDelete.MobileNumber.Visible (begin)
+        <td @Html.Raw(usersDelete.MobileNumber.CellAttributes)>
+<span id="">
+<span @Html.Raw(usersDelete.MobileNumber.ViewAttributes)>
+@Html.Raw(usersDelete.MobileNumber.GetViewValue())</span>
+</span></td>
+} @* usersDelete.MobileNumber.Visible (end) *@
+@if (usersDelete._Username.Visible) { // usersDelete._Username.Visible (begin)
+        <td @Html.Raw(usersDelete._Username.CellAttributes)>
+<span id="">
+<span @Html.Raw(usersDelete._Username.ViewAttributes)>
+@Html.Raw(usersDelete._Username.GetViewValue())</span>
+</span></td>
+} @* usersDelete._Username.Visible (end) *@
+@if (usersDelete.Password.Visible) { // usersDelete.Password.Visible (begin)
+        <td @Html.Raw(usersDelete.Password.CellAttributes)>
+<span id="">
+<span @Html.Raw(usersDelete.Password.ViewAttributes)>
+@Html.Raw(usersDelete.Password.GetViewValue())</span>
+</span></td>
+} @* usersDelete.Password.Visible (end) *@
+@if (usersDelete.IsActive.Visible) { // usersDelete.IsActive.Visible (begin)
+        <td @Html.Raw(usersDelete.IsActive.CellAttributes)>
+<span id="">
+<span @Html.Raw(usersDelete.IsActive.ViewAttributes)>
+<div class="form-check d-inline-block">
+    <input type="checkbox" id="x_IsActive_@(usersDelete.RowCount)" class="form-check-input" value="@(usersDelete.IsActive.GetViewValue())" disabled checked="@(ConvertToBool(usersDelete.IsActive.CurrentValue))">
+    <label class="form-check-label" for="x_IsActive_@(usersDelete.RowCount)"></label>
+</div></span>
+</span></td>
+} @* usersDelete.IsActive.Visible (end) *@
+@if (usersDelete.UserLevelID.Visible) { // usersDelete.UserLevelID.Visible (begin)
+        <td @Html.Raw(usersDelete.UserLevelID.CellAttributes)>
+<span id="">
+<span @Html.Raw(usersDelete.UserLevelID.ViewAttributes)>
+@Html.Raw(usersDelete.UserLevelID.GetViewValue())</span>
+</span></td>
+} @* usersDelete.UserLevelID.Visible (end) *@
+@if (usersDelete.CreatedBy.Visible) { // usersDelete.CreatedBy.Visible (begin)
+        <td @Html.Raw(usersDelete.CreatedBy.CellAttributes)>
+<span id="">
+<span @Html.Raw(usersDelete.CreatedBy.ViewAttributes)>
+@Html.Raw(usersDelete.CreatedBy.GetViewValue())</span>
+</span></td>
+} @* usersDelete.CreatedBy.Visible (end) *@
+@if (usersDelete.CreatedDateTime.Visible) { // usersDelete.CreatedDateTime.Visible (begin)
+        <td @Html.Raw(usersDelete.CreatedDateTime.CellAttributes)>
+<span id="">
+<span @Html.Raw(usersDelete.CreatedDateTime.ViewAttributes)>
+@Html.Raw(usersDelete.CreatedDateTime.GetViewValue())</span>
+</span></td>
+} @* usersDelete.CreatedDateTime.Visible (end) *@
+@if (usersDelete.UpdatedBy.Visible) { // usersDelete.UpdatedBy.Visible (begin)
+        <td @Html.Raw(usersDelete.UpdatedBy.CellAttributes)>
+<span id="">
+<span @Html.Raw(usersDelete.UpdatedBy.ViewAttributes)>
+@Html.Raw(usersDelete.UpdatedBy.GetViewValue())</span>
+</span></td>
+} @* usersDelete.UpdatedBy.Visible (end) *@
+@if (usersDelete.UpdatedDateTime.Visible) { // usersDelete.UpdatedDateTime.Visible (begin)
+        <td @Html.Raw(usersDelete.UpdatedDateTime.CellAttributes)>
+<span id="">
+<span @Html.Raw(usersDelete.UpdatedDateTime.ViewAttributes)>
+@Html.Raw(usersDelete.UpdatedDateTime.GetViewValue())</span>
+</span></td>
+} @* usersDelete.UpdatedDateTime.Visible (end) *@
+    </tr>
+}
+@{ usersDelete.CloseRecordset(); }
+</tbody>
+</table>
+</div>
+</div>
+<div class="ew-buttons ew-desktop-buttons">
+<button class="btn btn-primary ew-btn" name="btn-action" id="btn-action" type="submit">@Html.Raw(Language.Phrase("DeleteBtn"))</button>
+<button class="btn btn-default ew-btn" name="btn-cancel" id="btn-cancel" type="button" data-href="@AppPath(usersDelete.ReturnUrl)">@Html.Raw(Language.Phrase("CancelBtn"))</button>
+</div>
+</form>
+@usersDelete.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>

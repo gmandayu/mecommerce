@@ -1,0 +1,317 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (auditTrailList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!auditTrailList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!auditTrailList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(auditTrailList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { AuditTrail: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(auditTrailList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(auditTrailList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(auditTrailList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(auditTrailList.FormKeyCountName)")
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!auditTrailList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (auditTrailList.TotalRecords > 0 && auditTrailList.ExportOptions.Visible) {
+    auditTrailList.ExportOptions.Render("body");
+}
+@if (auditTrailList.ImportOptions.Visible) {
+    auditTrailList.ImportOptions.Render("body");
+}
+@if (auditTrailList.SearchOptions.Visible) {
+    auditTrailList.SearchOptions.Render("body");
+}
+@if (auditTrailList.FilterOptions.Visible) {
+    auditTrailList.FilterOptions.Render("body");
+}
+</div>
+}
+@if (!auditTrailList.IsModal) {
+<form name="fAuditTrailsrch" id="fAuditTrailsrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" novalidate autocomplete="off">
+<div id="fAuditTrailsrch_search_panel" class="mb-2 mb-sm-0 @(auditTrailList.SearchPanelClass)"><!-- .ew-search-panel -->
+<script>
+var currentTable = @Html.Raw(ConvertToJson(auditTrailList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { AuditTrail: currentTable } });
+var currentForm;
+var fAuditTrailsrch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fAuditTrailsrch")
+        .setPageId("list")
+@if (auditTrailList.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Dynamic selection lists
+        .setLists({
+        })
+
+        // Filters
+        .setFilterList(@Html.Raw(await auditTrailList.GetFilterList()))
+
+        // Init search panel as collapsed
+        .setInitSearchPanel(true)
+        .build();
+    window[form.id] = form;
+    currentSearchForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<input type="hidden" name="cmd" value="search">
+@if (Security.CanSearch) {
+if (!auditTrailList.IsExport() && Empty(auditTrailList.CurrentAction) && auditTrailList.HasSearchFields()) { @* Show search form (begin) *@
+<div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0">
+    <div class="col-sm-auto px-0 pe-sm-2">
+        <div class="ew-basic-search input-group">
+            <input type="search" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control ew-basic-search-keyword" value="@Html.Raw(HtmlEncode(auditTrailList.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))" aria-label="@(HtmlEncode(Language.Phrase("Search")))">
+            <input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" class="ew-basic-search-type" value="@(HtmlEncode(auditTrailList.BasicSearch.SessionType))">
+            <button type="button" data-bs-toggle="dropdown" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false">
+                <span id="searchtype">@Html.Raw(auditTrailList.BasicSearch.TypeNameShort)</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <button type="button" class="dropdown-item@(auditTrailList.BasicSearch.SessionType == "" ? " active" : "")" form="fAuditTrailsrch" data-ew-action="search-type">@Html.Raw(Language.Phrase("QuickSearchAuto"))</button>
+                <button type="button" class="dropdown-item@(auditTrailList.BasicSearch.SessionType == "=" ? " active" : "")" form="fAuditTrailsrch" data-ew-action="search-type" data-search-type="=">@Html.Raw(Language.Phrase("QuickSearchExact"))</button>
+                <button type="button" class="dropdown-item@(auditTrailList.BasicSearch.SessionType == "AND" ? " active" : "")" form="fAuditTrailsrch" data-ew-action="search-type" data-search-type="AND">@Html.Raw(Language.Phrase("QuickSearchAll"))</button>
+                <button type="button" class="dropdown-item@(auditTrailList.BasicSearch.SessionType == "OR" ? " active" : "")" form="fAuditTrailsrch" data-ew-action="search-type" data-search-type="OR">@Html.Raw(Language.Phrase("QuickSearchAny"))</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-auto mb-3">
+        <button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+    </div>
+</div>
+</div><!-- /.ew-extended-search -->
+} @* Show search form (end) *@
+}
+</div><!-- /.ew-search-panel -->
+</form>
+}
+@auditTrailList.ShowPageHeader()
+@auditTrailList.ShowMessages()
+<main class="list @(auditTrailList.TotalRecords == 0 && !auditTrailList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (auditTrailList.TotalRecords > 0 || !Empty(auditTrailList.CurrentAction)) {
+<div class="card ew-card ew-grid@(auditTrailList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(auditTrailList.TableGridClass)">
+<form name="@(auditTrailList.FormName)" id="@(auditTrailList.FormName)" class="ew-form ew-list-form" action="@AppPath(auditTrailList.PageName)" method="post" novalidate autocomplete="off">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (auditTrailList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div id="gmp_AuditTrail" class="card-body ew-grid-middle-panel @(auditTrailList.TableContainerClass)" style="@(auditTrailList.TableContainerStyle)">
+@if (auditTrailList.TotalRecords > 0 || auditTrailList.IsGridEdit || auditTrailList.IsMultiEdit) {
+<table id="tbl_AuditTraillist" class="@(auditTrailList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    auditTrailList.RowType = RowType.Header;
+
+    // Render list options
+    await auditTrailList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@auditTrailList.ListOptions.RenderHeader("left")
+@if (auditTrailList.Id.Visible) { // auditTrailList.Id.Visible (begin)
+        <th data-name="Id" class="@(auditTrailList.Id.HeaderCellClass)"><div id="elh_AuditTrail_Id" class="AuditTrail_Id">@Html.Raw(auditTrailList.RenderFieldHeader(auditTrailList.Id))</div></th>
+} @* auditTrailList.Id.Visible (end) *@
+@if (auditTrailList._DateTime.Visible) { // auditTrailList._DateTime.Visible (begin)
+        <th data-name="_DateTime" class="@(auditTrailList._DateTime.HeaderCellClass)"><div id="elh_AuditTrail__DateTime" class="AuditTrail__DateTime">@Html.Raw(auditTrailList.RenderFieldHeader(auditTrailList._DateTime))</div></th>
+} @* auditTrailList._DateTime.Visible (end) *@
+@if (auditTrailList.Script.Visible) { // auditTrailList.Script.Visible (begin)
+        <th data-name="Script" class="@(auditTrailList.Script.HeaderCellClass)"><div id="elh_AuditTrail_Script" class="AuditTrail_Script">@Html.Raw(auditTrailList.RenderFieldHeader(auditTrailList.Script))</div></th>
+} @* auditTrailList.Script.Visible (end) *@
+@if (auditTrailList._User.Visible) { // auditTrailList._User.Visible (begin)
+        <th data-name="_User" class="@(auditTrailList._User.HeaderCellClass)"><div id="elh_AuditTrail__User" class="AuditTrail__User">@Html.Raw(auditTrailList.RenderFieldHeader(auditTrailList._User))</div></th>
+} @* auditTrailList._User.Visible (end) *@
+@if (auditTrailList._Action.Visible) { // auditTrailList._Action.Visible (begin)
+        <th data-name="_Action" class="@(auditTrailList._Action.HeaderCellClass)"><div id="elh_AuditTrail__Action" class="AuditTrail__Action">@Html.Raw(auditTrailList.RenderFieldHeader(auditTrailList._Action))</div></th>
+} @* auditTrailList._Action.Visible (end) *@
+@if (auditTrailList._Table.Visible) { // auditTrailList._Table.Visible (begin)
+        <th data-name="_Table" class="@(auditTrailList._Table.HeaderCellClass)"><div id="elh_AuditTrail__Table" class="AuditTrail__Table">@Html.Raw(auditTrailList.RenderFieldHeader(auditTrailList._Table))</div></th>
+} @* auditTrailList._Table.Visible (end) *@
+@if (auditTrailList._Field.Visible) { // auditTrailList._Field.Visible (begin)
+        <th data-name="_Field" class="@(auditTrailList._Field.HeaderCellClass)"><div id="elh_AuditTrail__Field" class="AuditTrail__Field">@Html.Raw(auditTrailList.RenderFieldHeader(auditTrailList._Field))</div></th>
+} @* auditTrailList._Field.Visible (end) *@
+@* Render list options (header, right) *@
+@auditTrailList.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(auditTrailList.PageNumber)">
+@{
+    await auditTrailList.SetupGrid();
+    bool eof = auditTrailList.Recordset == null; // DN
+}
+@while (auditTrailList.RecordCount < auditTrailList.StopRecord || SameString(auditTrailList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(auditTrailList.RowIndex, "$rowindex$") &&
+        (!auditTrailList.IsGridAdd || auditTrailList.CurrentMode == "copy") &&
+        (!((auditTrailList.IsCopy || auditTrailList.IsAdd) && auditTrailList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await auditTrailList.Recordset.ReadAsync();
+    auditTrailList.RecordCount++;
+    if (auditTrailList.RecordCount >= auditTrailList.StartRecord) {
+        await auditTrailList.SetupRow();
+    <tr @Html.Raw(auditTrailList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @auditTrailList.ListOptions.RenderBody("left", auditTrailList.RowCount)
+    @if (auditTrailList.Id.Visible) { // auditTrailList.Id.Visible (begin)
+        <td data-name="Id" @Html.Raw(auditTrailList.Id.CellAttributes)>
+<span id="el@(auditTrailList.RowIndex == "$rowindex$" ? "$rowindex$" : auditTrailList.RowCount)_AuditTrail_Id" class="el_AuditTrail_Id">
+<span @Html.Raw(auditTrailList.Id.ViewAttributes)>
+@Html.Raw(auditTrailList.Id.GetViewValue())</span>
+</span>
+</td>
+    } @* auditTrailList.Id.Visible (end) *@
+    @if (auditTrailList._DateTime.Visible) { // auditTrailList._DateTime.Visible (begin)
+        <td data-name="_DateTime" @Html.Raw(auditTrailList._DateTime.CellAttributes)>
+<span id="el@(auditTrailList.RowIndex == "$rowindex$" ? "$rowindex$" : auditTrailList.RowCount)_AuditTrail__DateTime" class="el_AuditTrail__DateTime">
+<span @Html.Raw(auditTrailList._DateTime.ViewAttributes)>
+@Html.Raw(auditTrailList._DateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* auditTrailList._DateTime.Visible (end) *@
+    @if (auditTrailList.Script.Visible) { // auditTrailList.Script.Visible (begin)
+        <td data-name="Script" @Html.Raw(auditTrailList.Script.CellAttributes)>
+<span id="el@(auditTrailList.RowIndex == "$rowindex$" ? "$rowindex$" : auditTrailList.RowCount)_AuditTrail_Script" class="el_AuditTrail_Script">
+<span @Html.Raw(auditTrailList.Script.ViewAttributes)>
+@Html.Raw(auditTrailList.Script.GetViewValue())</span>
+</span>
+</td>
+    } @* auditTrailList.Script.Visible (end) *@
+    @if (auditTrailList._User.Visible) { // auditTrailList._User.Visible (begin)
+        <td data-name="_User" @Html.Raw(auditTrailList._User.CellAttributes)>
+<span id="el@(auditTrailList.RowIndex == "$rowindex$" ? "$rowindex$" : auditTrailList.RowCount)_AuditTrail__User" class="el_AuditTrail__User">
+<span @Html.Raw(auditTrailList._User.ViewAttributes)>
+@Html.Raw(auditTrailList._User.GetViewValue())</span>
+</span>
+</td>
+    } @* auditTrailList._User.Visible (end) *@
+    @if (auditTrailList._Action.Visible) { // auditTrailList._Action.Visible (begin)
+        <td data-name="_Action" @Html.Raw(auditTrailList._Action.CellAttributes)>
+<span id="el@(auditTrailList.RowIndex == "$rowindex$" ? "$rowindex$" : auditTrailList.RowCount)_AuditTrail__Action" class="el_AuditTrail__Action">
+<span @Html.Raw(auditTrailList._Action.ViewAttributes)>
+@Html.Raw(auditTrailList._Action.GetViewValue())</span>
+</span>
+</td>
+    } @* auditTrailList._Action.Visible (end) *@
+    @if (auditTrailList._Table.Visible) { // auditTrailList._Table.Visible (begin)
+        <td data-name="_Table" @Html.Raw(auditTrailList._Table.CellAttributes)>
+<span id="el@(auditTrailList.RowIndex == "$rowindex$" ? "$rowindex$" : auditTrailList.RowCount)_AuditTrail__Table" class="el_AuditTrail__Table">
+<span @Html.Raw(auditTrailList._Table.ViewAttributes)>
+@Html.Raw(auditTrailList._Table.GetViewValue())</span>
+</span>
+</td>
+    } @* auditTrailList._Table.Visible (end) *@
+    @if (auditTrailList._Field.Visible) { // auditTrailList._Field.Visible (begin)
+        <td data-name="_Field" @Html.Raw(auditTrailList._Field.CellAttributes)>
+<span id="el@(auditTrailList.RowIndex == "$rowindex$" ? "$rowindex$" : auditTrailList.RowCount)_AuditTrail__Field" class="el_AuditTrail__Field">
+<span @Html.Raw(auditTrailList._Field.ViewAttributes)>
+@Html.Raw(auditTrailList._Field.GetViewValue())</span>
+</span>
+</td>
+    } @* auditTrailList._Field.Visible (end) *@
+    @* Render list options (body, right) *@
+    @auditTrailList.ListOptions.RenderBody("right", auditTrailList.RowCount)
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(auditTrailList.RowIndex, "$rowindex$"))
+        auditTrailList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((auditTrailList.IsCopy || auditTrailList.IsAdd) && auditTrailList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        auditTrailList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(auditTrailList.CurrentAction) && !auditTrailList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ auditTrailList.CloseRecordset(); }
+@if (!auditTrailList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!auditTrailList.IsGridAdd && !(auditTrailList.IsGridEdit && auditTrailList.ModalGridEdit) && !auditTrailList.IsMultiEdit) {
+@Html.Raw(auditTrailList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@auditTrailList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@auditTrailList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@auditTrailList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!auditTrailList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("AuditTrail");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>
+}

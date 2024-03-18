@@ -1,0 +1,364 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (usersList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!usersList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!usersList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(usersList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { Users: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(usersList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(usersList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(usersList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(usersList.FormKeyCountName)")
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!usersList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (usersList.TotalRecords > 0 && usersList.ExportOptions.Visible) {
+    usersList.ExportOptions.Render("body");
+}
+@if (usersList.ImportOptions.Visible) {
+    usersList.ImportOptions.Render("body");
+}
+@if (usersList.SearchOptions.Visible) {
+    usersList.SearchOptions.Render("body");
+}
+@if (usersList.FilterOptions.Visible) {
+    usersList.FilterOptions.Render("body");
+}
+</div>
+}
+@if (!usersList.IsModal) {
+<form name="fUserssrch" id="fUserssrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" novalidate autocomplete="off">
+<div id="fUserssrch_search_panel" class="mb-2 mb-sm-0 @(usersList.SearchPanelClass)"><!-- .ew-search-panel -->
+<script>
+var currentTable = @Html.Raw(ConvertToJson(usersList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { Users: currentTable } });
+var currentForm;
+var fUserssrch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fUserssrch")
+        .setPageId("list")
+@if (usersList.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Dynamic selection lists
+        .setLists({
+        })
+
+        // Filters
+        .setFilterList(@Html.Raw(await usersList.GetFilterList()))
+
+        // Init search panel as collapsed
+        .setInitSearchPanel(true)
+        .build();
+    window[form.id] = form;
+    currentSearchForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<input type="hidden" name="cmd" value="search">
+@if (Security.CanSearch) {
+if (!usersList.IsExport() && Empty(usersList.CurrentAction) && usersList.HasSearchFields()) { @* Show search form (begin) *@
+<div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0">
+    <div class="col-sm-auto px-0 pe-sm-2">
+        <div class="ew-basic-search input-group">
+            <input type="search" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control ew-basic-search-keyword" value="@Html.Raw(HtmlEncode(usersList.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))" aria-label="@(HtmlEncode(Language.Phrase("Search")))">
+            <input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" class="ew-basic-search-type" value="@(HtmlEncode(usersList.BasicSearch.SessionType))">
+            <button type="button" data-bs-toggle="dropdown" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false">
+                <span id="searchtype">@Html.Raw(usersList.BasicSearch.TypeNameShort)</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <button type="button" class="dropdown-item@(usersList.BasicSearch.SessionType == "" ? " active" : "")" form="fUserssrch" data-ew-action="search-type">@Html.Raw(Language.Phrase("QuickSearchAuto"))</button>
+                <button type="button" class="dropdown-item@(usersList.BasicSearch.SessionType == "=" ? " active" : "")" form="fUserssrch" data-ew-action="search-type" data-search-type="=">@Html.Raw(Language.Phrase("QuickSearchExact"))</button>
+                <button type="button" class="dropdown-item@(usersList.BasicSearch.SessionType == "AND" ? " active" : "")" form="fUserssrch" data-ew-action="search-type" data-search-type="AND">@Html.Raw(Language.Phrase("QuickSearchAll"))</button>
+                <button type="button" class="dropdown-item@(usersList.BasicSearch.SessionType == "OR" ? " active" : "")" form="fUserssrch" data-ew-action="search-type" data-search-type="OR">@Html.Raw(Language.Phrase("QuickSearchAny"))</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-auto mb-3">
+        <button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+    </div>
+</div>
+</div><!-- /.ew-extended-search -->
+} @* Show search form (end) *@
+}
+</div><!-- /.ew-search-panel -->
+</form>
+}
+@usersList.ShowPageHeader()
+@usersList.ShowMessages()
+<main class="list @(usersList.TotalRecords == 0 && !usersList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (usersList.TotalRecords > 0 || !Empty(usersList.CurrentAction)) {
+<div class="card ew-card ew-grid@(usersList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(usersList.TableGridClass)">
+<form name="@(usersList.FormName)" id="@(usersList.FormName)" class="ew-form ew-list-form" action="@AppPath(usersList.PageName)" method="post" novalidate autocomplete="off">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (usersList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div id="gmp_Users" class="card-body ew-grid-middle-panel @(usersList.TableContainerClass)" style="@(usersList.TableContainerStyle)">
+@if (usersList.TotalRecords > 0 || usersList.IsGridEdit || usersList.IsMultiEdit) {
+<table id="tbl_Userslist" class="@(usersList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    usersList.RowType = RowType.Header;
+
+    // Render list options
+    await usersList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@usersList.ListOptions.RenderHeader("left")
+@if (usersList.UserID.Visible) { // usersList.UserID.Visible (begin)
+        <th data-name="UserID" class="@(usersList.UserID.HeaderCellClass)"><div id="elh_Users_UserID" class="Users_UserID">@Html.Raw(usersList.RenderFieldHeader(usersList.UserID))</div></th>
+} @* usersList.UserID.Visible (end) *@
+@if (usersList._Email.Visible) { // usersList._Email.Visible (begin)
+        <th data-name="_Email" class="@(usersList._Email.HeaderCellClass)"><div id="elh_Users__Email" class="Users__Email">@Html.Raw(usersList.RenderFieldHeader(usersList._Email))</div></th>
+} @* usersList._Email.Visible (end) *@
+@if (usersList.MobileNumber.Visible) { // usersList.MobileNumber.Visible (begin)
+        <th data-name="MobileNumber" class="@(usersList.MobileNumber.HeaderCellClass)"><div id="elh_Users_MobileNumber" class="Users_MobileNumber">@Html.Raw(usersList.RenderFieldHeader(usersList.MobileNumber))</div></th>
+} @* usersList.MobileNumber.Visible (end) *@
+@if (usersList._Username.Visible) { // usersList._Username.Visible (begin)
+        <th data-name="_Username" class="@(usersList._Username.HeaderCellClass)"><div id="elh_Users__Username" class="Users__Username">@Html.Raw(usersList.RenderFieldHeader(usersList._Username))</div></th>
+} @* usersList._Username.Visible (end) *@
+@if (usersList.Password.Visible) { // usersList.Password.Visible (begin)
+        <th data-name="Password" class="@(usersList.Password.HeaderCellClass)"><div id="elh_Users_Password" class="Users_Password">@Html.Raw(usersList.RenderFieldHeader(usersList.Password))</div></th>
+} @* usersList.Password.Visible (end) *@
+@if (usersList.IsActive.Visible) { // usersList.IsActive.Visible (begin)
+        <th data-name="IsActive" class="@(usersList.IsActive.HeaderCellClass)"><div id="elh_Users_IsActive" class="Users_IsActive">@Html.Raw(usersList.RenderFieldHeader(usersList.IsActive))</div></th>
+} @* usersList.IsActive.Visible (end) *@
+@if (usersList.UserLevelID.Visible) { // usersList.UserLevelID.Visible (begin)
+        <th data-name="UserLevelID" class="@(usersList.UserLevelID.HeaderCellClass)"><div id="elh_Users_UserLevelID" class="Users_UserLevelID">@Html.Raw(usersList.RenderFieldHeader(usersList.UserLevelID))</div></th>
+} @* usersList.UserLevelID.Visible (end) *@
+@if (usersList.CreatedBy.Visible) { // usersList.CreatedBy.Visible (begin)
+        <th data-name="CreatedBy" class="@(usersList.CreatedBy.HeaderCellClass)"><div id="elh_Users_CreatedBy" class="Users_CreatedBy">@Html.Raw(usersList.RenderFieldHeader(usersList.CreatedBy))</div></th>
+} @* usersList.CreatedBy.Visible (end) *@
+@if (usersList.CreatedDateTime.Visible) { // usersList.CreatedDateTime.Visible (begin)
+        <th data-name="CreatedDateTime" class="@(usersList.CreatedDateTime.HeaderCellClass)"><div id="elh_Users_CreatedDateTime" class="Users_CreatedDateTime">@Html.Raw(usersList.RenderFieldHeader(usersList.CreatedDateTime))</div></th>
+} @* usersList.CreatedDateTime.Visible (end) *@
+@if (usersList.UpdatedBy.Visible) { // usersList.UpdatedBy.Visible (begin)
+        <th data-name="UpdatedBy" class="@(usersList.UpdatedBy.HeaderCellClass)"><div id="elh_Users_UpdatedBy" class="Users_UpdatedBy">@Html.Raw(usersList.RenderFieldHeader(usersList.UpdatedBy))</div></th>
+} @* usersList.UpdatedBy.Visible (end) *@
+@if (usersList.UpdatedDateTime.Visible) { // usersList.UpdatedDateTime.Visible (begin)
+        <th data-name="UpdatedDateTime" class="@(usersList.UpdatedDateTime.HeaderCellClass)"><div id="elh_Users_UpdatedDateTime" class="Users_UpdatedDateTime">@Html.Raw(usersList.RenderFieldHeader(usersList.UpdatedDateTime))</div></th>
+} @* usersList.UpdatedDateTime.Visible (end) *@
+@* Render list options (header, right) *@
+@usersList.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(usersList.PageNumber)">
+@{
+    await usersList.SetupGrid();
+    bool eof = usersList.Recordset == null; // DN
+}
+@while (usersList.RecordCount < usersList.StopRecord || SameString(usersList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(usersList.RowIndex, "$rowindex$") &&
+        (!usersList.IsGridAdd || usersList.CurrentMode == "copy") &&
+        (!((usersList.IsCopy || usersList.IsAdd) && usersList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await usersList.Recordset.ReadAsync();
+    usersList.RecordCount++;
+    if (usersList.RecordCount >= usersList.StartRecord) {
+        await usersList.SetupRow();
+    <tr @Html.Raw(usersList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @usersList.ListOptions.RenderBody("left", usersList.RowCount)
+    @if (usersList.UserID.Visible) { // usersList.UserID.Visible (begin)
+        <td data-name="UserID" @Html.Raw(usersList.UserID.CellAttributes)>
+<span id="el@(usersList.RowIndex == "$rowindex$" ? "$rowindex$" : usersList.RowCount)_Users_UserID" class="el_Users_UserID">
+<span @Html.Raw(usersList.UserID.ViewAttributes)>
+@Html.Raw(usersList.UserID.GetViewValue())</span>
+</span>
+</td>
+    } @* usersList.UserID.Visible (end) *@
+    @if (usersList._Email.Visible) { // usersList._Email.Visible (begin)
+        <td data-name="_Email" @Html.Raw(usersList._Email.CellAttributes)>
+<span id="el@(usersList.RowIndex == "$rowindex$" ? "$rowindex$" : usersList.RowCount)_Users__Email" class="el_Users__Email">
+<span @Html.Raw(usersList._Email.ViewAttributes)>
+@Html.Raw(usersList._Email.GetViewValue())</span>
+</span>
+</td>
+    } @* usersList._Email.Visible (end) *@
+    @if (usersList.MobileNumber.Visible) { // usersList.MobileNumber.Visible (begin)
+        <td data-name="MobileNumber" @Html.Raw(usersList.MobileNumber.CellAttributes)>
+<span id="el@(usersList.RowIndex == "$rowindex$" ? "$rowindex$" : usersList.RowCount)_Users_MobileNumber" class="el_Users_MobileNumber">
+<span @Html.Raw(usersList.MobileNumber.ViewAttributes)>
+@Html.Raw(usersList.MobileNumber.GetViewValue())</span>
+</span>
+</td>
+    } @* usersList.MobileNumber.Visible (end) *@
+    @if (usersList._Username.Visible) { // usersList._Username.Visible (begin)
+        <td data-name="_Username" @Html.Raw(usersList._Username.CellAttributes)>
+<span id="el@(usersList.RowIndex == "$rowindex$" ? "$rowindex$" : usersList.RowCount)_Users__Username" class="el_Users__Username">
+<span @Html.Raw(usersList._Username.ViewAttributes)>
+@Html.Raw(usersList._Username.GetViewValue())</span>
+</span>
+</td>
+    } @* usersList._Username.Visible (end) *@
+    @if (usersList.Password.Visible) { // usersList.Password.Visible (begin)
+        <td data-name="Password" @Html.Raw(usersList.Password.CellAttributes)>
+<span id="el@(usersList.RowIndex == "$rowindex$" ? "$rowindex$" : usersList.RowCount)_Users_Password" class="el_Users_Password">
+<span @Html.Raw(usersList.Password.ViewAttributes)>
+@Html.Raw(usersList.Password.GetViewValue())</span>
+</span>
+</td>
+    } @* usersList.Password.Visible (end) *@
+    @if (usersList.IsActive.Visible) { // usersList.IsActive.Visible (begin)
+        <td data-name="IsActive" @Html.Raw(usersList.IsActive.CellAttributes)>
+<span id="el@(usersList.RowIndex == "$rowindex$" ? "$rowindex$" : usersList.RowCount)_Users_IsActive" class="el_Users_IsActive">
+<span @Html.Raw(usersList.IsActive.ViewAttributes)>
+<div class="form-check d-inline-block">
+    <input type="checkbox" id="x_IsActive_@(usersList.RowCount)" class="form-check-input" value="@(usersList.IsActive.GetViewValue())" disabled checked="@(ConvertToBool(usersList.IsActive.CurrentValue))">
+    <label class="form-check-label" for="x_IsActive_@(usersList.RowCount)"></label>
+</div></span>
+</span>
+</td>
+    } @* usersList.IsActive.Visible (end) *@
+    @if (usersList.UserLevelID.Visible) { // usersList.UserLevelID.Visible (begin)
+        <td data-name="UserLevelID" @Html.Raw(usersList.UserLevelID.CellAttributes)>
+<span id="el@(usersList.RowIndex == "$rowindex$" ? "$rowindex$" : usersList.RowCount)_Users_UserLevelID" class="el_Users_UserLevelID">
+<span @Html.Raw(usersList.UserLevelID.ViewAttributes)>
+@Html.Raw(usersList.UserLevelID.GetViewValue())</span>
+</span>
+</td>
+    } @* usersList.UserLevelID.Visible (end) *@
+    @if (usersList.CreatedBy.Visible) { // usersList.CreatedBy.Visible (begin)
+        <td data-name="CreatedBy" @Html.Raw(usersList.CreatedBy.CellAttributes)>
+<span id="el@(usersList.RowIndex == "$rowindex$" ? "$rowindex$" : usersList.RowCount)_Users_CreatedBy" class="el_Users_CreatedBy">
+<span @Html.Raw(usersList.CreatedBy.ViewAttributes)>
+@Html.Raw(usersList.CreatedBy.GetViewValue())</span>
+</span>
+</td>
+    } @* usersList.CreatedBy.Visible (end) *@
+    @if (usersList.CreatedDateTime.Visible) { // usersList.CreatedDateTime.Visible (begin)
+        <td data-name="CreatedDateTime" @Html.Raw(usersList.CreatedDateTime.CellAttributes)>
+<span id="el@(usersList.RowIndex == "$rowindex$" ? "$rowindex$" : usersList.RowCount)_Users_CreatedDateTime" class="el_Users_CreatedDateTime">
+<span @Html.Raw(usersList.CreatedDateTime.ViewAttributes)>
+@Html.Raw(usersList.CreatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* usersList.CreatedDateTime.Visible (end) *@
+    @if (usersList.UpdatedBy.Visible) { // usersList.UpdatedBy.Visible (begin)
+        <td data-name="UpdatedBy" @Html.Raw(usersList.UpdatedBy.CellAttributes)>
+<span id="el@(usersList.RowIndex == "$rowindex$" ? "$rowindex$" : usersList.RowCount)_Users_UpdatedBy" class="el_Users_UpdatedBy">
+<span @Html.Raw(usersList.UpdatedBy.ViewAttributes)>
+@Html.Raw(usersList.UpdatedBy.GetViewValue())</span>
+</span>
+</td>
+    } @* usersList.UpdatedBy.Visible (end) *@
+    @if (usersList.UpdatedDateTime.Visible) { // usersList.UpdatedDateTime.Visible (begin)
+        <td data-name="UpdatedDateTime" @Html.Raw(usersList.UpdatedDateTime.CellAttributes)>
+<span id="el@(usersList.RowIndex == "$rowindex$" ? "$rowindex$" : usersList.RowCount)_Users_UpdatedDateTime" class="el_Users_UpdatedDateTime">
+<span @Html.Raw(usersList.UpdatedDateTime.ViewAttributes)>
+@Html.Raw(usersList.UpdatedDateTime.GetViewValue())</span>
+</span>
+</td>
+    } @* usersList.UpdatedDateTime.Visible (end) *@
+    @* Render list options (body, right) *@
+    @usersList.ListOptions.RenderBody("right", usersList.RowCount)
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(usersList.RowIndex, "$rowindex$"))
+        usersList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((usersList.IsCopy || usersList.IsAdd) && usersList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        usersList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(usersList.CurrentAction) && !usersList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ usersList.CloseRecordset(); }
+@if (!usersList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!usersList.IsGridAdd && !(usersList.IsGridEdit && usersList.ModalGridEdit) && !usersList.IsMultiEdit) {
+@Html.Raw(usersList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@usersList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@usersList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@usersList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!usersList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("Users");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>
+}

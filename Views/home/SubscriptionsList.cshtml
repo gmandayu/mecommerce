@@ -1,0 +1,295 @@
+@{
+    // View
+    View = this;
+
+    // Check action result
+    if (subscriptionsList.ActionResult is EmptyResult) { // Terminate page
+        return;
+    }
+
+    // Layout
+    if (!subscriptionsList.UseLayout) // UseLayout = false // DN
+        Layout = "";
+    else
+        Layout = "_Layout";
+
+    // Local variables (Temp data)
+    #pragma warning disable 168
+    string? sqlWrk, filterWrk, whereWrk, curVal, dispVal;
+    List<Dictionary<string, object>>? rswrk;
+    string[]? arWrk;
+    List<object?>? listWrk;
+    object? guidWrk;
+    Func<string>? lookupFilter;
+    #pragma warning restore 168
+}
+@if (!subscriptionsList.IsExport()) {
+<script>
+var currentTable = @Html.Raw(ConvertToJson(subscriptionsList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { Subscriptions: currentTable } });
+var currentPageID = ew.PAGE_ID = "list";
+var currentForm;
+var @(subscriptionsList.FormName);
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery;
+    let fields = currentTable.fields;
+
+    // Form object
+    let form = new ew.FormBuilder()
+        .setId("@(subscriptionsList.FormName)")
+        .setPageId("list")
+        .setSubmitWithFetch(@(subscriptionsList.UseAjaxActions ? "true" : "false"))
+        .setFormKeyCountName("@(subscriptionsList.FormKeyCountName)")
+        .build();
+    window[form.id] = form;
+    currentForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<script>
+loadjs.ready("head", function() {
+    // Write your client script here, no need to add script tags.
+});
+</script>
+}
+@if (!subscriptionsList.IsExport()) {
+<div class="btn-toolbar ew-toolbar">
+@if (subscriptionsList.TotalRecords > 0 && subscriptionsList.ExportOptions.Visible) {
+    subscriptionsList.ExportOptions.Render("body");
+}
+@if (subscriptionsList.ImportOptions.Visible) {
+    subscriptionsList.ImportOptions.Render("body");
+}
+@if (subscriptionsList.SearchOptions.Visible) {
+    subscriptionsList.SearchOptions.Render("body");
+}
+@if (subscriptionsList.FilterOptions.Visible) {
+    subscriptionsList.FilterOptions.Render("body");
+}
+</div>
+}
+@if (!subscriptionsList.IsModal) {
+<form name="fSubscriptionssrch" id="fSubscriptionssrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" novalidate autocomplete="off">
+<div id="fSubscriptionssrch_search_panel" class="mb-2 mb-sm-0 @(subscriptionsList.SearchPanelClass)"><!-- .ew-search-panel -->
+<script>
+var currentTable = @Html.Raw(ConvertToJson(subscriptionsList.ToClientVar()));
+ew.deepAssign(ew.vars, { tables: { Subscriptions: currentTable } });
+var currentForm;
+var fSubscriptionssrch, currentSearchForm, currentAdvancedSearchForm;
+loadjs.ready(["wrapper", "head"], function () {
+    let $ = jQuery,
+        fields = currentTable.fields;
+
+    // Form object for search
+    let form = new ew.FormBuilder()
+        .setId("fSubscriptionssrch")
+        .setPageId("list")
+@if (subscriptionsList.UseAjaxActions) {
+        <text>.setSubmitWithFetch(true)</text>
+}
+
+        // Dynamic selection lists
+        .setLists({
+        })
+
+        // Filters
+        .setFilterList(@Html.Raw(await subscriptionsList.GetFilterList()))
+
+        // Init search panel as collapsed
+        .setInitSearchPanel(true)
+        .build();
+    window[form.id] = form;
+    currentSearchForm = form;
+    loadjs.done(form.id);
+});
+</script>
+<input type="hidden" name="cmd" value="search">
+@if (Security.CanSearch) {
+if (!subscriptionsList.IsExport() && Empty(subscriptionsList.CurrentAction) && subscriptionsList.HasSearchFields()) { @* Show search form (begin) *@
+<div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0">
+    <div class="col-sm-auto px-0 pe-sm-2">
+        <div class="ew-basic-search input-group">
+            <input type="search" name="@(Config.TableBasicSearch)" id="@(Config.TableBasicSearch)" class="form-control ew-basic-search-keyword" value="@Html.Raw(HtmlEncode(subscriptionsList.BasicSearch.SessionKeyword))" placeholder="@(HtmlEncode(Language.Phrase("Search")))" aria-label="@(HtmlEncode(Language.Phrase("Search")))">
+            <input type="hidden" name="@(Config.TableBasicSearchType)" id="@(Config.TableBasicSearchType)" class="ew-basic-search-type" value="@(HtmlEncode(subscriptionsList.BasicSearch.SessionType))">
+            <button type="button" data-bs-toggle="dropdown" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" aria-haspopup="true" aria-expanded="false">
+                <span id="searchtype">@Html.Raw(subscriptionsList.BasicSearch.TypeNameShort)</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+                <button type="button" class="dropdown-item@(subscriptionsList.BasicSearch.SessionType == "" ? " active" : "")" form="fSubscriptionssrch" data-ew-action="search-type">@Html.Raw(Language.Phrase("QuickSearchAuto"))</button>
+                <button type="button" class="dropdown-item@(subscriptionsList.BasicSearch.SessionType == "=" ? " active" : "")" form="fSubscriptionssrch" data-ew-action="search-type" data-search-type="=">@Html.Raw(Language.Phrase("QuickSearchExact"))</button>
+                <button type="button" class="dropdown-item@(subscriptionsList.BasicSearch.SessionType == "AND" ? " active" : "")" form="fSubscriptionssrch" data-ew-action="search-type" data-search-type="AND">@Html.Raw(Language.Phrase("QuickSearchAll"))</button>
+                <button type="button" class="dropdown-item@(subscriptionsList.BasicSearch.SessionType == "OR" ? " active" : "")" form="fSubscriptionssrch" data-ew-action="search-type" data-search-type="OR">@Html.Raw(Language.Phrase("QuickSearchAny"))</button>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-auto mb-3">
+        <button class="btn btn-primary" name="btn-submit" id="btn-submit" type="submit">@Html.Raw(Language.Phrase("SearchBtn"))</button>
+    </div>
+</div>
+</div><!-- /.ew-extended-search -->
+} @* Show search form (end) *@
+}
+</div><!-- /.ew-search-panel -->
+</form>
+}
+@subscriptionsList.ShowPageHeader()
+@subscriptionsList.ShowMessages()
+<main class="list @(subscriptionsList.TotalRecords == 0 && !subscriptionsList.IsAdd ? " ew-no-record" : "")">
+<div id="ew-list">
+@if (subscriptionsList.TotalRecords > 0 || !Empty(subscriptionsList.CurrentAction)) {
+<div class="card ew-card ew-grid@(subscriptionsList.IsAddOrEdit ? " ew-grid-add-edit" : "") @(subscriptionsList.TableGridClass)">
+<form name="@(subscriptionsList.FormName)" id="@(subscriptionsList.FormName)" class="ew-form ew-list-form" action="@AppPath(subscriptionsList.PageName)" method="post" novalidate autocomplete="off">
+@if (CurrentPage.CheckToken) {
+    <input type="hidden" name="@Config.TokenNameKey" value="@Config.TokenName"><!-- CSRF token name -->
+    @Html.AntiForgeryToken()
+}
+@if (subscriptionsList.IsModal) {
+<input type="hidden" name="modal" value="1">
+}
+<div id="gmp_Subscriptions" class="card-body ew-grid-middle-panel @(subscriptionsList.TableContainerClass)" style="@(subscriptionsList.TableContainerStyle)">
+@if (subscriptionsList.TotalRecords > 0 || subscriptionsList.IsGridEdit || subscriptionsList.IsMultiEdit) {
+<table id="tbl_Subscriptionslist" class="@(subscriptionsList.TableClass)"><!-- .ew-table -->
+<thead>
+    <tr class="ew-table-header">
+@{
+    // Header row
+    subscriptionsList.RowType = RowType.Header;
+
+    // Render list options
+    await subscriptionsList.RenderListOptions();
+}
+@* Render list options (header, left) *@
+@subscriptionsList.ListOptions.RenderHeader("left")
+@if (subscriptionsList.Id.Visible) { // subscriptionsList.Id.Visible (begin)
+        <th data-name="Id" class="@(subscriptionsList.Id.HeaderCellClass)"><div id="elh_Subscriptions_Id" class="Subscriptions_Id">@Html.Raw(subscriptionsList.RenderFieldHeader(subscriptionsList.Id))</div></th>
+} @* subscriptionsList.Id.Visible (end) *@
+@if (subscriptionsList._User.Visible) { // subscriptionsList._User.Visible (begin)
+        <th data-name="_User" class="@(subscriptionsList._User.HeaderCellClass)"><div id="elh_Subscriptions__User" class="Subscriptions__User">@Html.Raw(subscriptionsList.RenderFieldHeader(subscriptionsList._User))</div></th>
+} @* subscriptionsList._User.Visible (end) *@
+@if (subscriptionsList.PublicKey.Visible) { // subscriptionsList.PublicKey.Visible (begin)
+        <th data-name="PublicKey" class="@(subscriptionsList.PublicKey.HeaderCellClass)"><div id="elh_Subscriptions_PublicKey" class="Subscriptions_PublicKey">@Html.Raw(subscriptionsList.RenderFieldHeader(subscriptionsList.PublicKey))</div></th>
+} @* subscriptionsList.PublicKey.Visible (end) *@
+@if (subscriptionsList.AuthenticationToken.Visible) { // subscriptionsList.AuthenticationToken.Visible (begin)
+        <th data-name="AuthenticationToken" class="@(subscriptionsList.AuthenticationToken.HeaderCellClass)"><div id="elh_Subscriptions_AuthenticationToken" class="Subscriptions_AuthenticationToken">@Html.Raw(subscriptionsList.RenderFieldHeader(subscriptionsList.AuthenticationToken))</div></th>
+} @* subscriptionsList.AuthenticationToken.Visible (end) *@
+@if (subscriptionsList.ContentEncoding.Visible) { // subscriptionsList.ContentEncoding.Visible (begin)
+        <th data-name="ContentEncoding" class="@(subscriptionsList.ContentEncoding.HeaderCellClass)"><div id="elh_Subscriptions_ContentEncoding" class="Subscriptions_ContentEncoding">@Html.Raw(subscriptionsList.RenderFieldHeader(subscriptionsList.ContentEncoding))</div></th>
+} @* subscriptionsList.ContentEncoding.Visible (end) *@
+@* Render list options (header, right) *@
+@subscriptionsList.ListOptions.RenderHeader("right")
+    </tr>
+</thead>
+<tbody data-page="@(subscriptionsList.PageNumber)">
+@{
+    await subscriptionsList.SetupGrid();
+    bool eof = subscriptionsList.Recordset == null; // DN
+}
+@while (subscriptionsList.RecordCount < subscriptionsList.StopRecord || SameString(subscriptionsList.RowIndex, "$rowindex$")) { // Begin While
+    if (!eof && !SameString(subscriptionsList.RowIndex, "$rowindex$") &&
+        (!subscriptionsList.IsGridAdd || subscriptionsList.CurrentMode == "copy") &&
+        (!((subscriptionsList.IsCopy || subscriptionsList.IsAdd) && subscriptionsList.RowIndex is int rowIndex && rowIndex == 0))) // DN
+        eof = !await subscriptionsList.Recordset.ReadAsync();
+    subscriptionsList.RecordCount++;
+    if (subscriptionsList.RecordCount >= subscriptionsList.StartRecord) {
+        await subscriptionsList.SetupRow();
+    <tr @Html.Raw(subscriptionsList.RowAttributes)>
+    @* Render list options (body, left) *@
+    @subscriptionsList.ListOptions.RenderBody("left", subscriptionsList.RowCount)
+    @if (subscriptionsList.Id.Visible) { // subscriptionsList.Id.Visible (begin)
+        <td data-name="Id" @Html.Raw(subscriptionsList.Id.CellAttributes)>
+<span id="el@(subscriptionsList.RowIndex == "$rowindex$" ? "$rowindex$" : subscriptionsList.RowCount)_Subscriptions_Id" class="el_Subscriptions_Id">
+<span @Html.Raw(subscriptionsList.Id.ViewAttributes)>
+@Html.Raw(subscriptionsList.Id.GetViewValue())</span>
+</span>
+</td>
+    } @* subscriptionsList.Id.Visible (end) *@
+    @if (subscriptionsList._User.Visible) { // subscriptionsList._User.Visible (begin)
+        <td data-name="_User" @Html.Raw(subscriptionsList._User.CellAttributes)>
+<span id="el@(subscriptionsList.RowIndex == "$rowindex$" ? "$rowindex$" : subscriptionsList.RowCount)_Subscriptions__User" class="el_Subscriptions__User">
+<span @Html.Raw(subscriptionsList._User.ViewAttributes)>
+@Html.Raw(subscriptionsList._User.GetViewValue())</span>
+</span>
+</td>
+    } @* subscriptionsList._User.Visible (end) *@
+    @if (subscriptionsList.PublicKey.Visible) { // subscriptionsList.PublicKey.Visible (begin)
+        <td data-name="PublicKey" @Html.Raw(subscriptionsList.PublicKey.CellAttributes)>
+<span id="el@(subscriptionsList.RowIndex == "$rowindex$" ? "$rowindex$" : subscriptionsList.RowCount)_Subscriptions_PublicKey" class="el_Subscriptions_PublicKey">
+<span @Html.Raw(subscriptionsList.PublicKey.ViewAttributes)>
+@Html.Raw(subscriptionsList.PublicKey.GetViewValue())</span>
+</span>
+</td>
+    } @* subscriptionsList.PublicKey.Visible (end) *@
+    @if (subscriptionsList.AuthenticationToken.Visible) { // subscriptionsList.AuthenticationToken.Visible (begin)
+        <td data-name="AuthenticationToken" @Html.Raw(subscriptionsList.AuthenticationToken.CellAttributes)>
+<span id="el@(subscriptionsList.RowIndex == "$rowindex$" ? "$rowindex$" : subscriptionsList.RowCount)_Subscriptions_AuthenticationToken" class="el_Subscriptions_AuthenticationToken">
+<span @Html.Raw(subscriptionsList.AuthenticationToken.ViewAttributes)>
+@Html.Raw(subscriptionsList.AuthenticationToken.GetViewValue())</span>
+</span>
+</td>
+    } @* subscriptionsList.AuthenticationToken.Visible (end) *@
+    @if (subscriptionsList.ContentEncoding.Visible) { // subscriptionsList.ContentEncoding.Visible (begin)
+        <td data-name="ContentEncoding" @Html.Raw(subscriptionsList.ContentEncoding.CellAttributes)>
+<span id="el@(subscriptionsList.RowIndex == "$rowindex$" ? "$rowindex$" : subscriptionsList.RowCount)_Subscriptions_ContentEncoding" class="el_Subscriptions_ContentEncoding">
+<span @Html.Raw(subscriptionsList.ContentEncoding.ViewAttributes)>
+@Html.Raw(subscriptionsList.ContentEncoding.GetViewValue())</span>
+</span>
+</td>
+    } @* subscriptionsList.ContentEncoding.Visible (end) *@
+    @* Render list options (body, right) *@
+    @subscriptionsList.ListOptions.RenderBody("right", subscriptionsList.RowCount)
+    </tr>
+    } @* End if *@
+
+    // Reset for template row
+    if (SameString(subscriptionsList.RowIndex, "$rowindex$"))
+        subscriptionsList.RowIndex = 0;
+
+    // Reset inline add/copy row
+    if ((subscriptionsList.IsCopy || subscriptionsList.IsAdd) && subscriptionsList.RowIndex is int rowIndex2 && rowIndex2 == 0)
+        subscriptionsList.RowIndex = 1;
+} @* End While *@
+</tbody>
+</table><!-- /.ew-table -->
+} @* End If TotalRecords > 0 *@
+</div><!-- /.ew-grid-middle-panel -->
+@if (Empty(subscriptionsList.CurrentAction) && !subscriptionsList.UseAjaxActions) {
+<input type="hidden" name="action" id="action" value="">
+}
+</form><!-- /.ew-list-form -->
+@{ subscriptionsList.CloseRecordset(); }
+@if (!subscriptionsList.IsExport()) {
+<div class="card-footer ew-grid-lower-panel">
+@if (!subscriptionsList.IsGridAdd && !(subscriptionsList.IsGridEdit && subscriptionsList.ModalGridEdit) && !subscriptionsList.IsMultiEdit) {
+@Html.Raw(subscriptionsList.Pager.Render())
+}
+<div class="ew-list-other-options">
+@subscriptionsList.OtherOptions.RenderBody("bottom")
+</div>
+</div>
+}
+</div><!-- /.ew-grid -->
+} else { // Show other options
+<div class="ew-list-other-options">
+@subscriptionsList.OtherOptions.ForEach(opt => opt.ButtonClass = "").RenderBody()
+</div>
+}
+</div>
+</main>
+@subscriptionsList.ShowPageFooter()
+@Html.Raw(GetDebugMessage())
+@ElapsedTime()
+@if (!subscriptionsList.IsExport()) {
+<script>
+// Field event handlers
+loadjs.ready("head", function() {
+    ew.addEventHandlers("Subscriptions");
+});
+</script>
+<script>
+loadjs.ready("load", function() {
+    // Write your table-specific startup script here
+    // document.write("page loaded");
+});
+</script>
+}
