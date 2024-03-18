@@ -40,6 +40,26 @@ loadjs.ready(["wrapper", "head"], function () {
         .setPageId("list")
         .setSubmitWithFetch(@(customersList.UseAjaxActions ? "true" : "false"))
         .setFormKeyCountName("@(customersList.FormKeyCountName)")
+
+        // Dynamic selection lists
+        .setLists({
+            "FirstName": @Html.Raw(customersList.FirstName.ToClientList(customersList)),
+            "MiddleName": @Html.Raw(customersList.MiddleName.ToClientList(customersList)),
+            "LastName": @Html.Raw(customersList.LastName.ToClientList(customersList)),
+            "Gender": @Html.Raw(customersList.Gender.ToClientList(customersList)),
+            "PlaceOfBirth": @Html.Raw(customersList.PlaceOfBirth.ToClientList(customersList)),
+            "PrimaryAddressCity": @Html.Raw(customersList.PrimaryAddressCity.ToClientList(customersList)),
+            "PrimaryAddressPostCode": @Html.Raw(customersList.PrimaryAddressPostCode.ToClientList(customersList)),
+            "PrimaryAddressCountryID": @Html.Raw(customersList.PrimaryAddressCountryID.ToClientList(customersList)),
+            "AlternativeAddressCity": @Html.Raw(customersList.AlternativeAddressCity.ToClientList(customersList)),
+            "AlternativeAddressPostCode": @Html.Raw(customersList.AlternativeAddressPostCode.ToClientList(customersList)),
+            "AlternativeAddressCountryID": @Html.Raw(customersList.AlternativeAddressCountryID.ToClientList(customersList)),
+            "MobileNumber": @Html.Raw(customersList.MobileNumber.ToClientList(customersList)),
+            "UserID": @Html.Raw(customersList.UserID.ToClientList(customersList)),
+            "Status": @Html.Raw(customersList.Status.ToClientList(customersList)),
+            "CreatedBy": @Html.Raw(customersList.CreatedBy.ToClientList(customersList)),
+            "UpdatedBy": @Html.Raw(customersList.UpdatedBy.ToClientList(customersList)),
+        })
         .build();
     window[form.id] = form;
     currentForm = form;
@@ -68,6 +88,9 @@ loadjs.ready("head", function() {
 }
 </div>
 }
+@if (customersList.ShowCurrentFilter) {
+    customersList.ShowFilterList();
+}
 @if (!customersList.IsModal) {
 <form name="fCustomerssrch" id="fCustomerssrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" novalidate autocomplete="off">
 <div id="fCustomerssrch_search_panel" class="mb-2 mb-sm-0 @(customersList.SearchPanelClass)"><!-- .ew-search-panel -->
@@ -88,8 +111,80 @@ loadjs.ready(["wrapper", "head"], function () {
         <text>.setSubmitWithFetch(true)</text>
 }
 
+        // Add fields
+        .setFields([
+
+            ["FirstName", [], fields.FirstName.isInvalid],
+            ["MiddleName", [], fields.MiddleName.isInvalid],
+            ["LastName", [], fields.LastName.isInvalid],
+            ["Gender", [], fields.Gender.isInvalid],
+            ["PlaceOfBirth", [], fields.PlaceOfBirth.isInvalid],
+            ["DateOfBirth", [], fields.DateOfBirth.isInvalid],
+            ["PrimaryAddressCity", [], fields.PrimaryAddressCity.isInvalid],
+            ["PrimaryAddressPostCode", [], fields.PrimaryAddressPostCode.isInvalid],
+            ["PrimaryAddressCountryID", [], fields.PrimaryAddressCountryID.isInvalid],
+            ["AlternativeAddressCity", [], fields.AlternativeAddressCity.isInvalid],
+            ["AlternativeAddressPostCode", [], fields.AlternativeAddressPostCode.isInvalid],
+            ["AlternativeAddressCountryID", [], fields.AlternativeAddressCountryID.isInvalid],
+            ["MobileNumber", [], fields.MobileNumber.isInvalid],
+            ["UserID", [], fields.UserID.isInvalid],
+            ["Status", [], fields.Status.isInvalid],
+            ["CreatedBy", [], fields.CreatedBy.isInvalid],
+            ["CreatedDateTime", [], fields.CreatedDateTime.isInvalid],
+            ["UpdatedBy", [], fields.UpdatedBy.isInvalid],
+            ["UpdatedDateTime", [], fields.UpdatedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
         // Dynamic selection lists
         .setLists({
+            "FirstName": @Html.Raw(customersList.FirstName.ToClientList(customersList)),
+            "MiddleName": @Html.Raw(customersList.MiddleName.ToClientList(customersList)),
+            "LastName": @Html.Raw(customersList.LastName.ToClientList(customersList)),
+            "Gender": @Html.Raw(customersList.Gender.ToClientList(customersList)),
+            "PlaceOfBirth": @Html.Raw(customersList.PlaceOfBirth.ToClientList(customersList)),
+            "PrimaryAddress": @Html.Raw(customersList.PrimaryAddress.ToClientList(customersList)),
+            "PrimaryAddressCity": @Html.Raw(customersList.PrimaryAddressCity.ToClientList(customersList)),
+            "PrimaryAddressPostCode": @Html.Raw(customersList.PrimaryAddressPostCode.ToClientList(customersList)),
+            "PrimaryAddressCountryID": @Html.Raw(customersList.PrimaryAddressCountryID.ToClientList(customersList)),
+            "AlternativeAddress": @Html.Raw(customersList.AlternativeAddress.ToClientList(customersList)),
+            "AlternativeAddressCity": @Html.Raw(customersList.AlternativeAddressCity.ToClientList(customersList)),
+            "AlternativeAddressPostCode": @Html.Raw(customersList.AlternativeAddressPostCode.ToClientList(customersList)),
+            "AlternativeAddressCountryID": @Html.Raw(customersList.AlternativeAddressCountryID.ToClientList(customersList)),
+            "MobileNumber": @Html.Raw(customersList.MobileNumber.ToClientList(customersList)),
+            "UserID": @Html.Raw(customersList.UserID.ToClientList(customersList)),
+            "Status": @Html.Raw(customersList.Status.ToClientList(customersList)),
+            "CreatedBy": @Html.Raw(customersList.CreatedBy.ToClientList(customersList)),
+            "UpdatedBy": @Html.Raw(customersList.UpdatedBy.ToClientList(customersList)),
         })
 
         // Filters
@@ -107,6 +202,662 @@ loadjs.ready(["wrapper", "head"], function () {
 @if (Security.CanSearch) {
 if (!customersList.IsExport() && Empty(customersList.CurrentAction) && customersList.HasSearchFields()) { @* Show search form (begin) *@
 <div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0@(customersList.SearchFieldsPerRow > 0 ? " row-cols-sm-" + customersList.SearchFieldsPerRow : "")">
+@{
+    // Render search row
+    customersList.RowType = RowType.Search;
+    customersList.ResetAttributes();
+    await customersList.RenderRow();
+}
+@if (customersList.FirstName.Visible) { // customersList.FirstName.Visible (begin)
+    if (!customersList.FirstName.UseFilter) {
+        customersList.SearchColumnCount++;
+    }
+    <div id="xs_FirstName" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(customersList.FirstName.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_FirstName"
+            name="x_FirstName[]"
+            class="form-control ew-select@(customersList.FirstName.IsInvalidClass)"
+            data-select2-id="fCustomerssrch_x_FirstName"
+            data-table="Customers"
+            data-field="x_FirstName"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(customersList.FirstName.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(customersList.FirstName.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(customersList.FirstName.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(customersList.FirstName.EditAttributes)>
+            @(customersList.FirstName.SelectOptionListHtml("x_FirstName", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(customersList.FirstName.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCustomerssrch", function() {
+            var options = {
+                name: "x_FirstName",
+                selectId: "fCustomerssrch_x_FirstName",
+                ajax: { id: "x_FirstName", form: "fCustomerssrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.Customers.fields.FirstName.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* customersList.FirstName.Visible (end) *@
+@if (customersList.MiddleName.Visible) { // customersList.MiddleName.Visible (begin)
+    if (!customersList.MiddleName.UseFilter) {
+        customersList.SearchColumnCount++;
+    }
+    <div id="xs_MiddleName" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(customersList.MiddleName.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_MiddleName"
+            name="x_MiddleName[]"
+            class="form-control ew-select@(customersList.MiddleName.IsInvalidClass)"
+            data-select2-id="fCustomerssrch_x_MiddleName"
+            data-table="Customers"
+            data-field="x_MiddleName"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(customersList.MiddleName.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(customersList.MiddleName.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(customersList.MiddleName.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(customersList.MiddleName.EditAttributes)>
+            @(customersList.MiddleName.SelectOptionListHtml("x_MiddleName", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(customersList.MiddleName.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCustomerssrch", function() {
+            var options = {
+                name: "x_MiddleName",
+                selectId: "fCustomerssrch_x_MiddleName",
+                ajax: { id: "x_MiddleName", form: "fCustomerssrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.Customers.fields.MiddleName.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* customersList.MiddleName.Visible (end) *@
+@if (customersList.LastName.Visible) { // customersList.LastName.Visible (begin)
+    if (!customersList.LastName.UseFilter) {
+        customersList.SearchColumnCount++;
+    }
+    <div id="xs_LastName" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(customersList.LastName.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_LastName"
+            name="x_LastName[]"
+            class="form-control ew-select@(customersList.LastName.IsInvalidClass)"
+            data-select2-id="fCustomerssrch_x_LastName"
+            data-table="Customers"
+            data-field="x_LastName"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(customersList.LastName.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(customersList.LastName.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(customersList.LastName.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(customersList.LastName.EditAttributes)>
+            @(customersList.LastName.SelectOptionListHtml("x_LastName", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(customersList.LastName.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCustomerssrch", function() {
+            var options = {
+                name: "x_LastName",
+                selectId: "fCustomerssrch_x_LastName",
+                ajax: { id: "x_LastName", form: "fCustomerssrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.Customers.fields.LastName.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* customersList.LastName.Visible (end) *@
+@if (customersList.Gender.Visible) { // customersList.Gender.Visible (begin)
+    if (!customersList.Gender.UseFilter) {
+        customersList.SearchColumnCount++;
+    }
+    <div id="xs_Gender" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(customersList.Gender.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_Gender"
+            name="x_Gender[]"
+            class="form-control ew-select@(customersList.Gender.IsInvalidClass)"
+            data-select2-id="fCustomerssrch_x_Gender"
+            data-table="Customers"
+            data-field="x_Gender"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(customersList.Gender.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(customersList.Gender.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(customersList.Gender.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(customersList.Gender.EditAttributes)>
+            @(customersList.Gender.SelectOptionListHtml("x_Gender", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(customersList.Gender.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCustomerssrch", function() {
+            var options = {
+                name: "x_Gender",
+                selectId: "fCustomerssrch_x_Gender",
+                ajax: { id: "x_Gender", form: "fCustomerssrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.Customers.fields.Gender.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* customersList.Gender.Visible (end) *@
+@if (customersList.PlaceOfBirth.Visible) { // customersList.PlaceOfBirth.Visible (begin)
+    if (!customersList.PlaceOfBirth.UseFilter) {
+        customersList.SearchColumnCount++;
+    }
+    <div id="xs_PlaceOfBirth" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(customersList.PlaceOfBirth.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_PlaceOfBirth"
+            name="x_PlaceOfBirth[]"
+            class="form-control ew-select@(customersList.PlaceOfBirth.IsInvalidClass)"
+            data-select2-id="fCustomerssrch_x_PlaceOfBirth"
+            data-table="Customers"
+            data-field="x_PlaceOfBirth"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(customersList.PlaceOfBirth.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(customersList.PlaceOfBirth.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(customersList.PlaceOfBirth.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(customersList.PlaceOfBirth.EditAttributes)>
+            @(customersList.PlaceOfBirth.SelectOptionListHtml("x_PlaceOfBirth", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(customersList.PlaceOfBirth.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCustomerssrch", function() {
+            var options = {
+                name: "x_PlaceOfBirth",
+                selectId: "fCustomerssrch_x_PlaceOfBirth",
+                ajax: { id: "x_PlaceOfBirth", form: "fCustomerssrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.Customers.fields.PlaceOfBirth.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* customersList.PlaceOfBirth.Visible (end) *@
+@if (customersList.PrimaryAddress.Visible) { // customersList.PrimaryAddress.Visible (begin)
+    if (!customersList.PrimaryAddress.UseFilter) {
+        customersList.SearchColumnCount++;
+    }
+    <div id="xs_PrimaryAddress" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(customersList.PrimaryAddress.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_PrimaryAddress"
+            name="x_PrimaryAddress[]"
+            class="form-control ew-select@(customersList.PrimaryAddress.IsInvalidClass)"
+            data-select2-id="fCustomerssrch_x_PrimaryAddress"
+            data-table="Customers"
+            data-field="x_PrimaryAddress"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(customersList.PrimaryAddress.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(customersList.PrimaryAddress.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(customersList.PrimaryAddress.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(customersList.PrimaryAddress.EditAttributes)>
+            @(customersList.PrimaryAddress.SelectOptionListHtml("x_PrimaryAddress", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(customersList.PrimaryAddress.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCustomerssrch", function() {
+            var options = {
+                name: "x_PrimaryAddress",
+                selectId: "fCustomerssrch_x_PrimaryAddress",
+                ajax: { id: "x_PrimaryAddress", form: "fCustomerssrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.Customers.fields.PrimaryAddress.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* customersList.PrimaryAddress.Visible (end) *@
+@if (customersList.PrimaryAddressCity.Visible) { // customersList.PrimaryAddressCity.Visible (begin)
+    if (!customersList.PrimaryAddressCity.UseFilter) {
+        customersList.SearchColumnCount++;
+    }
+    <div id="xs_PrimaryAddressCity" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(customersList.PrimaryAddressCity.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_PrimaryAddressCity"
+            name="x_PrimaryAddressCity[]"
+            class="form-control ew-select@(customersList.PrimaryAddressCity.IsInvalidClass)"
+            data-select2-id="fCustomerssrch_x_PrimaryAddressCity"
+            data-table="Customers"
+            data-field="x_PrimaryAddressCity"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(customersList.PrimaryAddressCity.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(customersList.PrimaryAddressCity.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(customersList.PrimaryAddressCity.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(customersList.PrimaryAddressCity.EditAttributes)>
+            @(customersList.PrimaryAddressCity.SelectOptionListHtml("x_PrimaryAddressCity", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(customersList.PrimaryAddressCity.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCustomerssrch", function() {
+            var options = {
+                name: "x_PrimaryAddressCity",
+                selectId: "fCustomerssrch_x_PrimaryAddressCity",
+                ajax: { id: "x_PrimaryAddressCity", form: "fCustomerssrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.Customers.fields.PrimaryAddressCity.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* customersList.PrimaryAddressCity.Visible (end) *@
+@if (customersList.PrimaryAddressPostCode.Visible) { // customersList.PrimaryAddressPostCode.Visible (begin)
+    if (!customersList.PrimaryAddressPostCode.UseFilter) {
+        customersList.SearchColumnCount++;
+    }
+    <div id="xs_PrimaryAddressPostCode" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(customersList.PrimaryAddressPostCode.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_PrimaryAddressPostCode"
+            name="x_PrimaryAddressPostCode[]"
+            class="form-control ew-select@(customersList.PrimaryAddressPostCode.IsInvalidClass)"
+            data-select2-id="fCustomerssrch_x_PrimaryAddressPostCode"
+            data-table="Customers"
+            data-field="x_PrimaryAddressPostCode"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(customersList.PrimaryAddressPostCode.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(customersList.PrimaryAddressPostCode.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(customersList.PrimaryAddressPostCode.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(customersList.PrimaryAddressPostCode.EditAttributes)>
+            @(customersList.PrimaryAddressPostCode.SelectOptionListHtml("x_PrimaryAddressPostCode", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(customersList.PrimaryAddressPostCode.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCustomerssrch", function() {
+            var options = {
+                name: "x_PrimaryAddressPostCode",
+                selectId: "fCustomerssrch_x_PrimaryAddressPostCode",
+                ajax: { id: "x_PrimaryAddressPostCode", form: "fCustomerssrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.Customers.fields.PrimaryAddressPostCode.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* customersList.PrimaryAddressPostCode.Visible (end) *@
+@if (customersList.PrimaryAddressCountryID.Visible) { // customersList.PrimaryAddressCountryID.Visible (begin)
+    if (!customersList.PrimaryAddressCountryID.UseFilter) {
+        customersList.SearchColumnCount++;
+    }
+    <div id="xs_PrimaryAddressCountryID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(customersList.PrimaryAddressCountryID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_PrimaryAddressCountryID"
+            name="x_PrimaryAddressCountryID[]"
+            class="form-control ew-select@(customersList.PrimaryAddressCountryID.IsInvalidClass)"
+            data-select2-id="fCustomerssrch_x_PrimaryAddressCountryID"
+            data-table="Customers"
+            data-field="x_PrimaryAddressCountryID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(customersList.PrimaryAddressCountryID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(customersList.PrimaryAddressCountryID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(customersList.PrimaryAddressCountryID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(customersList.PrimaryAddressCountryID.EditAttributes)>
+            @(customersList.PrimaryAddressCountryID.SelectOptionListHtml("x_PrimaryAddressCountryID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(customersList.PrimaryAddressCountryID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCustomerssrch", function() {
+            var options = {
+                name: "x_PrimaryAddressCountryID",
+                selectId: "fCustomerssrch_x_PrimaryAddressCountryID",
+                ajax: { id: "x_PrimaryAddressCountryID", form: "fCustomerssrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.Customers.fields.PrimaryAddressCountryID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* customersList.PrimaryAddressCountryID.Visible (end) *@
+@if (customersList.AlternativeAddress.Visible) { // customersList.AlternativeAddress.Visible (begin)
+    if (!customersList.AlternativeAddress.UseFilter) {
+        customersList.SearchColumnCount++;
+    }
+    <div id="xs_AlternativeAddress" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(customersList.AlternativeAddress.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_AlternativeAddress"
+            name="x_AlternativeAddress[]"
+            class="form-control ew-select@(customersList.AlternativeAddress.IsInvalidClass)"
+            data-select2-id="fCustomerssrch_x_AlternativeAddress"
+            data-table="Customers"
+            data-field="x_AlternativeAddress"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(customersList.AlternativeAddress.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(customersList.AlternativeAddress.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(customersList.AlternativeAddress.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(customersList.AlternativeAddress.EditAttributes)>
+            @(customersList.AlternativeAddress.SelectOptionListHtml("x_AlternativeAddress", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(customersList.AlternativeAddress.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCustomerssrch", function() {
+            var options = {
+                name: "x_AlternativeAddress",
+                selectId: "fCustomerssrch_x_AlternativeAddress",
+                ajax: { id: "x_AlternativeAddress", form: "fCustomerssrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.Customers.fields.AlternativeAddress.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* customersList.AlternativeAddress.Visible (end) *@
+@if (customersList.AlternativeAddressCity.Visible) { // customersList.AlternativeAddressCity.Visible (begin)
+    if (!customersList.AlternativeAddressCity.UseFilter) {
+        customersList.SearchColumnCount++;
+    }
+    <div id="xs_AlternativeAddressCity" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(customersList.AlternativeAddressCity.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_AlternativeAddressCity"
+            name="x_AlternativeAddressCity[]"
+            class="form-control ew-select@(customersList.AlternativeAddressCity.IsInvalidClass)"
+            data-select2-id="fCustomerssrch_x_AlternativeAddressCity"
+            data-table="Customers"
+            data-field="x_AlternativeAddressCity"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(customersList.AlternativeAddressCity.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(customersList.AlternativeAddressCity.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(customersList.AlternativeAddressCity.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(customersList.AlternativeAddressCity.EditAttributes)>
+            @(customersList.AlternativeAddressCity.SelectOptionListHtml("x_AlternativeAddressCity", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(customersList.AlternativeAddressCity.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCustomerssrch", function() {
+            var options = {
+                name: "x_AlternativeAddressCity",
+                selectId: "fCustomerssrch_x_AlternativeAddressCity",
+                ajax: { id: "x_AlternativeAddressCity", form: "fCustomerssrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.Customers.fields.AlternativeAddressCity.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* customersList.AlternativeAddressCity.Visible (end) *@
+@if (customersList.AlternativeAddressPostCode.Visible) { // customersList.AlternativeAddressPostCode.Visible (begin)
+    if (!customersList.AlternativeAddressPostCode.UseFilter) {
+        customersList.SearchColumnCount++;
+    }
+    <div id="xs_AlternativeAddressPostCode" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(customersList.AlternativeAddressPostCode.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_AlternativeAddressPostCode"
+            name="x_AlternativeAddressPostCode[]"
+            class="form-control ew-select@(customersList.AlternativeAddressPostCode.IsInvalidClass)"
+            data-select2-id="fCustomerssrch_x_AlternativeAddressPostCode"
+            data-table="Customers"
+            data-field="x_AlternativeAddressPostCode"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(customersList.AlternativeAddressPostCode.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(customersList.AlternativeAddressPostCode.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(customersList.AlternativeAddressPostCode.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(customersList.AlternativeAddressPostCode.EditAttributes)>
+            @(customersList.AlternativeAddressPostCode.SelectOptionListHtml("x_AlternativeAddressPostCode", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(customersList.AlternativeAddressPostCode.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCustomerssrch", function() {
+            var options = {
+                name: "x_AlternativeAddressPostCode",
+                selectId: "fCustomerssrch_x_AlternativeAddressPostCode",
+                ajax: { id: "x_AlternativeAddressPostCode", form: "fCustomerssrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.Customers.fields.AlternativeAddressPostCode.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* customersList.AlternativeAddressPostCode.Visible (end) *@
+@if (customersList.AlternativeAddressCountryID.Visible) { // customersList.AlternativeAddressCountryID.Visible (begin)
+    if (!customersList.AlternativeAddressCountryID.UseFilter) {
+        customersList.SearchColumnCount++;
+    }
+    <div id="xs_AlternativeAddressCountryID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(customersList.AlternativeAddressCountryID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_AlternativeAddressCountryID"
+            name="x_AlternativeAddressCountryID[]"
+            class="form-control ew-select@(customersList.AlternativeAddressCountryID.IsInvalidClass)"
+            data-select2-id="fCustomerssrch_x_AlternativeAddressCountryID"
+            data-table="Customers"
+            data-field="x_AlternativeAddressCountryID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(customersList.AlternativeAddressCountryID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(customersList.AlternativeAddressCountryID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(customersList.AlternativeAddressCountryID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(customersList.AlternativeAddressCountryID.EditAttributes)>
+            @(customersList.AlternativeAddressCountryID.SelectOptionListHtml("x_AlternativeAddressCountryID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(customersList.AlternativeAddressCountryID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCustomerssrch", function() {
+            var options = {
+                name: "x_AlternativeAddressCountryID",
+                selectId: "fCustomerssrch_x_AlternativeAddressCountryID",
+                ajax: { id: "x_AlternativeAddressCountryID", form: "fCustomerssrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.Customers.fields.AlternativeAddressCountryID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* customersList.AlternativeAddressCountryID.Visible (end) *@
+@if (customersList.MobileNumber.Visible) { // customersList.MobileNumber.Visible (begin)
+    if (!customersList.MobileNumber.UseFilter) {
+        customersList.SearchColumnCount++;
+    }
+    <div id="xs_MobileNumber" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(customersList.MobileNumber.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_MobileNumber"
+            name="x_MobileNumber[]"
+            class="form-control ew-select@(customersList.MobileNumber.IsInvalidClass)"
+            data-select2-id="fCustomerssrch_x_MobileNumber"
+            data-table="Customers"
+            data-field="x_MobileNumber"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(customersList.MobileNumber.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(customersList.MobileNumber.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(customersList.MobileNumber.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(customersList.MobileNumber.EditAttributes)>
+            @(customersList.MobileNumber.SelectOptionListHtml("x_MobileNumber", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(customersList.MobileNumber.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCustomerssrch", function() {
+            var options = {
+                name: "x_MobileNumber",
+                selectId: "fCustomerssrch_x_MobileNumber",
+                ajax: { id: "x_MobileNumber", form: "fCustomerssrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.Customers.fields.MobileNumber.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* customersList.MobileNumber.Visible (end) *@
+@if (customersList.UserID.Visible) { // customersList.UserID.Visible (begin)
+    if (!customersList.UserID.UseFilter) {
+        customersList.SearchColumnCount++;
+    }
+    <div id="xs_UserID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(customersList.UserID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_UserID"
+            name="x_UserID[]"
+            class="form-control ew-select@(customersList.UserID.IsInvalidClass)"
+            data-select2-id="fCustomerssrch_x_UserID"
+            data-table="Customers"
+            data-field="x_UserID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(customersList.UserID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(customersList.UserID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(customersList.UserID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(customersList.UserID.EditAttributes)>
+            @(customersList.UserID.SelectOptionListHtml("x_UserID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(customersList.UserID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCustomerssrch", function() {
+            var options = {
+                name: "x_UserID",
+                selectId: "fCustomerssrch_x_UserID",
+                ajax: { id: "x_UserID", form: "fCustomerssrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.Customers.fields.UserID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* customersList.UserID.Visible (end) *@
+@if (customersList.Status.Visible) { // customersList.Status.Visible (begin)
+    if (!customersList.Status.UseFilter) {
+        customersList.SearchColumnCount++;
+    }
+    <div id="xs_Status" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(customersList.Status.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_Status"
+            name="x_Status[]"
+            class="form-control ew-select@(customersList.Status.IsInvalidClass)"
+            data-select2-id="fCustomerssrch_x_Status"
+            data-table="Customers"
+            data-field="x_Status"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(customersList.Status.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(customersList.Status.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(customersList.Status.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(customersList.Status.EditAttributes)>
+            @(customersList.Status.SelectOptionListHtml("x_Status", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(customersList.Status.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCustomerssrch", function() {
+            var options = {
+                name: "x_Status",
+                selectId: "fCustomerssrch_x_Status",
+                ajax: { id: "x_Status", form: "fCustomerssrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.Customers.fields.Status.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* customersList.Status.Visible (end) *@
+@if (customersList.CreatedBy.Visible) { // customersList.CreatedBy.Visible (begin)
+    if (!customersList.CreatedBy.UseFilter) {
+        customersList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedBy" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(customersList.CreatedBy.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedBy"
+            name="x_CreatedBy[]"
+            class="form-control ew-select@(customersList.CreatedBy.IsInvalidClass)"
+            data-select2-id="fCustomerssrch_x_CreatedBy"
+            data-table="Customers"
+            data-field="x_CreatedBy"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(customersList.CreatedBy.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(customersList.CreatedBy.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(customersList.CreatedBy.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(customersList.CreatedBy.EditAttributes)>
+            @(customersList.CreatedBy.SelectOptionListHtml("x_CreatedBy", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(customersList.CreatedBy.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCustomerssrch", function() {
+            var options = {
+                name: "x_CreatedBy",
+                selectId: "fCustomerssrch_x_CreatedBy",
+                ajax: { id: "x_CreatedBy", form: "fCustomerssrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.Customers.fields.CreatedBy.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* customersList.CreatedBy.Visible (end) *@
+@if (customersList.UpdatedBy.Visible) { // customersList.UpdatedBy.Visible (begin)
+    if (!customersList.UpdatedBy.UseFilter) {
+        customersList.SearchColumnCount++;
+    }
+    <div id="xs_UpdatedBy" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(customersList.UpdatedBy.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_UpdatedBy"
+            name="x_UpdatedBy[]"
+            class="form-control ew-select@(customersList.UpdatedBy.IsInvalidClass)"
+            data-select2-id="fCustomerssrch_x_UpdatedBy"
+            data-table="Customers"
+            data-field="x_UpdatedBy"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(customersList.UpdatedBy.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(customersList.UpdatedBy.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(customersList.UpdatedBy.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(customersList.UpdatedBy.EditAttributes)>
+            @(customersList.UpdatedBy.SelectOptionListHtml("x_UpdatedBy", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(customersList.UpdatedBy.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCustomerssrch", function() {
+            var options = {
+                name: "x_UpdatedBy",
+                selectId: "fCustomerssrch_x_UpdatedBy",
+                ajax: { id: "x_UpdatedBy", form: "fCustomerssrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.Customers.fields.UpdatedBy.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* customersList.UpdatedBy.Visible (end) *@
+</div><!-- /.row -->
 <div class="row mb-0">
     <div class="col-sm-auto px-0 pe-sm-2">
         <div class="ew-basic-search input-group">
@@ -161,9 +912,6 @@ if (!customersList.IsExport() && Empty(customersList.CurrentAction) && customers
 }
 @* Render list options (header, left) *@
 @customersList.ListOptions.RenderHeader("left")
-@if (customersList.CustomerID.Visible) { // customersList.CustomerID.Visible (begin)
-        <th data-name="CustomerID" class="@(customersList.CustomerID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Customers_CustomerID" class="Customers_CustomerID">@Html.Raw(customersList.RenderFieldHeader(customersList.CustomerID))</div></th>
-} @* customersList.CustomerID.Visible (end) *@
 @if (customersList.FirstName.Visible) { // customersList.FirstName.Visible (begin)
         <th data-name="FirstName" class="@(customersList.FirstName.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Customers_FirstName" class="Customers_FirstName">@Html.Raw(customersList.RenderFieldHeader(customersList.FirstName))</div></th>
 } @* customersList.FirstName.Visible (end) *@
@@ -241,14 +989,6 @@ if (!customersList.IsExport() && Empty(customersList.CurrentAction) && customers
     <tr @Html.Raw(customersList.RowAttributes)>
     @* Render list options (body, left) *@
     @customersList.ListOptions.RenderBody("left", customersList.RowCount)
-    @if (customersList.CustomerID.Visible) { // customersList.CustomerID.Visible (begin)
-        <td data-name="CustomerID" @Html.Raw(customersList.CustomerID.CellAttributes)>
-<span id="el@(customersList.RowIndex == "$rowindex$" ? "$rowindex$" : customersList.RowCount)_Customers_CustomerID" class="el_Customers_CustomerID">
-<span @Html.Raw(customersList.CustomerID.ViewAttributes)>
-@Html.Raw(customersList.CustomerID.GetViewValue())</span>
-</span>
-</td>
-    } @* customersList.CustomerID.Visible (end) *@
     @if (customersList.FirstName.Visible) { // customersList.FirstName.Visible (begin)
         <td data-name="FirstName" @Html.Raw(customersList.FirstName.CellAttributes)>
 <span id="el@(customersList.RowIndex == "$rowindex$" ? "$rowindex$" : customersList.RowCount)_Customers_FirstName" class="el_Customers_FirstName">

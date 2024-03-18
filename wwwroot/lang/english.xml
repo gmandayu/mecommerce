@@ -1352,6 +1352,10 @@
       </field>
       <field id="gender">
         <phrase id="fldcaption" value="Gender" />
+        <phrase id="fldtagvalue1" value="Male" />
+        <phrase id="fldtagcaption1" value="Male" />
+        <phrase id="fldtagvalue2" value="Female" />
+        <phrase id="fldtagcaption2" value="Female" />
       </field>
       <field id="placeofbirth">
         <phrase id="fldcaption" value="Place Of Birth" />

@@ -161,12 +161,12 @@ if (!subscriptionsList.IsExport() && Empty(subscriptionsList.CurrentAction) && s
 }
 @* Render list options (header, left) *@
 @subscriptionsList.ListOptions.RenderHeader("left")
-@if (subscriptionsList.Id.Visible) { // subscriptionsList.Id.Visible (begin)
-        <th data-name="Id" class="@(subscriptionsList.Id.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Subscriptions_Id" class="Subscriptions_Id">@Html.Raw(subscriptionsList.RenderFieldHeader(subscriptionsList.Id))</div></th>
-} @* subscriptionsList.Id.Visible (end) *@
 @if (subscriptionsList._User.Visible) { // subscriptionsList._User.Visible (begin)
         <th data-name="_User" class="@(subscriptionsList._User.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Subscriptions__User" class="Subscriptions__User">@Html.Raw(subscriptionsList.RenderFieldHeader(subscriptionsList._User))</div></th>
 } @* subscriptionsList._User.Visible (end) *@
+@if (subscriptionsList.Endpoint.Visible) { // subscriptionsList.Endpoint.Visible (begin)
+        <th data-name="Endpoint" class="@(subscriptionsList.Endpoint.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Subscriptions_Endpoint" class="Subscriptions_Endpoint">@Html.Raw(subscriptionsList.RenderFieldHeader(subscriptionsList.Endpoint))</div></th>
+} @* subscriptionsList.Endpoint.Visible (end) *@
 @if (subscriptionsList.PublicKey.Visible) { // subscriptionsList.PublicKey.Visible (begin)
         <th data-name="PublicKey" class="@(subscriptionsList.PublicKey.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Subscriptions_PublicKey" class="Subscriptions_PublicKey">@Html.Raw(subscriptionsList.RenderFieldHeader(subscriptionsList.PublicKey))</div></th>
 } @* subscriptionsList.PublicKey.Visible (end) *@
@@ -196,14 +196,6 @@ if (!subscriptionsList.IsExport() && Empty(subscriptionsList.CurrentAction) && s
     <tr @Html.Raw(subscriptionsList.RowAttributes)>
     @* Render list options (body, left) *@
     @subscriptionsList.ListOptions.RenderBody("left", subscriptionsList.RowCount)
-    @if (subscriptionsList.Id.Visible) { // subscriptionsList.Id.Visible (begin)
-        <td data-name="Id" @Html.Raw(subscriptionsList.Id.CellAttributes)>
-<span id="el@(subscriptionsList.RowIndex == "$rowindex$" ? "$rowindex$" : subscriptionsList.RowCount)_Subscriptions_Id" class="el_Subscriptions_Id">
-<span @Html.Raw(subscriptionsList.Id.ViewAttributes)>
-@Html.Raw(subscriptionsList.Id.GetViewValue())</span>
-</span>
-</td>
-    } @* subscriptionsList.Id.Visible (end) *@
     @if (subscriptionsList._User.Visible) { // subscriptionsList._User.Visible (begin)
         <td data-name="_User" @Html.Raw(subscriptionsList._User.CellAttributes)>
 <span id="el@(subscriptionsList.RowIndex == "$rowindex$" ? "$rowindex$" : subscriptionsList.RowCount)_Subscriptions__User" class="el_Subscriptions__User">
@@ -212,6 +204,14 @@ if (!subscriptionsList.IsExport() && Empty(subscriptionsList.CurrentAction) && s
 </span>
 </td>
     } @* subscriptionsList._User.Visible (end) *@
+    @if (subscriptionsList.Endpoint.Visible) { // subscriptionsList.Endpoint.Visible (begin)
+        <td data-name="Endpoint" @Html.Raw(subscriptionsList.Endpoint.CellAttributes)>
+<span id="el@(subscriptionsList.RowIndex == "$rowindex$" ? "$rowindex$" : subscriptionsList.RowCount)_Subscriptions_Endpoint" class="el_Subscriptions_Endpoint">
+<span @Html.Raw(subscriptionsList.Endpoint.ViewAttributes)>
+@Html.Raw(subscriptionsList.Endpoint.GetViewValue())</span>
+</span>
+</td>
+    } @* subscriptionsList.Endpoint.Visible (end) *@
     @if (subscriptionsList.PublicKey.Visible) { // subscriptionsList.PublicKey.Visible (begin)
         <td data-name="PublicKey" @Html.Raw(subscriptionsList.PublicKey.CellAttributes)>
 <span id="el@(subscriptionsList.RowIndex == "$rowindex$" ? "$rowindex$" : subscriptionsList.RowCount)_Subscriptions_PublicKey" class="el_Subscriptions_PublicKey">

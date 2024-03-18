@@ -64,9 +64,6 @@ loadjs.ready("head", function() {
 <table class="@(customersDelete.TableClass)">
     <thead>
     <tr class="ew-table-header">
-@if (customersDelete.CustomerID.Visible) { // customersDelete.CustomerID.Visible (begin)
-        <th class="@Html.Raw(customersDelete.CustomerID.HeaderCellClass)"><span id="elh_Customers_CustomerID" class="Customers_CustomerID">@Html.Raw(customersDelete.CustomerID.Caption)</span></th>
-} @* customersDelete.CustomerID.Visible (end) *@
 @if (customersDelete.FirstName.Visible) { // customersDelete.FirstName.Visible (begin)
         <th class="@Html.Raw(customersDelete.FirstName.HeaderCellClass)"><span id="elh_Customers_FirstName" class="Customers_FirstName">@Html.Raw(customersDelete.FirstName.Caption)</span></th>
 } @* customersDelete.FirstName.Visible (end) *@
@@ -142,13 +139,6 @@ loadjs.ready("head", function() {
     // Render row
     await customersDelete.RenderRow();
     <tr @Html.Raw(customersDelete.RowAttributes)>
-@if (customersDelete.CustomerID.Visible) { // customersDelete.CustomerID.Visible (begin)
-        <td @Html.Raw(customersDelete.CustomerID.CellAttributes)>
-<span id="">
-<span @Html.Raw(customersDelete.CustomerID.ViewAttributes)>
-@Html.Raw(customersDelete.CustomerID.GetViewValue())</span>
-</span></td>
-} @* customersDelete.CustomerID.Visible (end) *@
 @if (customersDelete.FirstName.Visible) { // customersDelete.FirstName.Visible (begin)
         <td @Html.Raw(customersDelete.FirstName.CellAttributes)>
 <span id="">

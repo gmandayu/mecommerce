@@ -64,9 +64,6 @@ loadjs.ready("head", function() {
 <table class="@(usersDelete.TableClass)">
     <thead>
     <tr class="ew-table-header">
-@if (usersDelete.UserID.Visible) { // usersDelete.UserID.Visible (begin)
-        <th class="@Html.Raw(usersDelete.UserID.HeaderCellClass)"><span id="elh_Users_UserID" class="Users_UserID">@Html.Raw(usersDelete.UserID.Caption)</span></th>
-} @* usersDelete.UserID.Visible (end) *@
 @if (usersDelete._Email.Visible) { // usersDelete._Email.Visible (begin)
         <th class="@Html.Raw(usersDelete._Email.HeaderCellClass)"><span id="elh_Users__Email" class="Users__Email">@Html.Raw(usersDelete._Email.Caption)</span></th>
 } @* usersDelete._Email.Visible (end) *@
@@ -79,6 +76,12 @@ loadjs.ready("head", function() {
 @if (usersDelete.Password.Visible) { // usersDelete.Password.Visible (begin)
         <th class="@Html.Raw(usersDelete.Password.HeaderCellClass)"><span id="elh_Users_Password" class="Users_Password">@Html.Raw(usersDelete.Password.Caption)</span></th>
 } @* usersDelete.Password.Visible (end) *@
+@if (usersDelete.ProfilePicture.Visible) { // usersDelete.ProfilePicture.Visible (begin)
+        <th class="@Html.Raw(usersDelete.ProfilePicture.HeaderCellClass)"><span id="elh_Users_ProfilePicture" class="Users_ProfilePicture">@Html.Raw(usersDelete.ProfilePicture.Caption)</span></th>
+} @* usersDelete.ProfilePicture.Visible (end) *@
+@if (usersDelete.ProfileDescription.Visible) { // usersDelete.ProfileDescription.Visible (begin)
+        <th class="@Html.Raw(usersDelete.ProfileDescription.HeaderCellClass)"><span id="elh_Users_ProfileDescription" class="Users_ProfileDescription">@Html.Raw(usersDelete.ProfileDescription.Caption)</span></th>
+} @* usersDelete.ProfileDescription.Visible (end) *@
 @if (usersDelete.IsActive.Visible) { // usersDelete.IsActive.Visible (begin)
         <th class="@Html.Raw(usersDelete.IsActive.HeaderCellClass)"><span id="elh_Users_IsActive" class="Users_IsActive">@Html.Raw(usersDelete.IsActive.Caption)</span></th>
 } @* usersDelete.IsActive.Visible (end) *@
@@ -115,13 +118,6 @@ loadjs.ready("head", function() {
     // Render row
     await usersDelete.RenderRow();
     <tr @Html.Raw(usersDelete.RowAttributes)>
-@if (usersDelete.UserID.Visible) { // usersDelete.UserID.Visible (begin)
-        <td @Html.Raw(usersDelete.UserID.CellAttributes)>
-<span id="">
-<span @Html.Raw(usersDelete.UserID.ViewAttributes)>
-@Html.Raw(usersDelete.UserID.GetViewValue())</span>
-</span></td>
-} @* usersDelete.UserID.Visible (end) *@
 @if (usersDelete._Email.Visible) { // usersDelete._Email.Visible (begin)
         <td @Html.Raw(usersDelete._Email.CellAttributes)>
 <span id="">
@@ -150,6 +146,27 @@ loadjs.ready("head", function() {
 @Html.Raw(usersDelete.Password.GetViewValue())</span>
 </span></td>
 } @* usersDelete.Password.Visible (end) *@
+@if (usersDelete.ProfilePicture.Visible) { // usersDelete.ProfilePicture.Visible (begin)
+        <td @Html.Raw(usersDelete.ProfilePicture.CellAttributes)>
+<span id="">
+<span @Html.Raw(usersDelete.ProfilePicture.ViewAttributes)>@if (!string.IsNullOrEmpty(usersList.ProfilePicture.GetViewValue()))
+{
+    <a href="uploads/usersList.MobileNumber.GetViewValue()/@ConvertToString(usersList.ProfilePicture.GetViewValue())" target="_blank">Attachment</a>
+}
+else
+{
+    @Html.Raw("&nbsp;")
+}
+</span>
+</span></td>
+} @* usersDelete.ProfilePicture.Visible (end) *@
+@if (usersDelete.ProfileDescription.Visible) { // usersDelete.ProfileDescription.Visible (begin)
+        <td @Html.Raw(usersDelete.ProfileDescription.CellAttributes)>
+<span id="">
+<span @Html.Raw(usersDelete.ProfileDescription.ViewAttributes)>
+@Html.Raw(usersDelete.ProfileDescription.GetViewValue())</span>
+</span></td>
+} @* usersDelete.ProfileDescription.Visible (end) *@
 @if (usersDelete.IsActive.Visible) { // usersDelete.IsActive.Visible (begin)
         <td @Html.Raw(usersDelete.IsActive.CellAttributes)>
 <span id="">

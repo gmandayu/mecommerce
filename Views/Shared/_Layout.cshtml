@@ -390,6 +390,8 @@ loadjs.done("wrapper");
 </script>
 <!-- modal dialog -->
 <div id="ew-modal-dialog" class="modal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="ew-modal-dialog-title" aria-hidden="true"><div class="modal-dialog modal-fullscreen-sm-down"><div class="modal-content"><div class="modal-header"><h5 id="ew-modal-dialog-title" class="modal-title"></h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="@Html.Raw(Language.Phrase("CloseBtn"))"></button></div><div class="modal-body"></div><div class="modal-footer"></div></div></div></div>
+<!-- table header filter dropdown footer -->
+<div id="ew-filter-dropdown-footer" class="d-none"><div class="dropdown-divider my-0"></div><div class="dropdown-footer text-start p-2"><button type="button" class="btn btn-link ew-btn ew-filter-clear">@Html.Raw(Language.Phrase("Clear"))</button><button type="button" class="btn btn-default ew-btn ew-filter-btn ms-2 float-end" data-value="false">@Html.Raw(Language.Phrase("CancelBtn"))</button><button type="button" class="btn btn-primary ew-btn ew-filter-btn ms-1 float-end" data-value="true">@Html.Raw(Language.Phrase("OKBtn"))</button></div></div>
 @await Html.PartialAsync("pushnotification.cshtml")
 <!-- image cropper dialog -->
 <div id="ew-cropper-dialog" class="modal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="ew-cropper-dialog-title" aria-hidden="true">

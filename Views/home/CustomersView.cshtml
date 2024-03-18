@@ -68,16 +68,6 @@ loadjs.ready(["wrapper", "head"], function () {
 }
 <input type="hidden" name="modal" value="@ConvertToInt(customersView.IsModal)">
 <table class="@(customersView.TableClass)">
-@if (customersView.CustomerID.Visible) { // customersView.CustomerID.Visible (begin)
-    <tr id="r_CustomerID" @Html.Raw(customersView.CustomerID.RowAttributes)>
-        <td class="@(customersView.TableLeftColumnClass)"><span id="elh_Customers_CustomerID">@Html.Raw(customersView.CustomerID.Caption)</span></td>
-        <td data-name="CustomerID" @Html.Raw(customersView.CustomerID.CellAttributes)>
-<span id="el_Customers_CustomerID">
-<span @Html.Raw(customersView.CustomerID.ViewAttributes)>
-@Html.Raw(customersView.CustomerID.GetViewValue())</span>
-</span></td>
-    </tr>
-} @* customersView.CustomerID.Visible (end) *@
 @if (customersView.FirstName.Visible) { // customersView.FirstName.Visible (begin)
     <tr id="r_FirstName" @Html.Raw(customersView.FirstName.RowAttributes)>
         <td class="@(customersView.TableLeftColumnClass)"><span id="elh_Customers_FirstName">@Html.Raw(customersView.FirstName.Caption)</span></td>

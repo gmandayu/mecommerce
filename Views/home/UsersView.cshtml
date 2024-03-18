@@ -68,16 +68,6 @@ loadjs.ready(["wrapper", "head"], function () {
 }
 <input type="hidden" name="modal" value="@ConvertToInt(usersView.IsModal)">
 <table class="@(usersView.TableClass)">
-@if (usersView.UserID.Visible) { // usersView.UserID.Visible (begin)
-    <tr id="r_UserID" @Html.Raw(usersView.UserID.RowAttributes)>
-        <td class="@(usersView.TableLeftColumnClass)"><span id="elh_Users_UserID">@Html.Raw(usersView.UserID.Caption)</span></td>
-        <td data-name="UserID" @Html.Raw(usersView.UserID.CellAttributes)>
-<span id="el_Users_UserID">
-<span @Html.Raw(usersView.UserID.ViewAttributes)>
-@Html.Raw(usersView.UserID.GetViewValue())</span>
-</span></td>
-    </tr>
-} @* usersView.UserID.Visible (end) *@
 @if (usersView._Email.Visible) { // usersView._Email.Visible (begin)
     <tr id="r__Email" @Html.Raw(usersView._Email.RowAttributes)>
         <td class="@(usersView.TableLeftColumnClass)"><span id="elh_Users__Email">@Html.Raw(usersView._Email.Caption)</span></td>
@@ -123,8 +113,14 @@ loadjs.ready(["wrapper", "head"], function () {
         <td class="@(usersView.TableLeftColumnClass)"><span id="elh_Users_ProfilePicture">@Html.Raw(usersView.ProfilePicture.Caption)</span></td>
         <td data-name="ProfilePicture" @Html.Raw(usersView.ProfilePicture.CellAttributes)>
 <span id="el_Users_ProfilePicture">
-<span @Html.Raw(usersView.ProfilePicture.ViewAttributes)>
-@Html.Raw(await GetFileViewTag((DbField)usersView.ProfilePicture, ConvertToString(usersView.ProfilePicture.GetViewValue()), false))
+<span @Html.Raw(usersView.ProfilePicture.ViewAttributes)>@if (!string.IsNullOrEmpty(usersList.ProfilePicture.GetViewValue()))
+{
+    <a href="uploads/usersList.MobileNumber.GetViewValue()/@ConvertToString(usersList.ProfilePicture.GetViewValue())" target="_blank">Attachment</a>
+}
+else
+{
+    @Html.Raw("&nbsp;")
+}
 </span>
 </span></td>
     </tr>

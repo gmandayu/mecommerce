@@ -68,16 +68,6 @@ loadjs.ready(["wrapper", "head"], function () {
 }
 <input type="hidden" name="modal" value="@ConvertToInt(auditTrailView.IsModal)">
 <table class="@(auditTrailView.TableClass)">
-@if (auditTrailView.Id.Visible) { // auditTrailView.Id.Visible (begin)
-    <tr id="r_Id" @Html.Raw(auditTrailView.Id.RowAttributes)>
-        <td class="@(auditTrailView.TableLeftColumnClass)"><span id="elh_AuditTrail_Id">@Html.Raw(auditTrailView.Id.Caption)</span></td>
-        <td data-name="Id" @Html.Raw(auditTrailView.Id.CellAttributes)>
-<span id="el_AuditTrail_Id">
-<span @Html.Raw(auditTrailView.Id.ViewAttributes)>
-@Html.Raw(auditTrailView.Id.GetViewValue())</span>
-</span></td>
-    </tr>
-} @* auditTrailView.Id.Visible (end) *@
 @if (auditTrailView._DateTime.Visible) { // auditTrailView._DateTime.Visible (begin)
     <tr id="r__DateTime" @Html.Raw(auditTrailView._DateTime.RowAttributes)>
         <td class="@(auditTrailView.TableLeftColumnClass)"><span id="elh_AuditTrail__DateTime">@Html.Raw(auditTrailView._DateTime.Caption)</span></td>

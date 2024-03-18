@@ -121,6 +121,7 @@ public partial class mecommerce {
                 IsAutoIncrement = true, // Autoincrement field
                 IsPrimaryKey = true, // Primary key field
                 Nullable = false, // NOT NULL field
+                Sortable = false, // Allow sort
                 DefaultErrorMessage = Language.Phrase("IncorrectInteger"),
                 SearchOperators = new () { "=", "<>", "IN", "NOT IN", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN" },
                 CustomMessage = Language.FieldPhrase("Users", "UserID", "CustomMsg"),
@@ -143,9 +144,15 @@ public partial class mecommerce {
                 ViewTag = "FORMATTED TEXT",
                 HtmlTag = "TEXT",
                 InputTextType = "email",
+                UseFilter = true, // Table header filter
                 SearchOperators = new () { "=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
                 CustomMessage = Language.FieldPhrase("Users", "_Email", "CustomMsg"),
                 IsUpload = false
+            };
+            _Email.Lookup = CurrentLanguage switch {
+                "en-US" => new Lookup<DbField>(_Email, "Users", true, "Email", new List<string> {"Email", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", ""),
+                "id-ID" => new Lookup<DbField>(_Email, "Users", true, "Email", new List<string> {"Email", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", ""),
+                _ => new Lookup<DbField>(_Email, "Users", true, "Email", new List<string> {"Email", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", "")
             };
             Fields.Add("Email", _Email);
 
@@ -153,7 +160,6 @@ public partial class mecommerce {
             MobileNumber = new (this, "x_MobileNumber", 202, SqlDbType.NVarChar) {
                 Name = "MobileNumber",
                 Expression = "[MobileNumber]",
-                UseBasicSearch = true,
                 BasicSearchExpression = "[MobileNumber]",
                 DateTimeFormat = -1,
                 VirtualExpression = "[MobileNumber]",
@@ -164,6 +170,7 @@ public partial class mecommerce {
                 ViewTag = "FORMATTED TEXT",
                 HtmlTag = "TEXT",
                 InputTextType = "text",
+                Sortable = false, // Allow sort
                 SearchOperators = new () { "=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
                 CustomMessage = Language.FieldPhrase("Users", "MobileNumber", "CustomMsg"),
                 IsUpload = false
@@ -186,9 +193,15 @@ public partial class mecommerce {
                 HtmlTag = "TEXT",
                 InputTextType = "text",
                 Required = true, // Required field
+                UseFilter = true, // Table header filter
                 SearchOperators = new () { "=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
                 CustomMessage = Language.FieldPhrase("Users", "_Username", "CustomMsg"),
                 IsUpload = false
+            };
+            _Username.Lookup = CurrentLanguage switch {
+                "en-US" => new Lookup<DbField>(_Username, "Users", true, "Username", new List<string> {"Username", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", ""),
+                "id-ID" => new Lookup<DbField>(_Username, "Users", true, "Username", new List<string> {"Username", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", ""),
+                _ => new Lookup<DbField>(_Username, "Users", true, "Username", new List<string> {"Username", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", "")
             };
             Fields.Add("Username", _Username);
 
@@ -196,7 +209,6 @@ public partial class mecommerce {
             Password = new (this, "x_Password", 202, SqlDbType.NVarChar) {
                 Name = "Password",
                 Expression = "[Password]",
-                UseBasicSearch = true,
                 BasicSearchExpression = "[Password]",
                 DateTimeFormat = -1,
                 VirtualExpression = "[Password]",
@@ -208,6 +220,7 @@ public partial class mecommerce {
                 HtmlTag = "PASSWORD",
                 InputTextType = "week",
                 Required = true, // Required field
+                Sortable = false, // Allow sort
                 SearchOperators = new () { "=", "<>", "IS NULL", "IS NOT NULL" },
                 CustomMessage = Language.FieldPhrase("Users", "Password", "CustomMsg"),
                 IsUpload = false
@@ -220,6 +233,7 @@ public partial class mecommerce {
             ProfilePicture = new (this, "x_ProfilePicture", 203, SqlDbType.NText) {
                 Name = "ProfilePicture",
                 Expression = "[ProfilePicture]",
+                UseBasicSearch = true,
                 BasicSearchExpression = "[ProfilePicture]",
                 DateTimeFormat = -1,
                 VirtualExpression = "[ProfilePicture]",
@@ -231,11 +245,17 @@ public partial class mecommerce {
                 HtmlTag = "FILE",
                 InputTextType = "text",
                 Sortable = false, // Allow sort
+                UseFilter = true, // Table header filter
                 UploadAllowedFileExtensions = "jpeg,png,jpg",
                 UploadMaxFileSize = 5000000,
                 SearchOperators = new () { "=", "<>", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
                 CustomMessage = Language.FieldPhrase("Users", "ProfilePicture", "CustomMsg"),
                 IsUpload = true
+            };
+            ProfilePicture.Lookup = CurrentLanguage switch {
+                "en-US" => new Lookup<DbField>(ProfilePicture, "Users", true, "ProfilePicture", new List<string> {"ProfilePicture", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", ""),
+                "id-ID" => new Lookup<DbField>(ProfilePicture, "Users", true, "ProfilePicture", new List<string> {"ProfilePicture", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", ""),
+                _ => new Lookup<DbField>(ProfilePicture, "Users", true, "ProfilePicture", new List<string> {"ProfilePicture", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", "")
             };
             ProfilePicture.GetUploadPath = () => "uploads/" + MobileNumber.DbValue;
             Fields.Add("ProfilePicture", ProfilePicture);
@@ -244,6 +264,7 @@ public partial class mecommerce {
             ProfileDescription = new (this, "x_ProfileDescription", 203, SqlDbType.NText) {
                 Name = "ProfileDescription",
                 Expression = "[ProfileDescription]",
+                UseBasicSearch = true,
                 BasicSearchExpression = "[ProfileDescription]",
                 DateTimeFormat = -1,
                 VirtualExpression = "[ProfileDescription]",
@@ -255,9 +276,15 @@ public partial class mecommerce {
                 HtmlTag = "TEXTAREA",
                 InputTextType = "text",
                 Sortable = false, // Allow sort
+                UseFilter = true, // Table header filter
                 SearchOperators = new () { "=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
                 CustomMessage = Language.FieldPhrase("Users", "ProfileDescription", "CustomMsg"),
                 IsUpload = false
+            };
+            ProfileDescription.Lookup = CurrentLanguage switch {
+                "en-US" => new Lookup<DbField>(ProfileDescription, "Users", true, "ProfileDescription", new List<string> {"ProfileDescription", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", ""),
+                "id-ID" => new Lookup<DbField>(ProfileDescription, "Users", true, "ProfileDescription", new List<string> {"ProfileDescription", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", ""),
+                _ => new Lookup<DbField>(ProfileDescription, "Users", true, "ProfileDescription", new List<string> {"ProfileDescription", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", "")
             };
             Fields.Add("ProfileDescription", ProfileDescription);
 
@@ -276,15 +303,16 @@ public partial class mecommerce {
                 HtmlTag = "CHECKBOX",
                 InputTextType = "text",
                 DataType = DataType.Boolean,
+                UseFilter = true, // Table header filter
                 OptionCount = 2,
                 SearchOperators = new () { "=", "<>", "IS NULL", "IS NOT NULL" },
                 CustomMessage = Language.FieldPhrase("Users", "IsActive", "CustomMsg"),
                 IsUpload = false
             };
             IsActive.Lookup = CurrentLanguage switch {
-                "en-US" => new Lookup<DbField>(IsActive, "Users", false, "", new List<string> {"", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", ""),
-                "id-ID" => new Lookup<DbField>(IsActive, "Users", false, "", new List<string> {"", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", ""),
-                _ => new Lookup<DbField>(IsActive, "Users", false, "", new List<string> {"", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", "")
+                "en-US" => new Lookup<DbField>(IsActive, "Users", true, "IsActive", new List<string> {"IsActive", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", ""),
+                "id-ID" => new Lookup<DbField>(IsActive, "Users", true, "IsActive", new List<string> {"IsActive", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", ""),
+                _ => new Lookup<DbField>(IsActive, "Users", true, "IsActive", new List<string> {"IsActive", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", "")
             };
             Fields.Add("IsActive", IsActive);
 
@@ -304,15 +332,16 @@ public partial class mecommerce {
                 InputTextType = "text",
                 UsePleaseSelect = true, // Use PleaseSelect by default
                 PleaseSelectText = Language.Phrase("PleaseSelect"), // PleaseSelect text
+                UseFilter = true, // Table header filter
                 DefaultErrorMessage = Language.Phrase("IncorrectInteger"),
                 SearchOperators = new () { "=", "<>", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN", "IS NULL", "IS NOT NULL" },
                 CustomMessage = Language.FieldPhrase("Users", "UserLevelID", "CustomMsg"),
                 IsUpload = false
             };
             UserLevelID.Lookup = CurrentLanguage switch {
-                "en-US" => new Lookup<DbField>(UserLevelID, "UserLevels", false, "UserLevelID", new List<string> {"UserLevelName", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", "[UserLevelName]"),
-                "id-ID" => new Lookup<DbField>(UserLevelID, "UserLevels", false, "UserLevelID", new List<string> {"UserLevelName", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", "[UserLevelName]"),
-                _ => new Lookup<DbField>(UserLevelID, "UserLevels", false, "UserLevelID", new List<string> {"UserLevelName", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", "[UserLevelName]")
+                "en-US" => new Lookup<DbField>(UserLevelID, "UserLevels", true, "UserLevelID", new List<string> {"UserLevelName", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", "[UserLevelName]"),
+                "id-ID" => new Lookup<DbField>(UserLevelID, "UserLevels", true, "UserLevelID", new List<string> {"UserLevelName", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", "[UserLevelName]"),
+                _ => new Lookup<DbField>(UserLevelID, "UserLevels", true, "UserLevelID", new List<string> {"UserLevelName", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", "[UserLevelName]")
             };
             Fields.Add("UserLevelID", UserLevelID);
 
@@ -328,12 +357,20 @@ public partial class mecommerce {
                 SelectMultiple = false,
                 VirtualSearch = false,
                 ViewTag = "FORMATTED TEXT",
-                HtmlTag = "TEXT",
+                HtmlTag = "SELECT",
                 InputTextType = "text",
+                Sortable = false, // Allow sort
+                UsePleaseSelect = true, // Use PleaseSelect by default
+                PleaseSelectText = Language.Phrase("PleaseSelect"), // PleaseSelect text
                 DefaultErrorMessage = Language.Phrase("IncorrectInteger"),
-                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN", "IS NULL", "IS NOT NULL" },
+                SearchOperators = new () { "=", "<>", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN", "IS NULL", "IS NOT NULL" },
                 CustomMessage = Language.FieldPhrase("Users", "CreatedBy", "CustomMsg"),
                 IsUpload = false
+            };
+            CreatedBy.Lookup = CurrentLanguage switch {
+                "en-US" => new Lookup<DbField>(CreatedBy, "Users", false, "UserID", new List<string> {"Email", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", "[Email]"),
+                "id-ID" => new Lookup<DbField>(CreatedBy, "Users", false, "UserID", new List<string> {"Email", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", "[Email]"),
+                _ => new Lookup<DbField>(CreatedBy, "Users", false, "UserID", new List<string> {"Email", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", "[Email]")
             };
             Fields.Add("CreatedBy", CreatedBy);
 
@@ -341,8 +378,8 @@ public partial class mecommerce {
             CreatedDateTime = new (this, "x_CreatedDateTime", 146, SqlDbType.DateTimeOffset) {
                 Name = "CreatedDateTime",
                 Expression = "[CreatedDateTime]",
-                BasicSearchExpression = CastDateFieldForLike("[CreatedDateTime]", 0, "DB"),
-                DateTimeFormat = 0,
+                BasicSearchExpression = CastDateFieldForLike("[CreatedDateTime]", 1, "DB"),
+                DateTimeFormat = 1,
                 VirtualExpression = "[CreatedDateTime]",
                 IsVirtual = false,
                 ForceSelection = false,
@@ -351,7 +388,8 @@ public partial class mecommerce {
                 ViewTag = "FORMATTED TEXT",
                 HtmlTag = "TEXT",
                 InputTextType = "text",
-                DefaultErrorMessage = ConvertToString(Language.Phrase("IncorrectDate")).Replace("%s", CurrentDateTimeFormat.ShortDatePattern),
+                Sortable = false, // Allow sort
+                DefaultErrorMessage = ConvertToString(Language.Phrase("IncorrectDate")).Replace("%s", DateFormat(1)),
                 SearchOperators = new () { "=", "<>", "IN", "NOT IN", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN", "IS NULL", "IS NOT NULL" },
                 CustomMessage = Language.FieldPhrase("Users", "CreatedDateTime", "CustomMsg"),
                 IsUpload = false
@@ -370,12 +408,20 @@ public partial class mecommerce {
                 SelectMultiple = false,
                 VirtualSearch = false,
                 ViewTag = "FORMATTED TEXT",
-                HtmlTag = "TEXT",
+                HtmlTag = "SELECT",
                 InputTextType = "text",
+                Sortable = false, // Allow sort
+                UsePleaseSelect = true, // Use PleaseSelect by default
+                PleaseSelectText = Language.Phrase("PleaseSelect"), // PleaseSelect text
                 DefaultErrorMessage = Language.Phrase("IncorrectInteger"),
-                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN", "IS NULL", "IS NOT NULL" },
+                SearchOperators = new () { "=", "<>", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN", "IS NULL", "IS NOT NULL" },
                 CustomMessage = Language.FieldPhrase("Users", "UpdatedBy", "CustomMsg"),
                 IsUpload = false
+            };
+            UpdatedBy.Lookup = CurrentLanguage switch {
+                "en-US" => new Lookup<DbField>(UpdatedBy, "Users", false, "UserID", new List<string> {"Email", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", "[Email]"),
+                "id-ID" => new Lookup<DbField>(UpdatedBy, "Users", false, "UserID", new List<string> {"Email", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", "[Email]"),
+                _ => new Lookup<DbField>(UpdatedBy, "Users", false, "UserID", new List<string> {"Email", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", "[Email]")
             };
             Fields.Add("UpdatedBy", UpdatedBy);
 
@@ -383,8 +429,8 @@ public partial class mecommerce {
             UpdatedDateTime = new (this, "x_UpdatedDateTime", 146, SqlDbType.DateTimeOffset) {
                 Name = "UpdatedDateTime",
                 Expression = "[UpdatedDateTime]",
-                BasicSearchExpression = CastDateFieldForLike("[UpdatedDateTime]", 0, "DB"),
-                DateTimeFormat = 0,
+                BasicSearchExpression = CastDateFieldForLike("[UpdatedDateTime]", 1, "DB"),
+                DateTimeFormat = 1,
                 VirtualExpression = "[UpdatedDateTime]",
                 IsVirtual = false,
                 ForceSelection = false,
@@ -393,7 +439,8 @@ public partial class mecommerce {
                 ViewTag = "FORMATTED TEXT",
                 HtmlTag = "TEXT",
                 InputTextType = "text",
-                DefaultErrorMessage = ConvertToString(Language.Phrase("IncorrectDate")).Replace("%s", CurrentDateTimeFormat.ShortDatePattern),
+                Sortable = false, // Allow sort
+                DefaultErrorMessage = ConvertToString(Language.Phrase("IncorrectDate")).Replace("%s", DateFormat(1)),
                 SearchOperators = new () { "=", "<>", "IN", "NOT IN", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN", "IS NULL", "IS NOT NULL" },
                 CustomMessage = Language.FieldPhrase("Users", "UpdatedDateTime", "CustomMsg"),
                 IsUpload = false
@@ -1422,6 +1469,7 @@ public partial class mecommerce {
             } else {
                 ProfilePicture.ViewValue = "";
             }
+            ProfilePicture.CellCssStyle += "text-align: center;";
             ProfilePicture.ViewCustomAttributes = "";
 
             // ProfileDescription
@@ -1462,8 +1510,24 @@ public partial class mecommerce {
             UserLevelID.ViewCustomAttributes = "";
 
             // CreatedBy
-            CreatedBy.ViewValue = CreatedBy.CurrentValue;
-            CreatedBy.ViewValue = FormatNumber(CreatedBy.ViewValue, CreatedBy.FormatPattern);
+            curVal = ConvertToString(CreatedBy.CurrentValue);
+            if (!Empty(curVal)) {
+                if (CreatedBy.Lookup != null && IsDictionary(CreatedBy.Lookup?.Options) && CreatedBy.Lookup?.Options.Values.Count > 0) { // Load from cache // DN
+                    CreatedBy.ViewValue = CreatedBy.LookupCacheOption(curVal);
+                } else { // Lookup from database // DN
+                    filterWrk = SearchFilter("[UserID]", "=", CreatedBy.CurrentValue, DataType.Number, "");
+                    sqlWrk = CreatedBy.Lookup?.GetSql(false, filterWrk, null, this, true, true);
+                    rswrk = sqlWrk != null ? Connection.GetRows(sqlWrk) : null; // Must use Sync to avoid overwriting ViewValue in RenderViewRow
+                    if (rswrk?.Count > 0 && CreatedBy.Lookup != null) { // Lookup values found
+                        var listwrk = CreatedBy.Lookup?.RenderViewRow(rswrk[0]);
+                        CreatedBy.ViewValue = CreatedBy.HighlightLookup(ConvertToString(rswrk[0]), CreatedBy.DisplayValue(listwrk));
+                    } else {
+                        CreatedBy.ViewValue = FormatNumber(CreatedBy.CurrentValue, CreatedBy.FormatPattern);
+                    }
+                }
+            } else {
+                CreatedBy.ViewValue = DbNullValue;
+            }
             CreatedBy.ViewCustomAttributes = "";
 
             // CreatedDateTime
@@ -1472,8 +1536,24 @@ public partial class mecommerce {
             CreatedDateTime.ViewCustomAttributes = "";
 
             // UpdatedBy
-            UpdatedBy.ViewValue = UpdatedBy.CurrentValue;
-            UpdatedBy.ViewValue = FormatNumber(UpdatedBy.ViewValue, UpdatedBy.FormatPattern);
+            curVal = ConvertToString(UpdatedBy.CurrentValue);
+            if (!Empty(curVal)) {
+                if (UpdatedBy.Lookup != null && IsDictionary(UpdatedBy.Lookup?.Options) && UpdatedBy.Lookup?.Options.Values.Count > 0) { // Load from cache // DN
+                    UpdatedBy.ViewValue = UpdatedBy.LookupCacheOption(curVal);
+                } else { // Lookup from database // DN
+                    filterWrk = SearchFilter("[UserID]", "=", UpdatedBy.CurrentValue, DataType.Number, "");
+                    sqlWrk = UpdatedBy.Lookup?.GetSql(false, filterWrk, null, this, true, true);
+                    rswrk = sqlWrk != null ? Connection.GetRows(sqlWrk) : null; // Must use Sync to avoid overwriting ViewValue in RenderViewRow
+                    if (rswrk?.Count > 0 && UpdatedBy.Lookup != null) { // Lookup values found
+                        var listwrk = UpdatedBy.Lookup?.RenderViewRow(rswrk[0]);
+                        UpdatedBy.ViewValue = UpdatedBy.HighlightLookup(ConvertToString(rswrk[0]), UpdatedBy.DisplayValue(listwrk));
+                    } else {
+                        UpdatedBy.ViewValue = FormatNumber(UpdatedBy.CurrentValue, UpdatedBy.FormatPattern);
+                    }
+                }
+            } else {
+                UpdatedBy.ViewValue = DbNullValue;
+            }
             UpdatedBy.ViewCustomAttributes = "";
 
             // UpdatedDateTime
@@ -1606,6 +1686,15 @@ public partial class mecommerce {
             if (!Security.CanAdmin) { // System admin
                 UserLevelID.EditValue = Language.Phrase("PasswordMask");
             } else {
+                curVal = ConvertToString(UserLevelID.CurrentValue)?.Trim() ?? "";
+                if (UserLevelID.Lookup != null && IsDictionary(UserLevelID.Lookup?.Options) && UserLevelID.Lookup?.Options.Values.Count > 0) { // Load from cache // DN
+                    UserLevelID.EditValue = UserLevelID.Lookup?.Options.Values.ToList();
+                } else { // Lookup from database
+                    filterWrk = "";
+                    sqlWrk = UserLevelID.Lookup?.GetSql(true, filterWrk, null, this, false, true);
+                    rswrk = sqlWrk != null ? Connection.GetRows(sqlWrk) : null; // Must use Sync to avoid overwriting ViewValue in RenderViewRow
+                    UserLevelID.EditValue = rswrk;
+                }
                 UserLevelID.PlaceHolder = RemoveHtml(UserLevelID.Caption);
                 if (!Empty(UserLevelID.EditValue) && IsNumeric(UserLevelID.EditValue))
                     UserLevelID.EditValue = FormatNumber(UserLevelID.EditValue, UserLevelID.FormatPattern);
@@ -1613,7 +1702,6 @@ public partial class mecommerce {
 
             // CreatedBy
             CreatedBy.SetupEditAttributes();
-            CreatedBy.EditValue = CreatedBy.CurrentValue; // DN
             CreatedBy.PlaceHolder = RemoveHtml(CreatedBy.Caption);
             if (!Empty(CreatedBy.EditValue) && IsNumeric(CreatedBy.EditValue))
                 CreatedBy.EditValue = FormatNumber(CreatedBy.EditValue, CreatedBy.FormatPattern);
@@ -1625,7 +1713,6 @@ public partial class mecommerce {
 
             // UpdatedBy
             UpdatedBy.SetupEditAttributes();
-            UpdatedBy.EditValue = UpdatedBy.CurrentValue; // DN
             UpdatedBy.PlaceHolder = RemoveHtml(UpdatedBy.Caption);
             if (!Empty(UpdatedBy.EditValue) && IsNumeric(UpdatedBy.EditValue))
                 UpdatedBy.EditValue = FormatNumber(UpdatedBy.EditValue, UpdatedBy.FormatPattern);
@@ -1667,7 +1754,6 @@ public partial class mecommerce {
                 if (doc.Horizontal) { // Horizontal format, write header
                     doc.BeginExportRow();
                     if (exportType == "view") {
-                        doc.ExportCaption(UserID);
                         doc.ExportCaption(_Email);
                         doc.ExportCaption(MobileNumber);
                         doc.ExportCaption(_Username);
@@ -1681,7 +1767,6 @@ public partial class mecommerce {
                         doc.ExportCaption(UpdatedBy);
                         doc.ExportCaption(UpdatedDateTime);
                     } else {
-                        doc.ExportCaption(UserID);
                         doc.ExportCaption(_Email);
                         doc.ExportCaption(MobileNumber);
                         doc.ExportCaption(_Username);
@@ -1729,7 +1814,6 @@ public partial class mecommerce {
                     if (!doc.ExportCustom) {
                         doc.BeginExportRow(rowcnt); // Allow CSS styles if enabled
                         if (exportType == "view") {
-                            await doc.ExportField(UserID);
                             await doc.ExportField(_Email);
                             await doc.ExportField(MobileNumber);
                             await doc.ExportField(_Username);
@@ -1743,7 +1827,6 @@ public partial class mecommerce {
                             await doc.ExportField(UpdatedBy);
                             await doc.ExportField(UpdatedDateTime);
                         } else {
-                            await doc.ExportField(UserID);
                             await doc.ExportField(_Email);
                             await doc.ExportField(MobileNumber);
                             await doc.ExportField(_Username);

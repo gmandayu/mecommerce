@@ -1042,9 +1042,6 @@ public partial class mecommerce {
 
             // Initialize
             var filters = new JObject(); // DN
-            filters.Merge(JObject.Parse(UserLevelID.AdvancedSearch.ToJson())); // Field UserLevelID
-            filters.Merge(JObject.Parse(_TableName.AdvancedSearch.ToJson())); // Field TableName
-            filters.Merge(JObject.Parse(Permission.AdvancedSearch.ToJson())); // Field Permission
             filters.Merge(JObject.Parse(BasicSearch.ToJson()));
 
             // Return filter list in JSON
@@ -1079,36 +1076,6 @@ public partial class mecommerce {
             var filter = JsonConvert.DeserializeObject<Dictionary<string, string>>(Post("filter"));
             Command = "search";
             string? sv;
-
-            // Field UserLevelID
-            if (filter?.TryGetValue("x_UserLevelID", out sv) ?? false) {
-                UserLevelID.AdvancedSearch.SearchValue = sv;
-                UserLevelID.AdvancedSearch.SearchOperator = filter["z_UserLevelID"];
-                UserLevelID.AdvancedSearch.SearchCondition = filter["v_UserLevelID"];
-                UserLevelID.AdvancedSearch.SearchValue2 = filter["y_UserLevelID"];
-                UserLevelID.AdvancedSearch.SearchOperator2 = filter["w_UserLevelID"];
-                UserLevelID.AdvancedSearch.Save();
-            }
-
-            // Field TableName
-            if (filter?.TryGetValue("x__TableName", out sv) ?? false) {
-                _TableName.AdvancedSearch.SearchValue = sv;
-                _TableName.AdvancedSearch.SearchOperator = filter["z__TableName"];
-                _TableName.AdvancedSearch.SearchCondition = filter["v__TableName"];
-                _TableName.AdvancedSearch.SearchValue2 = filter["y__TableName"];
-                _TableName.AdvancedSearch.SearchOperator2 = filter["w__TableName"];
-                _TableName.AdvancedSearch.Save();
-            }
-
-            // Field Permission
-            if (filter?.TryGetValue("x_Permission", out sv) ?? false) {
-                Permission.AdvancedSearch.SearchValue = sv;
-                Permission.AdvancedSearch.SearchOperator = filter["z_Permission"];
-                Permission.AdvancedSearch.SearchCondition = filter["v_Permission"];
-                Permission.AdvancedSearch.SearchValue2 = filter["y_Permission"];
-                Permission.AdvancedSearch.SearchOperator2 = filter["w_Permission"];
-                Permission.AdvancedSearch.Save();
-            }
             if (filter?.TryGetValue(Config.TableBasicSearch, out string? keyword) ?? false)
                 BasicSearch.SessionKeyword = keyword;
             if (filter?.TryGetValue(Config.TableBasicSearchType, out string? type) ?? false)
@@ -1303,6 +1270,14 @@ public partial class mecommerce {
             item.ShowInDropDown = false;
             item.ShowInButtonGroup = false;
 
+            // "sequence"
+            item = ListOptions.Add("sequence");
+            item.CssClass = "text-nowrap";
+            item.Visible = true;
+            item.OnLeft = true; // Always on left
+            item.ShowInDropDown = false;
+            item.ShowInButtonGroup = false;
+
             // Drop down button for ListOptions
             ListOptions.UseDropDownButton = true;
             ListOptions.DropDownButtonPhrase = "ButtonListOptions";
@@ -1341,6 +1316,10 @@ public partial class mecommerce {
 
             // Call ListOptions Rendering event
             ListOptionsRendering();
+
+            // "sequence"
+            listOption = ListOptions["sequence"];
+            listOption?.SetBody(FormatSequenceNumber(RecordCount));
 
             // "view"
             listOption = ListOptions["view"];
