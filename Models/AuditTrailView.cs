@@ -680,42 +680,6 @@ public partial class mecommerce {
             ListOption item;
             string links = "";
 
-            // Add
-            item = option.Add("add");
-            string addTitle = Language.Phrase("ViewPageAddLink", true);
-            if (IsModal) // Modal
-                item.Body = "<a class=\"ew-action ew-add\" title=\"" + addTitle + "\" data-caption=\"" + addTitle + "\" data-ew-action=\"modal\" data-url=\"" + HtmlEncode(AppPath(AddUrl)) + "\">" + Language.Phrase("ViewPageAddLink") + "</a>";
-            else
-                item.Body = "<a class=\"ew-action ew-add\" title=\"" + addTitle + "\" data-caption=\"" + addTitle + "\" href=\"" + HtmlEncode(AppPath(AddUrl)) + "\">" + Language.Phrase("ViewPageAddLink") + "</a>";
-                item.Visible = AddUrl != "" && Security.CanAdd;
-
-            // Edit
-            item = option.Add("edit");
-            var editTitle = Language.Phrase("ViewPageEditLink", true);
-            if (IsModal) // Modal
-                item.Body = "<a class=\"ew-action ew-edit\" title=\"" + editTitle + "\" data-caption=\"" + editTitle + "\" data-ew-action=\"modal\" data-url=\"" + HtmlEncode(AppPath(EditUrl)) + "\">" + Language.Phrase("ViewPageEditLink") + "</a>";
-            else
-                item.Body = "<a class=\"ew-action ew-edit\" title=\"" + editTitle + "\" data-caption=\"" + editTitle + "\" href=\"" + HtmlEncode(AppPath(EditUrl)) + "\">" + Language.Phrase("ViewPageEditLink") + "</a>";
-                item.Visible = EditUrl != "" && Security.CanEdit;
-
-            // Copy
-            item = option.Add("copy");
-            var copyTitle = Language.Phrase("ViewPageCopyLink", true);
-            if (IsModal) // Modal
-                item.Body = "<a class=\"ew-action ew-copy\" title=\"" + copyTitle + "\" data-caption=\"" + copyTitle + "\" data-ew-action=\"modal\" data-url=\"" + HtmlEncode(AppPath(CopyUrl)) + "\" data-btn=\"AddBtn\">" + Language.Phrase("ViewPageCopyLink") + "</a>";
-            else
-                item.Body = "<a class=\"ew-action ew-copy\" title=\"" + copyTitle + "\" data-caption=\"" + copyTitle + "\" href=\"" + HtmlEncode(AppPath(CopyUrl)) + "\">" + Language.Phrase("ViewPageCopyLink") + "</a>";
-                item.Visible = CopyUrl != "" && Security.CanAdd;
-
-            // Delete
-            item = option.Add("delete");
-            string url = AppPath(DeleteUrl);
-            item.Body = "<a class=\"ew-action ew-delete\"" +
-                (InlineDelete || IsModal ? " data-ew-action=\"inline-delete\"" : "") +
-                " title=\"" + Language.Phrase("ViewPageDeleteLink", true) + "\" data-caption=\"" + Language.Phrase("ViewPageDeleteLink", true) +
-                "\" href=\"" + HtmlEncode(url) + "\">" + Language.Phrase("ViewPageDeleteLink") + "</a>";
-            item.Visible = DeleteUrl != "" && Security.CanDelete;
-
             // Set up action default
             option = options["action"];
             option.DropDownButtonPhrase = "ButtonActions";
@@ -854,10 +818,6 @@ public partial class mecommerce {
 
             // View row
             if (RowType == RowType.View) {
-                // Id
-                Id.ViewValue = Id.CurrentValue;
-                Id.ViewCustomAttributes = "";
-
                 // DateTime
                 _DateTime.ViewValue = _DateTime.CurrentValue;
                 _DateTime.ViewValue = FormatDateTime(_DateTime.ViewValue, _DateTime.FormatPattern);
@@ -894,10 +854,6 @@ public partial class mecommerce {
                 // NewValue
                 NewValue.ViewValue = NewValue.CurrentValue;
                 NewValue.ViewCustomAttributes = "";
-
-                // Id
-                Id.HrefValue = "";
-                Id.TooltipValue = "";
 
                 // DateTime
                 _DateTime.HrefValue = "";
