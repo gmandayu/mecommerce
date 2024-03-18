@@ -324,18 +324,14 @@ public partial class mecommerce {
             // Template = "<My JsRender template>"; // OR use custom JsRender template
             Type = "DROPDOWN";
             CurrentDateTimeFormat.TimeSeparator = ":";
-            switch(CurrentLanguage) 
-            {
-                case "en-US": 
-                    SetPhrase("InvalidUidPwd", "Incorrect email or password");
-                    break;
-                case "id-ID": 
-                    SetPhrase("InvalidUidPwd", "Email atau kata sandi tidak valid");
-                    break;
-                default:
-                    SetPhrase("InvalidUidPwd", "Incorrect email or password");
-                    break;
-            }
+            string invalidUidPwdPhrase = CurrentLanguage == "en-US" 
+                ? "Incorrect email or password" 
+                : (CurrentLanguage == "id-ID" ? "Email atau kata sandi tidak valid" : "Incorrect email or password");
+            string logoutPhrase = CurrentLanguage == "en-US" 
+                ? "Logout" 
+                : (CurrentLanguage == "id-ID" ? "Keluar" : "Logout");
+            SetPhrase("InvalidUidPwd", invalidUidPwdPhrase);
+            SetPhrase("Logout", logoutPhrase);
         }
     }
 } // End Partial class
