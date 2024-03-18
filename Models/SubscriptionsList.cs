@@ -268,9 +268,9 @@ public partial class mecommerce {
         // Set field visibility
         public void SetVisibility()
         {
-            Id.SetVisibility();
+            Id.Visible = false;
             _User.SetVisibility();
-            Endpoint.Visible = false;
+            Endpoint.SetVisibility();
             PublicKey.SetVisibility();
             AuthenticationToken.SetVisibility();
             ContentEncoding.SetVisibility();
@@ -1046,12 +1046,6 @@ public partial class mecommerce {
 
             // Initialize
             var filters = new JObject(); // DN
-            filters.Merge(JObject.Parse(Id.AdvancedSearch.ToJson())); // Field Id
-            filters.Merge(JObject.Parse(_User.AdvancedSearch.ToJson())); // Field User
-            filters.Merge(JObject.Parse(Endpoint.AdvancedSearch.ToJson())); // Field Endpoint
-            filters.Merge(JObject.Parse(PublicKey.AdvancedSearch.ToJson())); // Field PublicKey
-            filters.Merge(JObject.Parse(AuthenticationToken.AdvancedSearch.ToJson())); // Field AuthenticationToken
-            filters.Merge(JObject.Parse(ContentEncoding.AdvancedSearch.ToJson())); // Field ContentEncoding
             filters.Merge(JObject.Parse(BasicSearch.ToJson()));
 
             // Return filter list in JSON
@@ -1086,66 +1080,6 @@ public partial class mecommerce {
             var filter = JsonConvert.DeserializeObject<Dictionary<string, string>>(Post("filter"));
             Command = "search";
             string? sv;
-
-            // Field Id
-            if (filter?.TryGetValue("x_Id", out sv) ?? false) {
-                Id.AdvancedSearch.SearchValue = sv;
-                Id.AdvancedSearch.SearchOperator = filter["z_Id"];
-                Id.AdvancedSearch.SearchCondition = filter["v_Id"];
-                Id.AdvancedSearch.SearchValue2 = filter["y_Id"];
-                Id.AdvancedSearch.SearchOperator2 = filter["w_Id"];
-                Id.AdvancedSearch.Save();
-            }
-
-            // Field User
-            if (filter?.TryGetValue("x__User", out sv) ?? false) {
-                _User.AdvancedSearch.SearchValue = sv;
-                _User.AdvancedSearch.SearchOperator = filter["z__User"];
-                _User.AdvancedSearch.SearchCondition = filter["v__User"];
-                _User.AdvancedSearch.SearchValue2 = filter["y__User"];
-                _User.AdvancedSearch.SearchOperator2 = filter["w__User"];
-                _User.AdvancedSearch.Save();
-            }
-
-            // Field Endpoint
-            if (filter?.TryGetValue("x_Endpoint", out sv) ?? false) {
-                Endpoint.AdvancedSearch.SearchValue = sv;
-                Endpoint.AdvancedSearch.SearchOperator = filter["z_Endpoint"];
-                Endpoint.AdvancedSearch.SearchCondition = filter["v_Endpoint"];
-                Endpoint.AdvancedSearch.SearchValue2 = filter["y_Endpoint"];
-                Endpoint.AdvancedSearch.SearchOperator2 = filter["w_Endpoint"];
-                Endpoint.AdvancedSearch.Save();
-            }
-
-            // Field PublicKey
-            if (filter?.TryGetValue("x_PublicKey", out sv) ?? false) {
-                PublicKey.AdvancedSearch.SearchValue = sv;
-                PublicKey.AdvancedSearch.SearchOperator = filter["z_PublicKey"];
-                PublicKey.AdvancedSearch.SearchCondition = filter["v_PublicKey"];
-                PublicKey.AdvancedSearch.SearchValue2 = filter["y_PublicKey"];
-                PublicKey.AdvancedSearch.SearchOperator2 = filter["w_PublicKey"];
-                PublicKey.AdvancedSearch.Save();
-            }
-
-            // Field AuthenticationToken
-            if (filter?.TryGetValue("x_AuthenticationToken", out sv) ?? false) {
-                AuthenticationToken.AdvancedSearch.SearchValue = sv;
-                AuthenticationToken.AdvancedSearch.SearchOperator = filter["z_AuthenticationToken"];
-                AuthenticationToken.AdvancedSearch.SearchCondition = filter["v_AuthenticationToken"];
-                AuthenticationToken.AdvancedSearch.SearchValue2 = filter["y_AuthenticationToken"];
-                AuthenticationToken.AdvancedSearch.SearchOperator2 = filter["w_AuthenticationToken"];
-                AuthenticationToken.AdvancedSearch.Save();
-            }
-
-            // Field ContentEncoding
-            if (filter?.TryGetValue("x_ContentEncoding", out sv) ?? false) {
-                ContentEncoding.AdvancedSearch.SearchValue = sv;
-                ContentEncoding.AdvancedSearch.SearchOperator = filter["z_ContentEncoding"];
-                ContentEncoding.AdvancedSearch.SearchCondition = filter["v_ContentEncoding"];
-                ContentEncoding.AdvancedSearch.SearchValue2 = filter["y_ContentEncoding"];
-                ContentEncoding.AdvancedSearch.SearchOperator2 = filter["w_ContentEncoding"];
-                ContentEncoding.AdvancedSearch.Save();
-            }
             if (filter?.TryGetValue(Config.TableBasicSearch, out string? keyword) ?? false)
                 BasicSearch.SessionKeyword = keyword;
             if (filter?.TryGetValue(Config.TableBasicSearchType, out string? type) ?? false)
@@ -1258,8 +1192,8 @@ public partial class mecommerce {
             if (Get("order", out StringValues sv)) {
                 CurrentOrder = sv.ToString();
                 CurrentOrderType = Get("ordertype");
-                UpdateSort(Id); // Id
                 UpdateSort(_User); // User
+                UpdateSort(Endpoint); // Endpoint
                 UpdateSort(PublicKey); // PublicKey
                 UpdateSort(AuthenticationToken); // AuthenticationToken
                 UpdateSort(ContentEncoding); // ContentEncoding
@@ -1318,18 +1252,6 @@ public partial class mecommerce {
             item.Visible = Security.CanView;
             item.OnLeft = true;
 
-            // "edit"
-            item = ListOptions.Add("edit");
-            item.CssClass = "text-nowrap";
-            item.Visible = Security.CanEdit;
-            item.OnLeft = true;
-
-            // "copy"
-            item = ListOptions.Add("copy");
-            item.CssClass = "text-nowrap";
-            item.Visible = Security.CanAdd;
-            item.OnLeft = true;
-
             // List actions
             item = ListOptions.Add("listactions");
             item.CssClass = "text-nowrap";
@@ -1341,11 +1263,19 @@ public partial class mecommerce {
             // "checkbox"
             item = ListOptions.Add("checkbox");
             item.CssStyle = "white-space: nowrap; text-align: center; vertical-align: middle; margin: 0px;";
-            item.Visible = (Security.CanAdmin || Security.CanDelete);
+            item.Visible = Security.CanAdmin;
             item.OnLeft = true;
             item.Header = "<div class=\"form-check\"><input type=\"checkbox\" name=\"key\" id=\"key\" class=\"form-check-input\" data-ew-action=\"select-all-keys\"></div>";
             if (item.OnLeft)
                 item.MoveTo(0);
+            item.ShowInDropDown = false;
+            item.ShowInButtonGroup = false;
+
+            // "sequence"
+            item = ListOptions.Add("sequence");
+            item.CssClass = "text-nowrap";
+            item.Visible = true;
+            item.OnLeft = true; // Always on left
             item.ShowInDropDown = false;
             item.ShowInButtonGroup = false;
 
@@ -1388,6 +1318,10 @@ public partial class mecommerce {
             // Call ListOptions Rendering event
             ListOptionsRendering();
 
+            // "sequence"
+            listOption = ListOptions["sequence"];
+            listOption?.SetBody(FormatSequenceNumber(RecordCount));
+
             // "view"
             listOption = ListOptions["view"];
             string viewcaption = Language.Phrase("ViewLink", true);
@@ -1397,32 +1331,6 @@ public partial class mecommerce {
                     listOption?.SetBody($@"<a class=""ew-row-link ew-view"" title=""{viewcaption}"" data-table=""Subscriptions"" data-caption=""{viewcaption}"" data-ew-action=""modal"" data-action=""view"" data-ajax=""" + (UseAjaxActions ? "true" : "false") + "\" data-url=\"" + HtmlEncode(AppPath(ViewUrl)) + "\" data-btn=\"null\">" + Language.Phrase("ViewLink") + "</a>");
                 else
                     listOption?.SetBody($@"<a class=""ew-row-link ew-view"" title=""{viewcaption}"" data-caption=""{viewcaption}"" href=""" + HtmlEncode(AppPath(ViewUrl)) + "\">" + Language.Phrase("ViewLink") + "</a>");
-            } else {
-                listOption?.Clear();
-            }
-
-            // "edit"
-            listOption = ListOptions["edit"];
-            string editcaption = Language.Phrase("EditLink", true);
-            isVisible = Security.CanEdit;
-            if (isVisible) {
-                if (ModalEdit && !IsMobile())
-                    listOption?.SetBody($@"<a class=""ew-row-link ew-edit"" title=""{editcaption}"" data-table=""Subscriptions"" data-caption=""{editcaption}"" data-ew-action=""modal"" data-action=""edit"" data-ajax=""" + (UseAjaxActions ? "true" : "false") + "\" data-url=\"" + HtmlEncode(AppPath(EditUrl)) + "\" data-btn=\"SaveBtn\">" + Language.Phrase("EditLink") + "</a>");
-                else
-                    listOption?.SetBody($@"<a class=""ew-row-link ew-edit"" title=""{editcaption}"" data-caption=""{editcaption}"" href=""" + HtmlEncode(AppPath(EditUrl)) + "\">" + Language.Phrase("EditLink") + "</a>");
-            } else {
-                listOption?.Clear();
-            }
-
-            // "copy"
-            listOption = ListOptions["copy"];
-            string copycaption = Language.Phrase("CopyLink", true);
-            isVisible = Security.CanAdd;
-            if (isVisible) {
-                if (ModalAdd && !IsMobile())
-                    listOption?.SetBody($@"<a class=""ew-row-link ew-copy"" title=""{copycaption}"" data-table=""Subscriptions"" data-caption=""{copycaption}"" data-ew-action=""modal"" data-action=""add"" data-ajax=""" + (UseAjaxActions ? "true" : "false") + "\" data-url=\"" + HtmlEncode(AppPath(CopyUrl)) + "\" data-btn=\"AddBtn\">" + Language.Phrase("CopyLink") + "</a>");
-                else
-                    listOption?.SetBody($@"<a class=""ew-row-link ew-copy"" title=""{copycaption}"" data-caption=""{copycaption}"" href=""" + HtmlEncode(AppPath(CopyUrl)) + "\">" + Language.Phrase("CopyLink") + "</a>");
             } else {
                 listOption?.Clear();
             }
@@ -1474,28 +1382,7 @@ public partial class mecommerce {
             ListOptions option;
             ListOption item;
             var options = OtherOptions;
-            option = options["addedit"];
-
-            // Add
-            item = option.Add("add");
-            string addTitle = Language.Phrase("AddLink", true);
-            if (ModalAdd && !IsMobile())
-                item.Body = $@"<a class=""ew-add-edit ew-add"" title=""{addTitle}"" data-table=""Subscriptions"" data-caption=""{addTitle}"" data-ew-action=""modal"" data-action=""add"" data-ajax=""" + (UseAjaxActions ? "true" : "false") + "\" data-url=\"" + HtmlEncode(AppPath(AddUrl)) + "\" data-btn=\"AddBtn\">" + Language.Phrase("AddLink") + "</a>";
-            else
-                item.Body = $@"<a class=""ew-add-edit ew-add"" title=""{addTitle}"" data-caption=""{addTitle}"" href=""" + HtmlEncode(AppPath(AddUrl)) + "\">" + Language.Phrase("AddLink") + "</a>";
-            item.Visible = AddUrl != "" && Security.CanAdd;
             option = options["action"];
-
-            // Add multi delete
-            item = option.Add("multidelete");
-            string deleteTitle = Language.Phrase("DeleteSelectedLink", true);
-            item.Body = $@"<button type=""button"" class=""ew-action ew-multi-delete"" title=""{deleteTitle}"" data-caption=""{deleteTitle}"" form=""fSubscriptionslist""" +
-                " data-ew-action=\"" + (UseAjaxActions ? "inline" : "submit") + "\"" +
-                (UseAjaxActions ? " data-action=\"delete\"" : "") +
-                " data-url=\"" + HtmlEncode(AppPath(MultiDeleteUrl)) + "\"" +
-                (InlineDelete ? " data-msg=\"" + HtmlEncode(Language.Phrase("DeleteConfirm")) + "\" data-data='{\"action\":\"delete\"}'" : " data-data='{\"action\":\"show\"}'") +
-                ">" + Language.Phrase("DeleteSelectedLink") + "</button>";
-            item.Visible = Security.CanDelete;
 
             // "pushnotification"
             item = option.Add("pushnotification");
@@ -1508,8 +1395,8 @@ public partial class mecommerce {
                 item = option.AddGroupOption();
                 item.Body = "";
                 item.Visible = UseColumnVisibility;
-                CreateColumnOption(option.Add("Id")); // DN
                 CreateColumnOption(option.Add("User")); // DN
+                CreateColumnOption(option.Add("Endpoint")); // DN
                 CreateColumnOption(option.Add("PublicKey")); // DN
                 CreateColumnOption(option.Add("AuthenticationToken")); // DN
                 CreateColumnOption(option.Add("ContentEncoding")); // DN
@@ -1933,13 +1820,13 @@ public partial class mecommerce {
 
             // View row
             if (RowType == RowType.View) {
-                // Id
-                Id.ViewValue = Id.CurrentValue;
-                Id.ViewCustomAttributes = "";
-
                 // User
                 _User.ViewValue = ConvertToString(_User.CurrentValue); // DN
                 _User.ViewCustomAttributes = "";
+
+                // Endpoint
+                Endpoint.ViewValue = Endpoint.CurrentValue;
+                Endpoint.ViewCustomAttributes = "";
 
                 // PublicKey
                 PublicKey.ViewValue = ConvertToString(PublicKey.CurrentValue); // DN
@@ -1953,13 +1840,13 @@ public partial class mecommerce {
                 ContentEncoding.ViewValue = ConvertToString(ContentEncoding.CurrentValue); // DN
                 ContentEncoding.ViewCustomAttributes = "";
 
-                // Id
-                Id.HrefValue = "";
-                Id.TooltipValue = "";
-
                 // User
                 _User.HrefValue = "";
                 _User.TooltipValue = "";
+
+                // Endpoint
+                Endpoint.HrefValue = "";
+                Endpoint.TooltipValue = "";
 
                 // PublicKey
                 PublicKey.HrefValue = "";

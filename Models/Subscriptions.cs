@@ -107,6 +107,7 @@ public partial class mecommerce {
                 IsAutoIncrement = true, // Autoincrement field
                 IsPrimaryKey = true, // Primary key field
                 Nullable = false, // NOT NULL field
+                Sortable = false, // Allow sort
                 DefaultErrorMessage = Language.Phrase("IncorrectInteger"),
                 SearchOperators = new () { "=", "<>", "IN", "NOT IN", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN" },
                 CustomMessage = Language.FieldPhrase("Subscriptions", "Id", "CustomMsg"),
@@ -139,6 +140,7 @@ public partial class mecommerce {
             Endpoint = new (this, "x_Endpoint", 203, SqlDbType.NText) {
                 Name = "Endpoint",
                 Expression = "[Endpoint]",
+                UseBasicSearch = true,
                 BasicSearchExpression = "[Endpoint]",
                 DateTimeFormat = -1,
                 VirtualExpression = "[Endpoint]",
@@ -1312,15 +1314,14 @@ public partial class mecommerce {
                 if (doc.Horizontal) { // Horizontal format, write header
                     doc.BeginExportRow();
                     if (exportType == "view") {
-                        doc.ExportCaption(Id);
                         doc.ExportCaption(_User);
                         doc.ExportCaption(Endpoint);
                         doc.ExportCaption(PublicKey);
                         doc.ExportCaption(AuthenticationToken);
                         doc.ExportCaption(ContentEncoding);
                     } else {
-                        doc.ExportCaption(Id);
                         doc.ExportCaption(_User);
+                        doc.ExportCaption(Endpoint);
                         doc.ExportCaption(PublicKey);
                         doc.ExportCaption(AuthenticationToken);
                         doc.ExportCaption(ContentEncoding);
@@ -1361,15 +1362,14 @@ public partial class mecommerce {
                     if (!doc.ExportCustom) {
                         doc.BeginExportRow(rowcnt); // Allow CSS styles if enabled
                         if (exportType == "view") {
-                            await doc.ExportField(Id);
                             await doc.ExportField(_User);
                             await doc.ExportField(Endpoint);
                             await doc.ExportField(PublicKey);
                             await doc.ExportField(AuthenticationToken);
                             await doc.ExportField(ContentEncoding);
                         } else {
-                            await doc.ExportField(Id);
                             await doc.ExportField(_User);
+                            await doc.ExportField(Endpoint);
                             await doc.ExportField(PublicKey);
                             await doc.ExportField(AuthenticationToken);
                             await doc.ExportField(ContentEncoding);
