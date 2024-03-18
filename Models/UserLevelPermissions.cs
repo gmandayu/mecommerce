@@ -96,15 +96,22 @@ public partial class mecommerce {
                 SelectMultiple = false,
                 VirtualSearch = false,
                 ViewTag = "FORMATTED TEXT",
-                HtmlTag = "TEXT",
+                HtmlTag = "SELECT",
                 InputTextType = "text",
                 IsPrimaryKey = true, // Primary key field
                 Nullable = false, // NOT NULL field
                 Required = true, // Required field
+                UsePleaseSelect = true, // Use PleaseSelect by default
+                PleaseSelectText = Language.Phrase("PleaseSelect"), // PleaseSelect text
                 DefaultErrorMessage = Language.Phrase("IncorrectInteger"),
-                SearchOperators = new () { "=", "<>", "IN", "NOT IN", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN" },
+                SearchOperators = new () { "=", "<>", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN" },
                 CustomMessage = Language.FieldPhrase("UserLevelPermissions", "UserLevelID", "CustomMsg"),
                 IsUpload = false
+            };
+            UserLevelID.Lookup = CurrentLanguage switch {
+                "en-US" => new Lookup<DbField>(UserLevelID, "UserLevels", false, "UserLevelID", new List<string> {"UserLevelName", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", "[UserLevelName]"),
+                "id-ID" => new Lookup<DbField>(UserLevelID, "UserLevels", false, "UserLevelID", new List<string> {"UserLevelName", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", "[UserLevelName]"),
+                _ => new Lookup<DbField>(UserLevelID, "UserLevels", false, "UserLevelID", new List<string> {"UserLevelName", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", "[UserLevelName]")
             };
             Fields.Add("UserLevelID", UserLevelID);
 
@@ -1131,14 +1138,33 @@ public partial class mecommerce {
             // Common render codes
 
             // UserLevelID
+            UserLevelID.CellCssStyle = "white-space: nowrap;";
 
             // TableName
+            _TableName.CellCssStyle = "white-space: nowrap;";
 
             // Permission
+            Permission.CellCssStyle = "white-space: nowrap;";
 
             // UserLevelID
-            UserLevelID.ViewValue = UserLevelID.CurrentValue;
-            UserLevelID.ViewValue = FormatNumber(UserLevelID.ViewValue, UserLevelID.FormatPattern);
+            curVal = ConvertToString(UserLevelID.CurrentValue);
+            if (!Empty(curVal)) {
+                if (UserLevelID.Lookup != null && IsDictionary(UserLevelID.Lookup?.Options) && UserLevelID.Lookup?.Options.Values.Count > 0) { // Load from cache // DN
+                    UserLevelID.ViewValue = UserLevelID.LookupCacheOption(curVal);
+                } else { // Lookup from database // DN
+                    filterWrk = SearchFilter("[UserLevelID]", "=", UserLevelID.CurrentValue, DataType.Number, "");
+                    sqlWrk = UserLevelID.Lookup?.GetSql(false, filterWrk, null, this, true, true);
+                    rswrk = sqlWrk != null ? Connection.GetRows(sqlWrk) : null; // Must use Sync to avoid overwriting ViewValue in RenderViewRow
+                    if (rswrk?.Count > 0 && UserLevelID.Lookup != null) { // Lookup values found
+                        var listwrk = UserLevelID.Lookup?.RenderViewRow(rswrk[0]);
+                        UserLevelID.ViewValue = UserLevelID.HighlightLookup(ConvertToString(rswrk[0]), UserLevelID.DisplayValue(listwrk));
+                    } else {
+                        UserLevelID.ViewValue = FormatNumber(UserLevelID.CurrentValue, UserLevelID.FormatPattern);
+                    }
+                }
+            } else {
+                UserLevelID.ViewValue = DbNullValue;
+            }
             UserLevelID.ViewCustomAttributes = "";
 
             // TableName
@@ -1179,7 +1205,6 @@ public partial class mecommerce {
 
             // UserLevelID
             UserLevelID.SetupEditAttributes();
-            UserLevelID.EditValue = UserLevelID.CurrentValue; // DN
             UserLevelID.PlaceHolder = RemoveHtml(UserLevelID.Caption);
 
             // TableName

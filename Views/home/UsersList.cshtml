@@ -40,6 +40,18 @@ loadjs.ready(["wrapper", "head"], function () {
         .setPageId("list")
         .setSubmitWithFetch(@(usersList.UseAjaxActions ? "true" : "false"))
         .setFormKeyCountName("@(usersList.FormKeyCountName)")
+
+        // Dynamic selection lists
+        .setLists({
+            "_Email": @Html.Raw(usersList._Email.ToClientList(usersList)),
+            "_Username": @Html.Raw(usersList._Username.ToClientList(usersList)),
+            "ProfilePicture": @Html.Raw(usersList.ProfilePicture.ToClientList(usersList)),
+            "ProfileDescription": @Html.Raw(usersList.ProfileDescription.ToClientList(usersList)),
+            "IsActive": @Html.Raw(usersList.IsActive.ToClientList(usersList)),
+            "UserLevelID": @Html.Raw(usersList.UserLevelID.ToClientList(usersList)),
+            "CreatedBy": @Html.Raw(usersList.CreatedBy.ToClientList(usersList)),
+            "UpdatedBy": @Html.Raw(usersList.UpdatedBy.ToClientList(usersList)),
+        })
         .build();
     window[form.id] = form;
     currentForm = form;
@@ -68,6 +80,9 @@ loadjs.ready("head", function() {
 }
 </div>
 }
+@if (usersList.ShowCurrentFilter) {
+    usersList.ShowFilterList();
+}
 @if (!usersList.IsModal) {
 <form name="fUserssrch" id="fUserssrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" novalidate autocomplete="off">
 <div id="fUserssrch_search_panel" class="mb-2 mb-sm-0 @(usersList.SearchPanelClass)"><!-- .ew-search-panel -->
@@ -88,8 +103,61 @@ loadjs.ready(["wrapper", "head"], function () {
         <text>.setSubmitWithFetch(true)</text>
 }
 
+        // Add fields
+        .setFields([
+
+            ["_Email", [], fields._Email.isInvalid],
+            ["MobileNumber", [], fields.MobileNumber.isInvalid],
+            ["_Username", [], fields._Username.isInvalid],
+            ["Password", [], fields.Password.isInvalid],
+            ["ProfilePicture", [], fields.ProfilePicture.isInvalid],
+            ["ProfileDescription", [], fields.ProfileDescription.isInvalid],
+            ["IsActive", [], fields.IsActive.isInvalid],
+            ["UserLevelID", [], fields.UserLevelID.isInvalid],
+            ["CreatedBy", [], fields.CreatedBy.isInvalid],
+            ["CreatedDateTime", [], fields.CreatedDateTime.isInvalid],
+            ["UpdatedBy", [], fields.UpdatedBy.isInvalid],
+            ["UpdatedDateTime", [], fields.UpdatedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
         // Dynamic selection lists
         .setLists({
+            "_Email": @Html.Raw(usersList._Email.ToClientList(usersList)),
+            "_Username": @Html.Raw(usersList._Username.ToClientList(usersList)),
+            "ProfilePicture": @Html.Raw(usersList.ProfilePicture.ToClientList(usersList)),
+            "ProfileDescription": @Html.Raw(usersList.ProfileDescription.ToClientList(usersList)),
+            "IsActive": @Html.Raw(usersList.IsActive.ToClientList(usersList)),
+            "UserLevelID": @Html.Raw(usersList.UserLevelID.ToClientList(usersList)),
         })
 
         // Filters
@@ -107,6 +175,230 @@ loadjs.ready(["wrapper", "head"], function () {
 @if (Security.CanSearch) {
 if (!usersList.IsExport() && Empty(usersList.CurrentAction) && usersList.HasSearchFields()) { @* Show search form (begin) *@
 <div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0@(usersList.SearchFieldsPerRow > 0 ? " row-cols-sm-" + usersList.SearchFieldsPerRow : "")">
+@{
+    // Render search row
+    usersList.RowType = RowType.Search;
+    usersList.ResetAttributes();
+    await usersList.RenderRow();
+}
+@if (usersList._Email.Visible) { // usersList._Email.Visible (begin)
+    if (!usersList._Email.UseFilter) {
+        usersList.SearchColumnCount++;
+    }
+    <div id="xs__Email" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(usersList._Email.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x__Email"
+            name="x__Email[]"
+            class="form-control ew-select@(usersList._Email.IsInvalidClass)"
+            data-select2-id="fUserssrch_x__Email"
+            data-table="Users"
+            data-field="x__Email"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(usersList._Email.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(usersList._Email.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(usersList._Email.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(usersList._Email.EditAttributes)>
+            @(usersList._Email.SelectOptionListHtml("x__Email", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(usersList._Email.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fUserssrch", function() {
+            var options = {
+                name: "x__Email",
+                selectId: "fUserssrch_x__Email",
+                ajax: { id: "x__Email", form: "fUserssrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.Users.fields._Email.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* usersList._Email.Visible (end) *@
+@if (usersList._Username.Visible) { // usersList._Username.Visible (begin)
+    if (!usersList._Username.UseFilter) {
+        usersList.SearchColumnCount++;
+    }
+    <div id="xs__Username" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(usersList._Username.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x__Username"
+            name="x__Username[]"
+            class="form-control ew-select@(usersList._Username.IsInvalidClass)"
+            data-select2-id="fUserssrch_x__Username"
+            data-table="Users"
+            data-field="x__Username"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(usersList._Username.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(usersList._Username.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(usersList._Username.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(usersList._Username.EditAttributes)>
+            @(usersList._Username.SelectOptionListHtml("x__Username", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(usersList._Username.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fUserssrch", function() {
+            var options = {
+                name: "x__Username",
+                selectId: "fUserssrch_x__Username",
+                ajax: { id: "x__Username", form: "fUserssrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.Users.fields._Username.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* usersList._Username.Visible (end) *@
+@if (usersList.ProfilePicture.Visible) { // usersList.ProfilePicture.Visible (begin)
+    if (!usersList.ProfilePicture.UseFilter) {
+        usersList.SearchColumnCount++;
+    }
+    <div id="xs_ProfilePicture" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(usersList.ProfilePicture.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_ProfilePicture"
+            name="x_ProfilePicture[]"
+            class="form-control ew-select@(usersList.ProfilePicture.IsInvalidClass)"
+            data-select2-id="fUserssrch_x_ProfilePicture"
+            data-table="Users"
+            data-field="x_ProfilePicture"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(usersList.ProfilePicture.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(usersList.ProfilePicture.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(usersList.ProfilePicture.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(usersList.ProfilePicture.EditAttributes)>
+            @(usersList.ProfilePicture.SelectOptionListHtml("x_ProfilePicture", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(usersList.ProfilePicture.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fUserssrch", function() {
+            var options = {
+                name: "x_ProfilePicture",
+                selectId: "fUserssrch_x_ProfilePicture",
+                ajax: { id: "x_ProfilePicture", form: "fUserssrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.Users.fields.ProfilePicture.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* usersList.ProfilePicture.Visible (end) *@
+@if (usersList.ProfileDescription.Visible) { // usersList.ProfileDescription.Visible (begin)
+    if (!usersList.ProfileDescription.UseFilter) {
+        usersList.SearchColumnCount++;
+    }
+    <div id="xs_ProfileDescription" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(usersList.ProfileDescription.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_ProfileDescription"
+            name="x_ProfileDescription[]"
+            class="form-control ew-select@(usersList.ProfileDescription.IsInvalidClass)"
+            data-select2-id="fUserssrch_x_ProfileDescription"
+            data-table="Users"
+            data-field="x_ProfileDescription"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(usersList.ProfileDescription.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(usersList.ProfileDescription.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(usersList.ProfileDescription.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(usersList.ProfileDescription.EditAttributes)>
+            @(usersList.ProfileDescription.SelectOptionListHtml("x_ProfileDescription", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(usersList.ProfileDescription.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fUserssrch", function() {
+            var options = {
+                name: "x_ProfileDescription",
+                selectId: "fUserssrch_x_ProfileDescription",
+                ajax: { id: "x_ProfileDescription", form: "fUserssrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.Users.fields.ProfileDescription.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* usersList.ProfileDescription.Visible (end) *@
+@if (usersList.IsActive.Visible) { // usersList.IsActive.Visible (begin)
+    if (!usersList.IsActive.UseFilter) {
+        usersList.SearchColumnCount++;
+    }
+    <div id="xs_IsActive" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(usersList.IsActive.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_IsActive"
+            name="x_IsActive[]"
+            class="form-control ew-select@(usersList.IsActive.IsInvalidClass)"
+            data-select2-id="fUserssrch_x_IsActive"
+            data-table="Users"
+            data-field="x_IsActive"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(usersList.IsActive.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(usersList.IsActive.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(usersList.IsActive.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(usersList.IsActive.EditAttributes)>
+            @(usersList.IsActive.SelectOptionListHtml("x_IsActive", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(usersList.IsActive.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fUserssrch", function() {
+            var options = {
+                name: "x_IsActive",
+                selectId: "fUserssrch_x_IsActive",
+                ajax: { id: "x_IsActive", form: "fUserssrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.Users.fields.IsActive.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* usersList.IsActive.Visible (end) *@
+@if (usersList.UserLevelID.Visible) { // usersList.UserLevelID.Visible (begin)
+    if (!usersList.UserLevelID.UseFilter) {
+        usersList.SearchColumnCount++;
+    }
+    <div id="xs_UserLevelID" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(usersList.UserLevelID.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_UserLevelID"
+            name="x_UserLevelID[]"
+            class="form-control ew-select@(usersList.UserLevelID.IsInvalidClass)"
+            data-select2-id="fUserssrch_x_UserLevelID"
+            data-table="Users"
+            data-field="x_UserLevelID"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(usersList.UserLevelID.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(usersList.UserLevelID.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(usersList.UserLevelID.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(usersList.UserLevelID.EditAttributes)>
+            @(usersList.UserLevelID.SelectOptionListHtml("x_UserLevelID", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(usersList.UserLevelID.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fUserssrch", function() {
+            var options = {
+                name: "x_UserLevelID",
+                selectId: "fUserssrch_x_UserLevelID",
+                ajax: { id: "x_UserLevelID", form: "fUserssrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.Users.fields.UserLevelID.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* usersList.UserLevelID.Visible (end) *@
+</div><!-- /.row -->
 <div class="row mb-0">
     <div class="col-sm-auto px-0 pe-sm-2">
         <div class="ew-basic-search input-group">
@@ -161,38 +453,41 @@ if (!usersList.IsExport() && Empty(usersList.CurrentAction) && usersList.HasSear
 }
 @* Render list options (header, left) *@
 @usersList.ListOptions.RenderHeader("left")
-@if (usersList.UserID.Visible) { // usersList.UserID.Visible (begin)
-        <th data-name="UserID" class="@(usersList.UserID.HeaderCellClass)"><div id="elh_Users_UserID" class="Users_UserID">@Html.Raw(usersList.RenderFieldHeader(usersList.UserID))</div></th>
-} @* usersList.UserID.Visible (end) *@
 @if (usersList._Email.Visible) { // usersList._Email.Visible (begin)
-        <th data-name="_Email" class="@(usersList._Email.HeaderCellClass)"><div id="elh_Users__Email" class="Users__Email">@Html.Raw(usersList.RenderFieldHeader(usersList._Email))</div></th>
+        <th data-name="_Email" class="@(usersList._Email.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Users__Email" class="Users__Email">@Html.Raw(usersList.RenderFieldHeader(usersList._Email))</div></th>
 } @* usersList._Email.Visible (end) *@
 @if (usersList.MobileNumber.Visible) { // usersList.MobileNumber.Visible (begin)
-        <th data-name="MobileNumber" class="@(usersList.MobileNumber.HeaderCellClass)"><div id="elh_Users_MobileNumber" class="Users_MobileNumber">@Html.Raw(usersList.RenderFieldHeader(usersList.MobileNumber))</div></th>
+        <th data-name="MobileNumber" class="@(usersList.MobileNumber.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Users_MobileNumber" class="Users_MobileNumber">@Html.Raw(usersList.RenderFieldHeader(usersList.MobileNumber))</div></th>
 } @* usersList.MobileNumber.Visible (end) *@
 @if (usersList._Username.Visible) { // usersList._Username.Visible (begin)
-        <th data-name="_Username" class="@(usersList._Username.HeaderCellClass)"><div id="elh_Users__Username" class="Users__Username">@Html.Raw(usersList.RenderFieldHeader(usersList._Username))</div></th>
+        <th data-name="_Username" class="@(usersList._Username.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Users__Username" class="Users__Username">@Html.Raw(usersList.RenderFieldHeader(usersList._Username))</div></th>
 } @* usersList._Username.Visible (end) *@
 @if (usersList.Password.Visible) { // usersList.Password.Visible (begin)
-        <th data-name="Password" class="@(usersList.Password.HeaderCellClass)"><div id="elh_Users_Password" class="Users_Password">@Html.Raw(usersList.RenderFieldHeader(usersList.Password))</div></th>
+        <th data-name="Password" class="@(usersList.Password.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Users_Password" class="Users_Password">@Html.Raw(usersList.RenderFieldHeader(usersList.Password))</div></th>
 } @* usersList.Password.Visible (end) *@
+@if (usersList.ProfilePicture.Visible) { // usersList.ProfilePicture.Visible (begin)
+        <th data-name="ProfilePicture" class="@(usersList.ProfilePicture.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Users_ProfilePicture" class="Users_ProfilePicture">@Html.Raw(usersList.RenderFieldHeader(usersList.ProfilePicture))</div></th>
+} @* usersList.ProfilePicture.Visible (end) *@
+@if (usersList.ProfileDescription.Visible) { // usersList.ProfileDescription.Visible (begin)
+        <th data-name="ProfileDescription" class="@(usersList.ProfileDescription.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Users_ProfileDescription" class="Users_ProfileDescription">@Html.Raw(usersList.RenderFieldHeader(usersList.ProfileDescription))</div></th>
+} @* usersList.ProfileDescription.Visible (end) *@
 @if (usersList.IsActive.Visible) { // usersList.IsActive.Visible (begin)
-        <th data-name="IsActive" class="@(usersList.IsActive.HeaderCellClass)"><div id="elh_Users_IsActive" class="Users_IsActive">@Html.Raw(usersList.RenderFieldHeader(usersList.IsActive))</div></th>
+        <th data-name="IsActive" class="@(usersList.IsActive.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Users_IsActive" class="Users_IsActive">@Html.Raw(usersList.RenderFieldHeader(usersList.IsActive))</div></th>
 } @* usersList.IsActive.Visible (end) *@
 @if (usersList.UserLevelID.Visible) { // usersList.UserLevelID.Visible (begin)
-        <th data-name="UserLevelID" class="@(usersList.UserLevelID.HeaderCellClass)"><div id="elh_Users_UserLevelID" class="Users_UserLevelID">@Html.Raw(usersList.RenderFieldHeader(usersList.UserLevelID))</div></th>
+        <th data-name="UserLevelID" class="@(usersList.UserLevelID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Users_UserLevelID" class="Users_UserLevelID">@Html.Raw(usersList.RenderFieldHeader(usersList.UserLevelID))</div></th>
 } @* usersList.UserLevelID.Visible (end) *@
 @if (usersList.CreatedBy.Visible) { // usersList.CreatedBy.Visible (begin)
-        <th data-name="CreatedBy" class="@(usersList.CreatedBy.HeaderCellClass)"><div id="elh_Users_CreatedBy" class="Users_CreatedBy">@Html.Raw(usersList.RenderFieldHeader(usersList.CreatedBy))</div></th>
+        <th data-name="CreatedBy" class="@(usersList.CreatedBy.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Users_CreatedBy" class="Users_CreatedBy">@Html.Raw(usersList.RenderFieldHeader(usersList.CreatedBy))</div></th>
 } @* usersList.CreatedBy.Visible (end) *@
 @if (usersList.CreatedDateTime.Visible) { // usersList.CreatedDateTime.Visible (begin)
-        <th data-name="CreatedDateTime" class="@(usersList.CreatedDateTime.HeaderCellClass)"><div id="elh_Users_CreatedDateTime" class="Users_CreatedDateTime">@Html.Raw(usersList.RenderFieldHeader(usersList.CreatedDateTime))</div></th>
+        <th data-name="CreatedDateTime" class="@(usersList.CreatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Users_CreatedDateTime" class="Users_CreatedDateTime">@Html.Raw(usersList.RenderFieldHeader(usersList.CreatedDateTime))</div></th>
 } @* usersList.CreatedDateTime.Visible (end) *@
 @if (usersList.UpdatedBy.Visible) { // usersList.UpdatedBy.Visible (begin)
-        <th data-name="UpdatedBy" class="@(usersList.UpdatedBy.HeaderCellClass)"><div id="elh_Users_UpdatedBy" class="Users_UpdatedBy">@Html.Raw(usersList.RenderFieldHeader(usersList.UpdatedBy))</div></th>
+        <th data-name="UpdatedBy" class="@(usersList.UpdatedBy.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Users_UpdatedBy" class="Users_UpdatedBy">@Html.Raw(usersList.RenderFieldHeader(usersList.UpdatedBy))</div></th>
 } @* usersList.UpdatedBy.Visible (end) *@
 @if (usersList.UpdatedDateTime.Visible) { // usersList.UpdatedDateTime.Visible (begin)
-        <th data-name="UpdatedDateTime" class="@(usersList.UpdatedDateTime.HeaderCellClass)"><div id="elh_Users_UpdatedDateTime" class="Users_UpdatedDateTime">@Html.Raw(usersList.RenderFieldHeader(usersList.UpdatedDateTime))</div></th>
+        <th data-name="UpdatedDateTime" class="@(usersList.UpdatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Users_UpdatedDateTime" class="Users_UpdatedDateTime">@Html.Raw(usersList.RenderFieldHeader(usersList.UpdatedDateTime))</div></th>
 } @* usersList.UpdatedDateTime.Visible (end) *@
 @* Render list options (header, right) *@
 @usersList.ListOptions.RenderHeader("right")
@@ -214,14 +509,6 @@ if (!usersList.IsExport() && Empty(usersList.CurrentAction) && usersList.HasSear
     <tr @Html.Raw(usersList.RowAttributes)>
     @* Render list options (body, left) *@
     @usersList.ListOptions.RenderBody("left", usersList.RowCount)
-    @if (usersList.UserID.Visible) { // usersList.UserID.Visible (begin)
-        <td data-name="UserID" @Html.Raw(usersList.UserID.CellAttributes)>
-<span id="el@(usersList.RowIndex == "$rowindex$" ? "$rowindex$" : usersList.RowCount)_Users_UserID" class="el_Users_UserID">
-<span @Html.Raw(usersList.UserID.ViewAttributes)>
-@Html.Raw(usersList.UserID.GetViewValue())</span>
-</span>
-</td>
-    } @* usersList.UserID.Visible (end) *@
     @if (usersList._Email.Visible) { // usersList._Email.Visible (begin)
         <td data-name="_Email" @Html.Raw(usersList._Email.CellAttributes)>
 <span id="el@(usersList.RowIndex == "$rowindex$" ? "$rowindex$" : usersList.RowCount)_Users__Email" class="el_Users__Email">
@@ -254,6 +541,29 @@ if (!usersList.IsExport() && Empty(usersList.CurrentAction) && usersList.HasSear
 </span>
 </td>
     } @* usersList.Password.Visible (end) *@
+    @if (usersList.ProfilePicture.Visible) { // usersList.ProfilePicture.Visible (begin)
+        <td data-name="ProfilePicture" @Html.Raw(usersList.ProfilePicture.CellAttributes)>
+<span id="el@(usersList.RowIndex == "$rowindex$" ? "$rowindex$" : usersList.RowCount)_Users_ProfilePicture" class="el_Users_ProfilePicture">
+<span @Html.Raw(usersList.ProfilePicture.ViewAttributes)>@if (!string.IsNullOrEmpty(usersList.ProfilePicture.GetViewValue()))
+{
+    <a href="uploads/usersList.MobileNumber.GetViewValue()/@ConvertToString(usersList.ProfilePicture.GetViewValue())" target="_blank">Attachment</a>
+}
+else
+{
+    @Html.Raw("&nbsp;")
+}
+</span>
+</span>
+</td>
+    } @* usersList.ProfilePicture.Visible (end) *@
+    @if (usersList.ProfileDescription.Visible) { // usersList.ProfileDescription.Visible (begin)
+        <td data-name="ProfileDescription" @Html.Raw(usersList.ProfileDescription.CellAttributes)>
+<span id="el@(usersList.RowIndex == "$rowindex$" ? "$rowindex$" : usersList.RowCount)_Users_ProfileDescription" class="el_Users_ProfileDescription">
+<span @Html.Raw(usersList.ProfileDescription.ViewAttributes)>
+@Html.Raw(usersList.ProfileDescription.GetViewValue())</span>
+</span>
+</td>
+    } @* usersList.ProfileDescription.Visible (end) *@
     @if (usersList.IsActive.Visible) { // usersList.IsActive.Visible (begin)
         <td data-name="IsActive" @Html.Raw(usersList.IsActive.CellAttributes)>
 <span id="el@(usersList.RowIndex == "$rowindex$" ? "$rowindex$" : usersList.RowCount)_Users_IsActive" class="el_Users_IsActive">
@@ -357,8 +667,19 @@ loadjs.ready("head", function() {
 </script>
 <script>
 loadjs.ready("load", function() {
+    // Startup script
     // Write your table-specific startup script here
     // document.write("page loaded");
+    const navbarHeightWithPadding = $('body div.wrapper.ew-layout nav.main-header').outerHeight();
+    const contentHeaderHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper div.content-header').outerHeight();
+    const toolbarHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid div.btn-toolbar.ew-toolbar').outerHeight();
+    const searchFormHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid form.ew-form.ew-ext-search-form').outerHeight();
+    const tableFooterHeightWithPadding = $('main div div.card.ew-card div.card-footer').outerHeight();
+    const footerHeight = $('footer.main-footer').outerHeight();
+    const nonTableHeightTotal = navbarHeightWithPadding + contentHeaderHeightWithPadding + toolbarHeightWithPadding + searchFormHeightWithPadding + tableFooterHeightWithPadding + footerHeight;
+    const marginBottom = '20px';
+    const tableHeight = `calc(100vh - ${nonTableHeightTotal}px - ${marginBottom})`;
+    $('main div div.card.ew-card form div.table-responsive').css('max-height', tableHeight);
 });
 </script>
 }

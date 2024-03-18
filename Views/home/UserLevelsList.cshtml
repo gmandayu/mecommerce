@@ -162,10 +162,10 @@ if (!userLevelsList.IsExport() && Empty(userLevelsList.CurrentAction) && userLev
 @* Render list options (header, left) *@
 @userLevelsList.ListOptions.RenderHeader("left")
 @if (userLevelsList.UserLevelID.Visible) { // userLevelsList.UserLevelID.Visible (begin)
-        <th data-name="UserLevelID" class="@(userLevelsList.UserLevelID.HeaderCellClass)"><div id="elh_UserLevels_UserLevelID" class="UserLevels_UserLevelID">@Html.Raw(userLevelsList.RenderFieldHeader(userLevelsList.UserLevelID))</div></th>
+        <th data-name="UserLevelID" class="@(userLevelsList.UserLevelID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_UserLevels_UserLevelID" class="UserLevels_UserLevelID">@Html.Raw(userLevelsList.RenderFieldHeader(userLevelsList.UserLevelID))</div></th>
 } @* userLevelsList.UserLevelID.Visible (end) *@
 @if (userLevelsList.UserLevelName.Visible) { // userLevelsList.UserLevelName.Visible (begin)
-        <th data-name="UserLevelName" class="@(userLevelsList.UserLevelName.HeaderCellClass)"><div id="elh_UserLevels_UserLevelName" class="UserLevels_UserLevelName">@Html.Raw(userLevelsList.RenderFieldHeader(userLevelsList.UserLevelName))</div></th>
+        <th data-name="UserLevelName" class="@(userLevelsList.UserLevelName.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_UserLevels_UserLevelName" class="UserLevels_UserLevelName">@Html.Raw(userLevelsList.RenderFieldHeader(userLevelsList.UserLevelName))</div></th>
 } @* userLevelsList.UserLevelName.Visible (end) *@
 @* Render list options (header, right) *@
 @userLevelsList.ListOptions.RenderHeader("right")
@@ -255,8 +255,19 @@ loadjs.ready("head", function() {
 </script>
 <script>
 loadjs.ready("load", function() {
+    // Startup script
     // Write your table-specific startup script here
     // document.write("page loaded");
+    const navbarHeightWithPadding = $('body div.wrapper.ew-layout nav.main-header').outerHeight();
+    const contentHeaderHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper div.content-header').outerHeight();
+    const toolbarHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid div.btn-toolbar.ew-toolbar').outerHeight();
+    const searchFormHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid form.ew-form.ew-ext-search-form').outerHeight();
+    const tableFooterHeightWithPadding = $('main div div.card.ew-card div.card-footer').outerHeight();
+    const footerHeight = $('footer.main-footer').outerHeight();
+    const nonTableHeightTotal = navbarHeightWithPadding + contentHeaderHeightWithPadding + toolbarHeightWithPadding + searchFormHeightWithPadding + tableFooterHeightWithPadding + footerHeight;
+    const marginBottom = '20px';
+    const tableHeight = `calc(100vh - ${nonTableHeightTotal}px - ${marginBottom})`;
+    $('main div div.card.ew-card form div.table-responsive').css('max-height', tableHeight);
 });
 </script>
 }

@@ -50,7 +50,7 @@ loadjs.ready(["wrapper", "head"], function () {
         // Add fields
         .setFields([
 
-            ["UserLevelID", [fields.UserLevelID.visible && fields.UserLevelID.required ? ew.Validators.required(fields.UserLevelID.caption) : null, ew.Validators.integer], fields.UserLevelID.isInvalid],
+            ["UserLevelID", [fields.UserLevelID.visible && fields.UserLevelID.required ? ew.Validators.required(fields.UserLevelID.caption) : null], fields.UserLevelID.isInvalid],
             ["_TableName", [fields._TableName.visible && fields._TableName.required ? ew.Validators.required(fields._TableName.caption) : null], fields._TableName.isInvalid],
             ["Permission", [fields.Permission.visible && fields.Permission.required ? ew.Validators.required(fields.Permission.caption) : null, ew.Validators.integer], fields.Permission.isInvalid]
         ])
@@ -68,6 +68,7 @@ loadjs.ready(["wrapper", "head"], function () {
 
         // Dynamic selection lists
         .setLists({
+            "UserLevelID": @Html.Raw(userLevelPermissionsEdit.UserLevelID.ToClientList(userLevelPermissionsEdit)),
         })
         .build();
     window[form.id] = form;
@@ -91,9 +92,39 @@ loadjs.ready(["wrapper", "head"], function () {
         <label id="elh_UserLevelPermissions_UserLevelID" for="x_UserLevelID" class="@(userLevelPermissionsEdit.LeftColumnClass)">@Html.Raw(userLevelPermissionsEdit.UserLevelID.Caption)@Html.Raw(userLevelPermissionsEdit.UserLevelID.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
         <div class="@(userLevelPermissionsEdit.RightColumnClass)"><div @Html.Raw(userLevelPermissionsEdit.UserLevelID.CellAttributes)>
 <span id="el_UserLevelPermissions_UserLevelID">
-<input type="@(userLevelPermissionsEdit.UserLevelID.InputTextType)" name="x_UserLevelID" id="x_UserLevelID" data-table="UserLevelPermissions" data-field="x_UserLevelID" value="@Html.Raw(userLevelPermissionsEdit.UserLevelID.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(userLevelPermissionsEdit.UserLevelID.PlaceHolder))" data-format-pattern="@(userLevelPermissionsEdit.UserLevelID.FormatPattern)"@Html.Raw(userLevelPermissionsEdit.UserLevelID.EditAttributes) aria-describedby="x_UserLevelID_help">
-@Html.Raw(userLevelPermissionsEdit.UserLevelID.GetCustomMessage)
-<div class="invalid-feedback">@Html.Raw(userLevelPermissionsEdit.UserLevelID.GetErrorMessage())</div>
+    <select
+        id="x_UserLevelID"
+        name="x_UserLevelID"
+        class="form-select ew-select@(userLevelPermissionsEdit.UserLevelID.IsInvalidClass)"
+        data-select2-id="fUserLevelPermissionsedit_x_UserLevelID"
+        data-table="UserLevelPermissions"
+        data-field="x_UserLevelID"
+        data-value-separator="@(userLevelPermissionsEdit.UserLevelID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(userLevelPermissionsEdit.UserLevelID.PlaceHolder))"
+        @Html.Raw(userLevelPermissionsEdit.UserLevelID.EditAttributes)>
+        @(userLevelPermissionsEdit.UserLevelID.SelectOptionListHtml("x_UserLevelID"))
+    </select>
+    @Html.Raw(userLevelPermissionsEdit.UserLevelID.GetCustomMessage)
+    <div class="invalid-feedback">@Html.Raw(userLevelPermissionsEdit.UserLevelID.GetErrorMessage())</div>
+@Html.Raw(userLevelPermissionsEdit.UserLevelID.Lookup.GetParamTag(userLevelPermissionsEdit, "p_x_UserLevelID"))
+<script>
+loadjs.ready("fUserLevelPermissionsedit", function() {
+    var options = { name: "x_UserLevelID", selectId: "fUserLevelPermissionsedit_x_UserLevelID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fUserLevelPermissionsedit.lists.UserLevelID?.lookupOptions.length) {
+        options.data = { id: "x_UserLevelID", form: "fUserLevelPermissionsedit" };
+    } else {
+        options.ajax = { id: "x_UserLevelID", form: "fUserLevelPermissionsedit", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumResultsForSearch = Infinity;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.UserLevelPermissions.fields.UserLevelID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
 <input type="hidden" data-table="UserLevelPermissions" data-field="x_UserLevelID" data-hidden="1" data-old name="o_UserLevelID" id="o_UserLevelID" value="@Html.Raw(HtmlEncode(userLevelPermissionsEdit.UserLevelID.OldValue ?? userLevelPermissionsEdit.UserLevelID.CurrentValue))">
 </span>
 </div></div>

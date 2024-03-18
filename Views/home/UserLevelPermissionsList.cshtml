@@ -162,13 +162,13 @@ if (!userLevelPermissionsList.IsExport() && Empty(userLevelPermissionsList.Curre
 @* Render list options (header, left) *@
 @userLevelPermissionsList.ListOptions.RenderHeader("left")
 @if (userLevelPermissionsList.UserLevelID.Visible) { // userLevelPermissionsList.UserLevelID.Visible (begin)
-        <th data-name="UserLevelID" class="@(userLevelPermissionsList.UserLevelID.HeaderCellClass)"><div id="elh_UserLevelPermissions_UserLevelID" class="UserLevelPermissions_UserLevelID">@Html.Raw(userLevelPermissionsList.RenderFieldHeader(userLevelPermissionsList.UserLevelID))</div></th>
+        <th data-name="UserLevelID" class="@(userLevelPermissionsList.UserLevelID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_UserLevelPermissions_UserLevelID" class="UserLevelPermissions_UserLevelID">@Html.Raw(userLevelPermissionsList.RenderFieldHeader(userLevelPermissionsList.UserLevelID))</div></th>
 } @* userLevelPermissionsList.UserLevelID.Visible (end) *@
 @if (userLevelPermissionsList._TableName.Visible) { // userLevelPermissionsList._TableName.Visible (begin)
-        <th data-name="_TableName" class="@(userLevelPermissionsList._TableName.HeaderCellClass)"><div id="elh_UserLevelPermissions__TableName" class="UserLevelPermissions__TableName">@Html.Raw(userLevelPermissionsList.RenderFieldHeader(userLevelPermissionsList._TableName))</div></th>
+        <th data-name="_TableName" class="@(userLevelPermissionsList._TableName.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_UserLevelPermissions__TableName" class="UserLevelPermissions__TableName">@Html.Raw(userLevelPermissionsList.RenderFieldHeader(userLevelPermissionsList._TableName))</div></th>
 } @* userLevelPermissionsList._TableName.Visible (end) *@
 @if (userLevelPermissionsList.Permission.Visible) { // userLevelPermissionsList.Permission.Visible (begin)
-        <th data-name="Permission" class="@(userLevelPermissionsList.Permission.HeaderCellClass)"><div id="elh_UserLevelPermissions_Permission" class="UserLevelPermissions_Permission">@Html.Raw(userLevelPermissionsList.RenderFieldHeader(userLevelPermissionsList.Permission))</div></th>
+        <th data-name="Permission" class="@(userLevelPermissionsList.Permission.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_UserLevelPermissions_Permission" class="UserLevelPermissions_Permission">@Html.Raw(userLevelPermissionsList.RenderFieldHeader(userLevelPermissionsList.Permission))</div></th>
 } @* userLevelPermissionsList.Permission.Visible (end) *@
 @* Render list options (header, right) *@
 @userLevelPermissionsList.ListOptions.RenderHeader("right")
@@ -266,8 +266,19 @@ loadjs.ready("head", function() {
 </script>
 <script>
 loadjs.ready("load", function() {
+    // Startup script
     // Write your table-specific startup script here
     // document.write("page loaded");
+    const navbarHeightWithPadding = $('body div.wrapper.ew-layout nav.main-header').outerHeight();
+    const contentHeaderHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper div.content-header').outerHeight();
+    const toolbarHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid div.btn-toolbar.ew-toolbar').outerHeight();
+    const searchFormHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid form.ew-form.ew-ext-search-form').outerHeight();
+    const tableFooterHeightWithPadding = $('main div div.card.ew-card div.card-footer').outerHeight();
+    const footerHeight = $('footer.main-footer').outerHeight();
+    const nonTableHeightTotal = navbarHeightWithPadding + contentHeaderHeightWithPadding + toolbarHeightWithPadding + searchFormHeightWithPadding + tableFooterHeightWithPadding + footerHeight;
+    const marginBottom = '20px';
+    const tableHeight = `calc(100vh - ${nonTableHeightTotal}px - ${marginBottom})`;
+    $('main div div.card.ew-card form div.table-responsive').css('max-height', tableHeight);
 });
 </script>
 }

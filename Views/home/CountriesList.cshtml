@@ -40,6 +40,16 @@ loadjs.ready(["wrapper", "head"], function () {
         .setPageId("list")
         .setSubmitWithFetch(@(countriesList.UseAjaxActions ? "true" : "false"))
         .setFormKeyCountName("@(countriesList.FormKeyCountName)")
+
+        // Dynamic selection lists
+        .setLists({
+            "ISO": @Html.Raw(countriesList.ISO.ToClientList(countriesList)),
+            "_Name": @Html.Raw(countriesList._Name.ToClientList(countriesList)),
+            "NiceName": @Html.Raw(countriesList.NiceName.ToClientList(countriesList)),
+            "ISO3": @Html.Raw(countriesList.ISO3.ToClientList(countriesList)),
+            "CreatedBy": @Html.Raw(countriesList.CreatedBy.ToClientList(countriesList)),
+            "UpdatedBy": @Html.Raw(countriesList.UpdatedBy.ToClientList(countriesList)),
+        })
         .build();
     window[form.id] = form;
     currentForm = form;
@@ -68,6 +78,9 @@ loadjs.ready("head", function() {
 }
 </div>
 }
+@if (countriesList.ShowCurrentFilter) {
+    countriesList.ShowFilterList();
+}
 @if (!countriesList.IsModal) {
 <form name="fCountriessrch" id="fCountriessrch" class="ew-form ew-ext-search-form" action="@AppPath(CurrentPageName())" novalidate autocomplete="off">
 <div id="fCountriessrch_search_panel" class="mb-2 mb-sm-0 @(countriesList.SearchPanelClass)"><!-- .ew-search-panel -->
@@ -88,8 +101,59 @@ loadjs.ready(["wrapper", "head"], function () {
         <text>.setSubmitWithFetch(true)</text>
 }
 
+        // Add fields
+        .setFields([
+
+            ["ISO", [], fields.ISO.isInvalid],
+            ["_Name", [], fields._Name.isInvalid],
+            ["NiceName", [], fields.NiceName.isInvalid],
+            ["ISO3", [], fields.ISO3.isInvalid],
+            ["NumCode", [], fields.NumCode.isInvalid],
+            ["PhoneCode", [], fields.PhoneCode.isInvalid],
+            ["CreatedBy", [], fields.CreatedBy.isInvalid],
+            ["CreatedDateTime", [], fields.CreatedDateTime.isInvalid],
+            ["UpdatedBy", [], fields.UpdatedBy.isInvalid],
+            ["UpdatedDateTime", [], fields.UpdatedDateTime.isInvalid]
+        ])
+        // Validate form
+        .setValidate(
+            async function () {
+                if (!this.validateRequired)
+                    return true; // Ignore validation
+                let fobj = this.getForm();
+
+                // Validate fields
+                if (!this.validateFields())
+                    return false;
+
+                // Call Form_CustomValidate event
+                if (!(await this.customValidate?.(fobj) ?? true)) {
+                    this.focus();
+                    return false;
+                }
+                return true;
+            }
+        )
+
+        // Form_CustomValidate
+        .setCustomValidate(
+            function(fobj) { // DO NOT CHANGE THIS LINE!
+                    // Your custom validation code here, return false if invalid.
+                    return true;
+                }
+        )
+
+        // Use JavaScript validation or not
+        .setValidateRequired(ew.CLIENT_VALIDATE)
+
         // Dynamic selection lists
         .setLists({
+            "ISO": @Html.Raw(countriesList.ISO.ToClientList(countriesList)),
+            "_Name": @Html.Raw(countriesList._Name.ToClientList(countriesList)),
+            "NiceName": @Html.Raw(countriesList.NiceName.ToClientList(countriesList)),
+            "ISO3": @Html.Raw(countriesList.ISO3.ToClientList(countriesList)),
+            "CreatedBy": @Html.Raw(countriesList.CreatedBy.ToClientList(countriesList)),
+            "UpdatedBy": @Html.Raw(countriesList.UpdatedBy.ToClientList(countriesList)),
         })
 
         // Filters
@@ -107,6 +171,230 @@ loadjs.ready(["wrapper", "head"], function () {
 @if (Security.CanSearch) {
 if (!countriesList.IsExport() && Empty(countriesList.CurrentAction) && countriesList.HasSearchFields()) { @* Show search form (begin) *@
 <div class="ew-extended-search container-fluid ps-2">
+<div class="row mb-0@(countriesList.SearchFieldsPerRow > 0 ? " row-cols-sm-" + countriesList.SearchFieldsPerRow : "")">
+@{
+    // Render search row
+    countriesList.RowType = RowType.Search;
+    countriesList.ResetAttributes();
+    await countriesList.RenderRow();
+}
+@if (countriesList.ISO.Visible) { // countriesList.ISO.Visible (begin)
+    if (!countriesList.ISO.UseFilter) {
+        countriesList.SearchColumnCount++;
+    }
+    <div id="xs_ISO" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(countriesList.ISO.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_ISO"
+            name="x_ISO[]"
+            class="form-control ew-select@(countriesList.ISO.IsInvalidClass)"
+            data-select2-id="fCountriessrch_x_ISO"
+            data-table="Countries"
+            data-field="x_ISO"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(countriesList.ISO.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(countriesList.ISO.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(countriesList.ISO.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(countriesList.ISO.EditAttributes)>
+            @(countriesList.ISO.SelectOptionListHtml("x_ISO", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(countriesList.ISO.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCountriessrch", function() {
+            var options = {
+                name: "x_ISO",
+                selectId: "fCountriessrch_x_ISO",
+                ajax: { id: "x_ISO", form: "fCountriessrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.Countries.fields.ISO.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* countriesList.ISO.Visible (end) *@
+@if (countriesList._Name.Visible) { // countriesList._Name.Visible (begin)
+    if (!countriesList._Name.UseFilter) {
+        countriesList.SearchColumnCount++;
+    }
+    <div id="xs__Name" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(countriesList._Name.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x__Name"
+            name="x__Name[]"
+            class="form-control ew-select@(countriesList._Name.IsInvalidClass)"
+            data-select2-id="fCountriessrch_x__Name"
+            data-table="Countries"
+            data-field="x__Name"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(countriesList._Name.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(countriesList._Name.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(countriesList._Name.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(countriesList._Name.EditAttributes)>
+            @(countriesList._Name.SelectOptionListHtml("x__Name", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(countriesList._Name.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCountriessrch", function() {
+            var options = {
+                name: "x__Name",
+                selectId: "fCountriessrch_x__Name",
+                ajax: { id: "x__Name", form: "fCountriessrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.Countries.fields._Name.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* countriesList._Name.Visible (end) *@
+@if (countriesList.NiceName.Visible) { // countriesList.NiceName.Visible (begin)
+    if (!countriesList.NiceName.UseFilter) {
+        countriesList.SearchColumnCount++;
+    }
+    <div id="xs_NiceName" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(countriesList.NiceName.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_NiceName"
+            name="x_NiceName[]"
+            class="form-control ew-select@(countriesList.NiceName.IsInvalidClass)"
+            data-select2-id="fCountriessrch_x_NiceName"
+            data-table="Countries"
+            data-field="x_NiceName"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(countriesList.NiceName.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(countriesList.NiceName.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(countriesList.NiceName.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(countriesList.NiceName.EditAttributes)>
+            @(countriesList.NiceName.SelectOptionListHtml("x_NiceName", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(countriesList.NiceName.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCountriessrch", function() {
+            var options = {
+                name: "x_NiceName",
+                selectId: "fCountriessrch_x_NiceName",
+                ajax: { id: "x_NiceName", form: "fCountriessrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.Countries.fields.NiceName.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* countriesList.NiceName.Visible (end) *@
+@if (countriesList.ISO3.Visible) { // countriesList.ISO3.Visible (begin)
+    if (!countriesList.ISO3.UseFilter) {
+        countriesList.SearchColumnCount++;
+    }
+    <div id="xs_ISO3" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(countriesList.ISO3.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_ISO3"
+            name="x_ISO3[]"
+            class="form-control ew-select@(countriesList.ISO3.IsInvalidClass)"
+            data-select2-id="fCountriessrch_x_ISO3"
+            data-table="Countries"
+            data-field="x_ISO3"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(countriesList.ISO3.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(countriesList.ISO3.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(countriesList.ISO3.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(countriesList.ISO3.EditAttributes)>
+            @(countriesList.ISO3.SelectOptionListHtml("x_ISO3", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(countriesList.ISO3.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCountriessrch", function() {
+            var options = {
+                name: "x_ISO3",
+                selectId: "fCountriessrch_x_ISO3",
+                ajax: { id: "x_ISO3", form: "fCountriessrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.Countries.fields.ISO3.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* countriesList.ISO3.Visible (end) *@
+@if (countriesList.CreatedBy.Visible) { // countriesList.CreatedBy.Visible (begin)
+    if (!countriesList.CreatedBy.UseFilter) {
+        countriesList.SearchColumnCount++;
+    }
+    <div id="xs_CreatedBy" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(countriesList.CreatedBy.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_CreatedBy"
+            name="x_CreatedBy[]"
+            class="form-control ew-select@(countriesList.CreatedBy.IsInvalidClass)"
+            data-select2-id="fCountriessrch_x_CreatedBy"
+            data-table="Countries"
+            data-field="x_CreatedBy"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(countriesList.CreatedBy.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(countriesList.CreatedBy.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(countriesList.CreatedBy.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(countriesList.CreatedBy.EditAttributes)>
+            @(countriesList.CreatedBy.SelectOptionListHtml("x_CreatedBy", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(countriesList.CreatedBy.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCountriessrch", function() {
+            var options = {
+                name: "x_CreatedBy",
+                selectId: "fCountriessrch_x_CreatedBy",
+                ajax: { id: "x_CreatedBy", form: "fCountriessrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.Countries.fields.CreatedBy.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* countriesList.CreatedBy.Visible (end) *@
+@if (countriesList.UpdatedBy.Visible) { // countriesList.UpdatedBy.Visible (begin)
+    if (!countriesList.UpdatedBy.UseFilter) {
+        countriesList.SearchColumnCount++;
+    }
+    <div id="xs_UpdatedBy" class="col-sm-auto d-sm-flex align-items-start mb-3 px-0 pe-sm-2@(countriesList.UpdatedBy.UseFilter ? " ew-filter-field" : "")">
+        <select
+            id="x_UpdatedBy"
+            name="x_UpdatedBy[]"
+            class="form-control ew-select@(countriesList.UpdatedBy.IsInvalidClass)"
+            data-select2-id="fCountriessrch_x_UpdatedBy"
+            data-table="Countries"
+            data-field="x_UpdatedBy"
+            data-caption="@Html.Raw(HtmlEncode(RemoveHtml(countriesList.UpdatedBy.Caption)))"
+            data-filter="true"
+            multiple
+            size="1"
+            data-value-separator="@(countriesList.UpdatedBy.DisplayValueSeparatorAttribute)"
+            data-placeholder="@(HtmlEncode(countriesList.UpdatedBy.PlaceHolder))"
+            data-ew-action="update-options"
+            @Html.Raw(countriesList.UpdatedBy.EditAttributes)>
+            @(countriesList.UpdatedBy.SelectOptionListHtml("x_UpdatedBy", true))
+        </select>
+        <div class="invalid-feedback">@Html.Raw(countriesList.UpdatedBy.GetErrorMessage(false))</div>
+        <script>
+        loadjs.ready("fCountriessrch", function() {
+            var options = {
+                name: "x_UpdatedBy",
+                selectId: "fCountriessrch_x_UpdatedBy",
+                ajax: { id: "x_UpdatedBy", form: "fCountriessrch", limit: ew.FILTER_PAGE_SIZE, data: { ajax: "filter" } }
+            };
+            options = Object.assign({}, ew.filterOptions, options, ew.vars.tables.Countries.fields.UpdatedBy.filterOptions);
+            ew.createFilter(options);
+        });
+        </script>
+    </div><!-- /.col-sm-auto -->
+} @* countriesList.UpdatedBy.Visible (end) *@
+</div><!-- /.row -->
 <div class="row mb-0">
     <div class="col-sm-auto px-0 pe-sm-2">
         <div class="ew-basic-search input-group">
@@ -161,38 +449,35 @@ if (!countriesList.IsExport() && Empty(countriesList.CurrentAction) && countries
 }
 @* Render list options (header, left) *@
 @countriesList.ListOptions.RenderHeader("left")
-@if (countriesList.CountryID.Visible) { // countriesList.CountryID.Visible (begin)
-        <th data-name="CountryID" class="@(countriesList.CountryID.HeaderCellClass)"><div id="elh_Countries_CountryID" class="Countries_CountryID">@Html.Raw(countriesList.RenderFieldHeader(countriesList.CountryID))</div></th>
-} @* countriesList.CountryID.Visible (end) *@
 @if (countriesList.ISO.Visible) { // countriesList.ISO.Visible (begin)
-        <th data-name="ISO" class="@(countriesList.ISO.HeaderCellClass)"><div id="elh_Countries_ISO" class="Countries_ISO">@Html.Raw(countriesList.RenderFieldHeader(countriesList.ISO))</div></th>
+        <th data-name="ISO" class="@(countriesList.ISO.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Countries_ISO" class="Countries_ISO">@Html.Raw(countriesList.RenderFieldHeader(countriesList.ISO))</div></th>
 } @* countriesList.ISO.Visible (end) *@
 @if (countriesList._Name.Visible) { // countriesList._Name.Visible (begin)
-        <th data-name="_Name" class="@(countriesList._Name.HeaderCellClass)"><div id="elh_Countries__Name" class="Countries__Name">@Html.Raw(countriesList.RenderFieldHeader(countriesList._Name))</div></th>
+        <th data-name="_Name" class="@(countriesList._Name.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Countries__Name" class="Countries__Name">@Html.Raw(countriesList.RenderFieldHeader(countriesList._Name))</div></th>
 } @* countriesList._Name.Visible (end) *@
 @if (countriesList.NiceName.Visible) { // countriesList.NiceName.Visible (begin)
-        <th data-name="NiceName" class="@(countriesList.NiceName.HeaderCellClass)"><div id="elh_Countries_NiceName" class="Countries_NiceName">@Html.Raw(countriesList.RenderFieldHeader(countriesList.NiceName))</div></th>
+        <th data-name="NiceName" class="@(countriesList.NiceName.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Countries_NiceName" class="Countries_NiceName">@Html.Raw(countriesList.RenderFieldHeader(countriesList.NiceName))</div></th>
 } @* countriesList.NiceName.Visible (end) *@
 @if (countriesList.ISO3.Visible) { // countriesList.ISO3.Visible (begin)
-        <th data-name="ISO3" class="@(countriesList.ISO3.HeaderCellClass)"><div id="elh_Countries_ISO3" class="Countries_ISO3">@Html.Raw(countriesList.RenderFieldHeader(countriesList.ISO3))</div></th>
+        <th data-name="ISO3" class="@(countriesList.ISO3.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Countries_ISO3" class="Countries_ISO3">@Html.Raw(countriesList.RenderFieldHeader(countriesList.ISO3))</div></th>
 } @* countriesList.ISO3.Visible (end) *@
 @if (countriesList.NumCode.Visible) { // countriesList.NumCode.Visible (begin)
-        <th data-name="NumCode" class="@(countriesList.NumCode.HeaderCellClass)"><div id="elh_Countries_NumCode" class="Countries_NumCode">@Html.Raw(countriesList.RenderFieldHeader(countriesList.NumCode))</div></th>
+        <th data-name="NumCode" class="@(countriesList.NumCode.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Countries_NumCode" class="Countries_NumCode">@Html.Raw(countriesList.RenderFieldHeader(countriesList.NumCode))</div></th>
 } @* countriesList.NumCode.Visible (end) *@
 @if (countriesList.PhoneCode.Visible) { // countriesList.PhoneCode.Visible (begin)
-        <th data-name="PhoneCode" class="@(countriesList.PhoneCode.HeaderCellClass)"><div id="elh_Countries_PhoneCode" class="Countries_PhoneCode">@Html.Raw(countriesList.RenderFieldHeader(countriesList.PhoneCode))</div></th>
+        <th data-name="PhoneCode" class="@(countriesList.PhoneCode.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Countries_PhoneCode" class="Countries_PhoneCode">@Html.Raw(countriesList.RenderFieldHeader(countriesList.PhoneCode))</div></th>
 } @* countriesList.PhoneCode.Visible (end) *@
 @if (countriesList.CreatedBy.Visible) { // countriesList.CreatedBy.Visible (begin)
-        <th data-name="CreatedBy" class="@(countriesList.CreatedBy.HeaderCellClass)"><div id="elh_Countries_CreatedBy" class="Countries_CreatedBy">@Html.Raw(countriesList.RenderFieldHeader(countriesList.CreatedBy))</div></th>
+        <th data-name="CreatedBy" class="@(countriesList.CreatedBy.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Countries_CreatedBy" class="Countries_CreatedBy">@Html.Raw(countriesList.RenderFieldHeader(countriesList.CreatedBy))</div></th>
 } @* countriesList.CreatedBy.Visible (end) *@
 @if (countriesList.CreatedDateTime.Visible) { // countriesList.CreatedDateTime.Visible (begin)
-        <th data-name="CreatedDateTime" class="@(countriesList.CreatedDateTime.HeaderCellClass)"><div id="elh_Countries_CreatedDateTime" class="Countries_CreatedDateTime">@Html.Raw(countriesList.RenderFieldHeader(countriesList.CreatedDateTime))</div></th>
+        <th data-name="CreatedDateTime" class="@(countriesList.CreatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Countries_CreatedDateTime" class="Countries_CreatedDateTime">@Html.Raw(countriesList.RenderFieldHeader(countriesList.CreatedDateTime))</div></th>
 } @* countriesList.CreatedDateTime.Visible (end) *@
 @if (countriesList.UpdatedBy.Visible) { // countriesList.UpdatedBy.Visible (begin)
-        <th data-name="UpdatedBy" class="@(countriesList.UpdatedBy.HeaderCellClass)"><div id="elh_Countries_UpdatedBy" class="Countries_UpdatedBy">@Html.Raw(countriesList.RenderFieldHeader(countriesList.UpdatedBy))</div></th>
+        <th data-name="UpdatedBy" class="@(countriesList.UpdatedBy.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Countries_UpdatedBy" class="Countries_UpdatedBy">@Html.Raw(countriesList.RenderFieldHeader(countriesList.UpdatedBy))</div></th>
 } @* countriesList.UpdatedBy.Visible (end) *@
 @if (countriesList.UpdatedDateTime.Visible) { // countriesList.UpdatedDateTime.Visible (begin)
-        <th data-name="UpdatedDateTime" class="@(countriesList.UpdatedDateTime.HeaderCellClass)"><div id="elh_Countries_UpdatedDateTime" class="Countries_UpdatedDateTime">@Html.Raw(countriesList.RenderFieldHeader(countriesList.UpdatedDateTime))</div></th>
+        <th data-name="UpdatedDateTime" class="@(countriesList.UpdatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Countries_UpdatedDateTime" class="Countries_UpdatedDateTime">@Html.Raw(countriesList.RenderFieldHeader(countriesList.UpdatedDateTime))</div></th>
 } @* countriesList.UpdatedDateTime.Visible (end) *@
 @* Render list options (header, right) *@
 @countriesList.ListOptions.RenderHeader("right")
@@ -214,14 +499,6 @@ if (!countriesList.IsExport() && Empty(countriesList.CurrentAction) && countries
     <tr @Html.Raw(countriesList.RowAttributes)>
     @* Render list options (body, left) *@
     @countriesList.ListOptions.RenderBody("left", countriesList.RowCount)
-    @if (countriesList.CountryID.Visible) { // countriesList.CountryID.Visible (begin)
-        <td data-name="CountryID" @Html.Raw(countriesList.CountryID.CellAttributes)>
-<span id="el@(countriesList.RowIndex == "$rowindex$" ? "$rowindex$" : countriesList.RowCount)_Countries_CountryID" class="el_Countries_CountryID">
-<span @Html.Raw(countriesList.CountryID.ViewAttributes)>
-@Html.Raw(countriesList.CountryID.GetViewValue())</span>
-</span>
-</td>
-    } @* countriesList.CountryID.Visible (end) *@
     @if (countriesList.ISO.Visible) { // countriesList.ISO.Visible (begin)
         <td data-name="ISO" @Html.Raw(countriesList.ISO.CellAttributes)>
 <span id="el@(countriesList.RowIndex == "$rowindex$" ? "$rowindex$" : countriesList.RowCount)_Countries_ISO" class="el_Countries_ISO">
@@ -354,8 +631,19 @@ loadjs.ready("head", function() {
 </script>
 <script>
 loadjs.ready("load", function() {
+    // Startup script
     // Write your table-specific startup script here
     // document.write("page loaded");
+    const navbarHeightWithPadding = $('body div.wrapper.ew-layout nav.main-header').outerHeight();
+    const contentHeaderHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper div.content-header').outerHeight();
+    const toolbarHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid div.btn-toolbar.ew-toolbar').outerHeight();
+    const searchFormHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid form.ew-form.ew-ext-search-form').outerHeight();
+    const tableFooterHeightWithPadding = $('main div div.card.ew-card div.card-footer').outerHeight();
+    const footerHeight = $('footer.main-footer').outerHeight();
+    const nonTableHeightTotal = navbarHeightWithPadding + contentHeaderHeightWithPadding + toolbarHeightWithPadding + searchFormHeightWithPadding + tableFooterHeightWithPadding + footerHeight;
+    const marginBottom = '20px';
+    const tableHeight = `calc(100vh - ${nonTableHeightTotal}px - ${marginBottom})`;
+    $('main div div.card.ew-card form div.table-responsive').css('max-height', tableHeight);
 });
 </script>
 }

@@ -161,27 +161,33 @@ if (!auditTrailList.IsExport() && Empty(auditTrailList.CurrentAction) && auditTr
 }
 @* Render list options (header, left) *@
 @auditTrailList.ListOptions.RenderHeader("left")
-@if (auditTrailList.Id.Visible) { // auditTrailList.Id.Visible (begin)
-        <th data-name="Id" class="@(auditTrailList.Id.HeaderCellClass)"><div id="elh_AuditTrail_Id" class="AuditTrail_Id">@Html.Raw(auditTrailList.RenderFieldHeader(auditTrailList.Id))</div></th>
-} @* auditTrailList.Id.Visible (end) *@
 @if (auditTrailList._DateTime.Visible) { // auditTrailList._DateTime.Visible (begin)
-        <th data-name="_DateTime" class="@(auditTrailList._DateTime.HeaderCellClass)"><div id="elh_AuditTrail__DateTime" class="AuditTrail__DateTime">@Html.Raw(auditTrailList.RenderFieldHeader(auditTrailList._DateTime))</div></th>
+        <th data-name="_DateTime" class="@(auditTrailList._DateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_AuditTrail__DateTime" class="AuditTrail__DateTime">@Html.Raw(auditTrailList.RenderFieldHeader(auditTrailList._DateTime))</div></th>
 } @* auditTrailList._DateTime.Visible (end) *@
 @if (auditTrailList.Script.Visible) { // auditTrailList.Script.Visible (begin)
-        <th data-name="Script" class="@(auditTrailList.Script.HeaderCellClass)"><div id="elh_AuditTrail_Script" class="AuditTrail_Script">@Html.Raw(auditTrailList.RenderFieldHeader(auditTrailList.Script))</div></th>
+        <th data-name="Script" class="@(auditTrailList.Script.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_AuditTrail_Script" class="AuditTrail_Script">@Html.Raw(auditTrailList.RenderFieldHeader(auditTrailList.Script))</div></th>
 } @* auditTrailList.Script.Visible (end) *@
 @if (auditTrailList._User.Visible) { // auditTrailList._User.Visible (begin)
-        <th data-name="_User" class="@(auditTrailList._User.HeaderCellClass)"><div id="elh_AuditTrail__User" class="AuditTrail__User">@Html.Raw(auditTrailList.RenderFieldHeader(auditTrailList._User))</div></th>
+        <th data-name="_User" class="@(auditTrailList._User.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_AuditTrail__User" class="AuditTrail__User">@Html.Raw(auditTrailList.RenderFieldHeader(auditTrailList._User))</div></th>
 } @* auditTrailList._User.Visible (end) *@
 @if (auditTrailList._Action.Visible) { // auditTrailList._Action.Visible (begin)
-        <th data-name="_Action" class="@(auditTrailList._Action.HeaderCellClass)"><div id="elh_AuditTrail__Action" class="AuditTrail__Action">@Html.Raw(auditTrailList.RenderFieldHeader(auditTrailList._Action))</div></th>
+        <th data-name="_Action" class="@(auditTrailList._Action.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_AuditTrail__Action" class="AuditTrail__Action">@Html.Raw(auditTrailList.RenderFieldHeader(auditTrailList._Action))</div></th>
 } @* auditTrailList._Action.Visible (end) *@
 @if (auditTrailList._Table.Visible) { // auditTrailList._Table.Visible (begin)
-        <th data-name="_Table" class="@(auditTrailList._Table.HeaderCellClass)"><div id="elh_AuditTrail__Table" class="AuditTrail__Table">@Html.Raw(auditTrailList.RenderFieldHeader(auditTrailList._Table))</div></th>
+        <th data-name="_Table" class="@(auditTrailList._Table.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_AuditTrail__Table" class="AuditTrail__Table">@Html.Raw(auditTrailList.RenderFieldHeader(auditTrailList._Table))</div></th>
 } @* auditTrailList._Table.Visible (end) *@
 @if (auditTrailList._Field.Visible) { // auditTrailList._Field.Visible (begin)
-        <th data-name="_Field" class="@(auditTrailList._Field.HeaderCellClass)"><div id="elh_AuditTrail__Field" class="AuditTrail__Field">@Html.Raw(auditTrailList.RenderFieldHeader(auditTrailList._Field))</div></th>
+        <th data-name="_Field" class="@(auditTrailList._Field.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_AuditTrail__Field" class="AuditTrail__Field">@Html.Raw(auditTrailList.RenderFieldHeader(auditTrailList._Field))</div></th>
 } @* auditTrailList._Field.Visible (end) *@
+@if (auditTrailList.KeyValue.Visible) { // auditTrailList.KeyValue.Visible (begin)
+        <th data-name="KeyValue" class="@(auditTrailList.KeyValue.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_AuditTrail_KeyValue" class="AuditTrail_KeyValue">@Html.Raw(auditTrailList.RenderFieldHeader(auditTrailList.KeyValue))</div></th>
+} @* auditTrailList.KeyValue.Visible (end) *@
+@if (auditTrailList.OldValue.Visible) { // auditTrailList.OldValue.Visible (begin)
+        <th data-name="OldValue" class="@(auditTrailList.OldValue.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_AuditTrail_OldValue" class="AuditTrail_OldValue">@Html.Raw(auditTrailList.RenderFieldHeader(auditTrailList.OldValue))</div></th>
+} @* auditTrailList.OldValue.Visible (end) *@
+@if (auditTrailList.NewValue.Visible) { // auditTrailList.NewValue.Visible (begin)
+        <th data-name="NewValue" class="@(auditTrailList.NewValue.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_AuditTrail_NewValue" class="AuditTrail_NewValue">@Html.Raw(auditTrailList.RenderFieldHeader(auditTrailList.NewValue))</div></th>
+} @* auditTrailList.NewValue.Visible (end) *@
 @* Render list options (header, right) *@
 @auditTrailList.ListOptions.RenderHeader("right")
     </tr>
@@ -202,14 +208,6 @@ if (!auditTrailList.IsExport() && Empty(auditTrailList.CurrentAction) && auditTr
     <tr @Html.Raw(auditTrailList.RowAttributes)>
     @* Render list options (body, left) *@
     @auditTrailList.ListOptions.RenderBody("left", auditTrailList.RowCount)
-    @if (auditTrailList.Id.Visible) { // auditTrailList.Id.Visible (begin)
-        <td data-name="Id" @Html.Raw(auditTrailList.Id.CellAttributes)>
-<span id="el@(auditTrailList.RowIndex == "$rowindex$" ? "$rowindex$" : auditTrailList.RowCount)_AuditTrail_Id" class="el_AuditTrail_Id">
-<span @Html.Raw(auditTrailList.Id.ViewAttributes)>
-@Html.Raw(auditTrailList.Id.GetViewValue())</span>
-</span>
-</td>
-    } @* auditTrailList.Id.Visible (end) *@
     @if (auditTrailList._DateTime.Visible) { // auditTrailList._DateTime.Visible (begin)
         <td data-name="_DateTime" @Html.Raw(auditTrailList._DateTime.CellAttributes)>
 <span id="el@(auditTrailList.RowIndex == "$rowindex$" ? "$rowindex$" : auditTrailList.RowCount)_AuditTrail__DateTime" class="el_AuditTrail__DateTime">
@@ -258,6 +256,30 @@ if (!auditTrailList.IsExport() && Empty(auditTrailList.CurrentAction) && auditTr
 </span>
 </td>
     } @* auditTrailList._Field.Visible (end) *@
+    @if (auditTrailList.KeyValue.Visible) { // auditTrailList.KeyValue.Visible (begin)
+        <td data-name="KeyValue" @Html.Raw(auditTrailList.KeyValue.CellAttributes)>
+<span id="el@(auditTrailList.RowIndex == "$rowindex$" ? "$rowindex$" : auditTrailList.RowCount)_AuditTrail_KeyValue" class="el_AuditTrail_KeyValue">
+<span @Html.Raw(auditTrailList.KeyValue.ViewAttributes)>
+@Html.Raw(auditTrailList.KeyValue.GetViewValue())</span>
+</span>
+</td>
+    } @* auditTrailList.KeyValue.Visible (end) *@
+    @if (auditTrailList.OldValue.Visible) { // auditTrailList.OldValue.Visible (begin)
+        <td data-name="OldValue" @Html.Raw(auditTrailList.OldValue.CellAttributes)>
+<span id="el@(auditTrailList.RowIndex == "$rowindex$" ? "$rowindex$" : auditTrailList.RowCount)_AuditTrail_OldValue" class="el_AuditTrail_OldValue">
+<span @Html.Raw(auditTrailList.OldValue.ViewAttributes)>
+@Html.Raw(auditTrailList.OldValue.GetViewValue())</span>
+</span>
+</td>
+    } @* auditTrailList.OldValue.Visible (end) *@
+    @if (auditTrailList.NewValue.Visible) { // auditTrailList.NewValue.Visible (begin)
+        <td data-name="NewValue" @Html.Raw(auditTrailList.NewValue.CellAttributes)>
+<span id="el@(auditTrailList.RowIndex == "$rowindex$" ? "$rowindex$" : auditTrailList.RowCount)_AuditTrail_NewValue" class="el_AuditTrail_NewValue">
+<span @Html.Raw(auditTrailList.NewValue.ViewAttributes)>
+@Html.Raw(auditTrailList.NewValue.GetViewValue())</span>
+</span>
+</td>
+    } @* auditTrailList.NewValue.Visible (end) *@
     @* Render list options (body, right) *@
     @auditTrailList.ListOptions.RenderBody("right", auditTrailList.RowCount)
     </tr>
@@ -310,8 +332,19 @@ loadjs.ready("head", function() {
 </script>
 <script>
 loadjs.ready("load", function() {
+    // Startup script
     // Write your table-specific startup script here
     // document.write("page loaded");
+    const navbarHeightWithPadding = $('body div.wrapper.ew-layout nav.main-header').outerHeight();
+    const contentHeaderHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper div.content-header').outerHeight();
+    const toolbarHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid div.btn-toolbar.ew-toolbar').outerHeight();
+    const searchFormHeightWithPadding = $('body div.wrapper.ew-layout div.content-wrapper section.content div.container-fluid form.ew-form.ew-ext-search-form').outerHeight();
+    const tableFooterHeightWithPadding = $('main div div.card.ew-card div.card-footer').outerHeight();
+    const footerHeight = $('footer.main-footer').outerHeight();
+    const nonTableHeightTotal = navbarHeightWithPadding + contentHeaderHeightWithPadding + toolbarHeightWithPadding + searchFormHeightWithPadding + tableFooterHeightWithPadding + footerHeight;
+    const marginBottom = '20px';
+    const tableHeight = `calc(100vh - ${nonTableHeightTotal}px - ${marginBottom})`;
+    $('main div div.card.ew-card form div.table-responsive').css('max-height', tableHeight);
 });
 </script>
 }
