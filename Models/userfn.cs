@@ -17,6 +17,7 @@ public partial class mecommerce {
     // Class Init event
     public static void ClassInit() {
         // Enter your code here
+        Sanitizer.AllowedAttributes.Remove("rounded-end");
     }
 
     // Page Loading event

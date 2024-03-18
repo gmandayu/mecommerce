@@ -87,3 +87,4 @@ global using GLOBALS = ASPNETMaker2023.Models.mecommerce;
 
 // global using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 // global using Microsoft.AspNetCore.HttpOverrides;
+// global using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
