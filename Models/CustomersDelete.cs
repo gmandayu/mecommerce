@@ -202,7 +202,7 @@ public partial class mecommerce {
         // Set field visibility
         public void SetVisibility()
         {
-            CustomerID.SetVisibility();
+            CustomerID.Visible = false;
             FirstName.SetVisibility();
             MiddleName.SetVisibility();
             LastName.SetVisibility();
@@ -436,6 +436,11 @@ public partial class mecommerce {
             // Use inline delete
             if (UseAjaxActions)
                 InlineDelete = true;
+
+            // Set up lookup cache
+            await SetupLookupOptions(Gender);
+            await SetupLookupOptions(PrimaryAddressCountryID);
+            await SetupLookupOptions(AlternativeAddressCountryID);
 
             // Set up Breadcrumb
             SetupBreadcrumb();
@@ -704,10 +709,6 @@ public partial class mecommerce {
 
             // View row
             if (RowType == RowType.View) {
-                // CustomerID
-                CustomerID.ViewValue = CustomerID.CurrentValue;
-                CustomerID.ViewCustomAttributes = "";
-
                 // FirstName
                 FirstName.ViewValue = ConvertToString(FirstName.CurrentValue); // DN
                 FirstName.ViewCustomAttributes = "";
@@ -721,7 +722,11 @@ public partial class mecommerce {
                 LastName.ViewCustomAttributes = "";
 
                 // Gender
-                Gender.ViewValue = ConvertToString(Gender.CurrentValue); // DN
+                if (!Empty(Gender.CurrentValue)) {
+                    Gender.ViewValue = Gender.HighlightLookup(ConvertToString(Gender.CurrentValue), Gender.OptionCaption(ConvertToString(Gender.CurrentValue)));
+                } else {
+                    Gender.ViewValue = DbNullValue;
+                }
                 Gender.ViewCustomAttributes = "";
 
                 // PlaceOfBirth
@@ -742,8 +747,24 @@ public partial class mecommerce {
                 PrimaryAddressPostCode.ViewCustomAttributes = "";
 
                 // PrimaryAddressCountryID
-                PrimaryAddressCountryID.ViewValue = PrimaryAddressCountryID.CurrentValue;
-                PrimaryAddressCountryID.ViewValue = FormatNumber(PrimaryAddressCountryID.ViewValue, PrimaryAddressCountryID.FormatPattern);
+                curVal = ConvertToString(PrimaryAddressCountryID.CurrentValue);
+                if (!Empty(curVal)) {
+                    if (PrimaryAddressCountryID.Lookup != null && IsDictionary(PrimaryAddressCountryID.Lookup?.Options) && PrimaryAddressCountryID.Lookup?.Options.Values.Count > 0) { // Load from cache // DN
+                        PrimaryAddressCountryID.ViewValue = PrimaryAddressCountryID.LookupCacheOption(curVal);
+                    } else { // Lookup from database // DN
+                        filterWrk = SearchFilter("[CountryID]", "=", PrimaryAddressCountryID.CurrentValue, DataType.Number, "");
+                        sqlWrk = PrimaryAddressCountryID.Lookup?.GetSql(false, filterWrk, null, this, true, true);
+                        rswrk = sqlWrk != null ? Connection.GetRows(sqlWrk) : null; // Must use Sync to avoid overwriting ViewValue in RenderViewRow
+                        if (rswrk?.Count > 0 && PrimaryAddressCountryID.Lookup != null) { // Lookup values found
+                            var listwrk = PrimaryAddressCountryID.Lookup?.RenderViewRow(rswrk[0]);
+                            PrimaryAddressCountryID.ViewValue = PrimaryAddressCountryID.HighlightLookup(ConvertToString(rswrk[0]), PrimaryAddressCountryID.DisplayValue(listwrk));
+                        } else {
+                            PrimaryAddressCountryID.ViewValue = FormatNumber(PrimaryAddressCountryID.CurrentValue, PrimaryAddressCountryID.FormatPattern);
+                        }
+                    }
+                } else {
+                    PrimaryAddressCountryID.ViewValue = DbNullValue;
+                }
                 PrimaryAddressCountryID.ViewCustomAttributes = "";
 
                 // AlternativeAddressCity
@@ -755,8 +776,24 @@ public partial class mecommerce {
                 AlternativeAddressPostCode.ViewCustomAttributes = "";
 
                 // AlternativeAddressCountryID
-                AlternativeAddressCountryID.ViewValue = AlternativeAddressCountryID.CurrentValue;
-                AlternativeAddressCountryID.ViewValue = FormatNumber(AlternativeAddressCountryID.ViewValue, AlternativeAddressCountryID.FormatPattern);
+                curVal = ConvertToString(AlternativeAddressCountryID.CurrentValue);
+                if (!Empty(curVal)) {
+                    if (AlternativeAddressCountryID.Lookup != null && IsDictionary(AlternativeAddressCountryID.Lookup?.Options) && AlternativeAddressCountryID.Lookup?.Options.Values.Count > 0) { // Load from cache // DN
+                        AlternativeAddressCountryID.ViewValue = AlternativeAddressCountryID.LookupCacheOption(curVal);
+                    } else { // Lookup from database // DN
+                        filterWrk = SearchFilter("[CountryID]", "=", AlternativeAddressCountryID.CurrentValue, DataType.Number, "");
+                        sqlWrk = AlternativeAddressCountryID.Lookup?.GetSql(false, filterWrk, null, this, true, true);
+                        rswrk = sqlWrk != null ? Connection.GetRows(sqlWrk) : null; // Must use Sync to avoid overwriting ViewValue in RenderViewRow
+                        if (rswrk?.Count > 0 && AlternativeAddressCountryID.Lookup != null) { // Lookup values found
+                            var listwrk = AlternativeAddressCountryID.Lookup?.RenderViewRow(rswrk[0]);
+                            AlternativeAddressCountryID.ViewValue = AlternativeAddressCountryID.HighlightLookup(ConvertToString(rswrk[0]), AlternativeAddressCountryID.DisplayValue(listwrk));
+                        } else {
+                            AlternativeAddressCountryID.ViewValue = FormatNumber(AlternativeAddressCountryID.CurrentValue, AlternativeAddressCountryID.FormatPattern);
+                        }
+                    }
+                } else {
+                    AlternativeAddressCountryID.ViewValue = DbNullValue;
+                }
                 AlternativeAddressCountryID.ViewCustomAttributes = "";
 
                 // MobileNumber
@@ -764,8 +801,24 @@ public partial class mecommerce {
                 MobileNumber.ViewCustomAttributes = "";
 
                 // UserID
-                UserID.ViewValue = UserID.CurrentValue;
-                UserID.ViewValue = FormatNumber(UserID.ViewValue, UserID.FormatPattern);
+                curVal = ConvertToString(UserID.CurrentValue);
+                if (!Empty(curVal)) {
+                    if (UserID.Lookup != null && IsDictionary(UserID.Lookup?.Options) && UserID.Lookup?.Options.Values.Count > 0) { // Load from cache // DN
+                        UserID.ViewValue = UserID.LookupCacheOption(curVal);
+                    } else { // Lookup from database // DN
+                        filterWrk = SearchFilter("[UserID]", "=", UserID.CurrentValue, DataType.Number, "");
+                        sqlWrk = UserID.Lookup?.GetSql(false, filterWrk, null, this, true, true);
+                        rswrk = sqlWrk != null ? Connection.GetRows(sqlWrk) : null; // Must use Sync to avoid overwriting ViewValue in RenderViewRow
+                        if (rswrk?.Count > 0 && UserID.Lookup != null) { // Lookup values found
+                            var listwrk = UserID.Lookup?.RenderViewRow(rswrk[0]);
+                            UserID.ViewValue = UserID.HighlightLookup(ConvertToString(rswrk[0]), UserID.DisplayValue(listwrk));
+                        } else {
+                            UserID.ViewValue = FormatNumber(UserID.CurrentValue, UserID.FormatPattern);
+                        }
+                    }
+                } else {
+                    UserID.ViewValue = DbNullValue;
+                }
                 UserID.ViewCustomAttributes = "";
 
                 // Status
@@ -773,8 +826,24 @@ public partial class mecommerce {
                 Status.ViewCustomAttributes = "";
 
                 // CreatedBy
-                CreatedBy.ViewValue = CreatedBy.CurrentValue;
-                CreatedBy.ViewValue = FormatNumber(CreatedBy.ViewValue, CreatedBy.FormatPattern);
+                curVal = ConvertToString(CreatedBy.CurrentValue);
+                if (!Empty(curVal)) {
+                    if (CreatedBy.Lookup != null && IsDictionary(CreatedBy.Lookup?.Options) && CreatedBy.Lookup?.Options.Values.Count > 0) { // Load from cache // DN
+                        CreatedBy.ViewValue = CreatedBy.LookupCacheOption(curVal);
+                    } else { // Lookup from database // DN
+                        filterWrk = SearchFilter("[UserID]", "=", CreatedBy.CurrentValue, DataType.Number, "");
+                        sqlWrk = CreatedBy.Lookup?.GetSql(false, filterWrk, null, this, true, true);
+                        rswrk = sqlWrk != null ? Connection.GetRows(sqlWrk) : null; // Must use Sync to avoid overwriting ViewValue in RenderViewRow
+                        if (rswrk?.Count > 0 && CreatedBy.Lookup != null) { // Lookup values found
+                            var listwrk = CreatedBy.Lookup?.RenderViewRow(rswrk[0]);
+                            CreatedBy.ViewValue = CreatedBy.HighlightLookup(ConvertToString(rswrk[0]), CreatedBy.DisplayValue(listwrk));
+                        } else {
+                            CreatedBy.ViewValue = FormatNumber(CreatedBy.CurrentValue, CreatedBy.FormatPattern);
+                        }
+                    }
+                } else {
+                    CreatedBy.ViewValue = DbNullValue;
+                }
                 CreatedBy.ViewCustomAttributes = "";
 
                 // CreatedDateTime
@@ -783,18 +852,30 @@ public partial class mecommerce {
                 CreatedDateTime.ViewCustomAttributes = "";
 
                 // UpdatedBy
-                UpdatedBy.ViewValue = UpdatedBy.CurrentValue;
-                UpdatedBy.ViewValue = FormatNumber(UpdatedBy.ViewValue, UpdatedBy.FormatPattern);
+                curVal = ConvertToString(UpdatedBy.CurrentValue);
+                if (!Empty(curVal)) {
+                    if (UpdatedBy.Lookup != null && IsDictionary(UpdatedBy.Lookup?.Options) && UpdatedBy.Lookup?.Options.Values.Count > 0) { // Load from cache // DN
+                        UpdatedBy.ViewValue = UpdatedBy.LookupCacheOption(curVal);
+                    } else { // Lookup from database // DN
+                        filterWrk = SearchFilter("[UserID]", "=", UpdatedBy.CurrentValue, DataType.Number, "");
+                        sqlWrk = UpdatedBy.Lookup?.GetSql(false, filterWrk, null, this, true, true);
+                        rswrk = sqlWrk != null ? Connection.GetRows(sqlWrk) : null; // Must use Sync to avoid overwriting ViewValue in RenderViewRow
+                        if (rswrk?.Count > 0 && UpdatedBy.Lookup != null) { // Lookup values found
+                            var listwrk = UpdatedBy.Lookup?.RenderViewRow(rswrk[0]);
+                            UpdatedBy.ViewValue = UpdatedBy.HighlightLookup(ConvertToString(rswrk[0]), UpdatedBy.DisplayValue(listwrk));
+                        } else {
+                            UpdatedBy.ViewValue = FormatNumber(UpdatedBy.CurrentValue, UpdatedBy.FormatPattern);
+                        }
+                    }
+                } else {
+                    UpdatedBy.ViewValue = DbNullValue;
+                }
                 UpdatedBy.ViewCustomAttributes = "";
 
                 // UpdatedDateTime
                 UpdatedDateTime.ViewValue = UpdatedDateTime.CurrentValue;
                 UpdatedDateTime.ViewValue = FormatDateTime(UpdatedDateTime.ViewValue, UpdatedDateTime.FormatPattern);
                 UpdatedDateTime.ViewCustomAttributes = "";
-
-                // CustomerID
-                CustomerID.HrefValue = "";
-                CustomerID.TooltipValue = "";
 
                 // FirstName
                 FirstName.HrefValue = "";

@@ -268,7 +268,7 @@ public partial class mecommerce {
         // Set field visibility
         public void SetVisibility()
         {
-            CustomerID.SetVisibility();
+            CustomerID.Visible = false;
             FirstName.SetVisibility();
             MiddleName.SetVisibility();
             LastName.SetVisibility();
@@ -748,6 +748,11 @@ public partial class mecommerce {
             // Set up custom action (compatible with old version)
             ListActions.Add(CustomActions);
 
+            // Set up lookup cache
+            await SetupLookupOptions(Gender);
+            await SetupLookupOptions(PrimaryAddressCountryID);
+            await SetupLookupOptions(AlternativeAddressCountryID);
+
             // Update form name to avoid conflict
             if (IsModal)
                 FormName = "fCustomersgrid";
@@ -805,9 +810,14 @@ public partial class mecommerce {
 
             // Get default search criteria
             AddFilter(ref DefaultSearchWhere, BasicSearchWhere(true));
+            AddFilter(ref DefaultSearchWhere, AdvancedSearchWhere(true));
 
             // Get basic search values
             LoadBasicSearchValues();
+
+            // Get and validate search values for advanced search
+            if (Empty(UserAction)) // Skip if user action
+                LoadSearchValues(); // Get search values
 
             // Process filter list
             var filterResult = await ProcessFilterList();
@@ -816,6 +826,10 @@ public partial class mecommerce {
                 if (!Config.Debug)
                     Response?.Clear();
                 return Controller.Json(filterResult);
+            }
+            CurrentForm?.ResetIndex();
+            if (!ValidateSearch()) {
+                // Nothing to do
             }
 
             // Restore search parms from Session if not searching / reset / export
@@ -832,6 +846,13 @@ public partial class mecommerce {
             if (!HasInvalidFields())
                 srchBasic = BasicSearchWhere();
 
+            // Get search criteria for advanced search
+            if (!HasInvalidFields())
+                srchAdvanced = AdvancedSearchWhere();
+
+            // Get query builder criteria
+            query = QueryBuilderWhere();
+
             // Restore display records
             if (Command != "json" && (RecordsPerPage == -1 || RecordsPerPage > 0)) {
                 DisplayRecords = RecordsPerPage; // Restore from Session
@@ -846,7 +867,15 @@ public partial class mecommerce {
                 BasicSearch.LoadDefault();
                 if (!Empty(BasicSearch.Keyword))
                     srchBasic = BasicSearchWhere(); // Save to session
+
+                // Load advanced search from default
+                if (LoadAdvancedSearchDefault())
+                    srchAdvanced = AdvancedSearchWhere(); // Save to session
             }
+
+            // Restore search settings from Session
+            if (!HasInvalidFields())
+                LoadAdvancedSearch();
 
             // Build search criteria
             if (!Empty(query)) {
@@ -1062,28 +1091,6 @@ public partial class mecommerce {
 
             // Initialize
             var filters = new JObject(); // DN
-            filters.Merge(JObject.Parse(CustomerID.AdvancedSearch.ToJson())); // Field CustomerID
-            filters.Merge(JObject.Parse(FirstName.AdvancedSearch.ToJson())); // Field FirstName
-            filters.Merge(JObject.Parse(MiddleName.AdvancedSearch.ToJson())); // Field MiddleName
-            filters.Merge(JObject.Parse(LastName.AdvancedSearch.ToJson())); // Field LastName
-            filters.Merge(JObject.Parse(Gender.AdvancedSearch.ToJson())); // Field Gender
-            filters.Merge(JObject.Parse(PlaceOfBirth.AdvancedSearch.ToJson())); // Field PlaceOfBirth
-            filters.Merge(JObject.Parse(DateOfBirth.AdvancedSearch.ToJson())); // Field DateOfBirth
-            filters.Merge(JObject.Parse(PrimaryAddress.AdvancedSearch.ToJson())); // Field PrimaryAddress
-            filters.Merge(JObject.Parse(PrimaryAddressCity.AdvancedSearch.ToJson())); // Field PrimaryAddressCity
-            filters.Merge(JObject.Parse(PrimaryAddressPostCode.AdvancedSearch.ToJson())); // Field PrimaryAddressPostCode
-            filters.Merge(JObject.Parse(PrimaryAddressCountryID.AdvancedSearch.ToJson())); // Field PrimaryAddressCountryID
-            filters.Merge(JObject.Parse(AlternativeAddress.AdvancedSearch.ToJson())); // Field AlternativeAddress
-            filters.Merge(JObject.Parse(AlternativeAddressCity.AdvancedSearch.ToJson())); // Field AlternativeAddressCity
-            filters.Merge(JObject.Parse(AlternativeAddressPostCode.AdvancedSearch.ToJson())); // Field AlternativeAddressPostCode
-            filters.Merge(JObject.Parse(AlternativeAddressCountryID.AdvancedSearch.ToJson())); // Field AlternativeAddressCountryID
-            filters.Merge(JObject.Parse(MobileNumber.AdvancedSearch.ToJson())); // Field MobileNumber
-            filters.Merge(JObject.Parse(UserID.AdvancedSearch.ToJson())); // Field UserID
-            filters.Merge(JObject.Parse(Status.AdvancedSearch.ToJson())); // Field Status
-            filters.Merge(JObject.Parse(CreatedBy.AdvancedSearch.ToJson())); // Field CreatedBy
-            filters.Merge(JObject.Parse(CreatedDateTime.AdvancedSearch.ToJson())); // Field CreatedDateTime
-            filters.Merge(JObject.Parse(UpdatedBy.AdvancedSearch.ToJson())); // Field UpdatedBy
-            filters.Merge(JObject.Parse(UpdatedDateTime.AdvancedSearch.ToJson())); // Field UpdatedDateTime
             filters.Merge(JObject.Parse(BasicSearch.ToJson()));
 
             // Return filter list in JSON
@@ -1118,226 +1125,6 @@ public partial class mecommerce {
             var filter = JsonConvert.DeserializeObject<Dictionary<string, string>>(Post("filter"));
             Command = "search";
             string? sv;
-
-            // Field CustomerID
-            if (filter?.TryGetValue("x_CustomerID", out sv) ?? false) {
-                CustomerID.AdvancedSearch.SearchValue = sv;
-                CustomerID.AdvancedSearch.SearchOperator = filter["z_CustomerID"];
-                CustomerID.AdvancedSearch.SearchCondition = filter["v_CustomerID"];
-                CustomerID.AdvancedSearch.SearchValue2 = filter["y_CustomerID"];
-                CustomerID.AdvancedSearch.SearchOperator2 = filter["w_CustomerID"];
-                CustomerID.AdvancedSearch.Save();
-            }
-
-            // Field FirstName
-            if (filter?.TryGetValue("x_FirstName", out sv) ?? false) {
-                FirstName.AdvancedSearch.SearchValue = sv;
-                FirstName.AdvancedSearch.SearchOperator = filter["z_FirstName"];
-                FirstName.AdvancedSearch.SearchCondition = filter["v_FirstName"];
-                FirstName.AdvancedSearch.SearchValue2 = filter["y_FirstName"];
-                FirstName.AdvancedSearch.SearchOperator2 = filter["w_FirstName"];
-                FirstName.AdvancedSearch.Save();
-            }
-
-            // Field MiddleName
-            if (filter?.TryGetValue("x_MiddleName", out sv) ?? false) {
-                MiddleName.AdvancedSearch.SearchValue = sv;
-                MiddleName.AdvancedSearch.SearchOperator = filter["z_MiddleName"];
-                MiddleName.AdvancedSearch.SearchCondition = filter["v_MiddleName"];
-                MiddleName.AdvancedSearch.SearchValue2 = filter["y_MiddleName"];
-                MiddleName.AdvancedSearch.SearchOperator2 = filter["w_MiddleName"];
-                MiddleName.AdvancedSearch.Save();
-            }
-
-            // Field LastName
-            if (filter?.TryGetValue("x_LastName", out sv) ?? false) {
-                LastName.AdvancedSearch.SearchValue = sv;
-                LastName.AdvancedSearch.SearchOperator = filter["z_LastName"];
-                LastName.AdvancedSearch.SearchCondition = filter["v_LastName"];
-                LastName.AdvancedSearch.SearchValue2 = filter["y_LastName"];
-                LastName.AdvancedSearch.SearchOperator2 = filter["w_LastName"];
-                LastName.AdvancedSearch.Save();
-            }
-
-            // Field Gender
-            if (filter?.TryGetValue("x_Gender", out sv) ?? false) {
-                Gender.AdvancedSearch.SearchValue = sv;
-                Gender.AdvancedSearch.SearchOperator = filter["z_Gender"];
-                Gender.AdvancedSearch.SearchCondition = filter["v_Gender"];
-                Gender.AdvancedSearch.SearchValue2 = filter["y_Gender"];
-                Gender.AdvancedSearch.SearchOperator2 = filter["w_Gender"];
-                Gender.AdvancedSearch.Save();
-            }
-
-            // Field PlaceOfBirth
-            if (filter?.TryGetValue("x_PlaceOfBirth", out sv) ?? false) {
-                PlaceOfBirth.AdvancedSearch.SearchValue = sv;
-                PlaceOfBirth.AdvancedSearch.SearchOperator = filter["z_PlaceOfBirth"];
-                PlaceOfBirth.AdvancedSearch.SearchCondition = filter["v_PlaceOfBirth"];
-                PlaceOfBirth.AdvancedSearch.SearchValue2 = filter["y_PlaceOfBirth"];
-                PlaceOfBirth.AdvancedSearch.SearchOperator2 = filter["w_PlaceOfBirth"];
-                PlaceOfBirth.AdvancedSearch.Save();
-            }
-
-            // Field DateOfBirth
-            if (filter?.TryGetValue("x_DateOfBirth", out sv) ?? false) {
-                DateOfBirth.AdvancedSearch.SearchValue = sv;
-                DateOfBirth.AdvancedSearch.SearchOperator = filter["z_DateOfBirth"];
-                DateOfBirth.AdvancedSearch.SearchCondition = filter["v_DateOfBirth"];
-                DateOfBirth.AdvancedSearch.SearchValue2 = filter["y_DateOfBirth"];
-                DateOfBirth.AdvancedSearch.SearchOperator2 = filter["w_DateOfBirth"];
-                DateOfBirth.AdvancedSearch.Save();
-            }
-
-            // Field PrimaryAddress
-            if (filter?.TryGetValue("x_PrimaryAddress", out sv) ?? false) {
-                PrimaryAddress.AdvancedSearch.SearchValue = sv;
-                PrimaryAddress.AdvancedSearch.SearchOperator = filter["z_PrimaryAddress"];
-                PrimaryAddress.AdvancedSearch.SearchCondition = filter["v_PrimaryAddress"];
-                PrimaryAddress.AdvancedSearch.SearchValue2 = filter["y_PrimaryAddress"];
-                PrimaryAddress.AdvancedSearch.SearchOperator2 = filter["w_PrimaryAddress"];
-                PrimaryAddress.AdvancedSearch.Save();
-            }
-
-            // Field PrimaryAddressCity
-            if (filter?.TryGetValue("x_PrimaryAddressCity", out sv) ?? false) {
-                PrimaryAddressCity.AdvancedSearch.SearchValue = sv;
-                PrimaryAddressCity.AdvancedSearch.SearchOperator = filter["z_PrimaryAddressCity"];
-                PrimaryAddressCity.AdvancedSearch.SearchCondition = filter["v_PrimaryAddressCity"];
-                PrimaryAddressCity.AdvancedSearch.SearchValue2 = filter["y_PrimaryAddressCity"];
-                PrimaryAddressCity.AdvancedSearch.SearchOperator2 = filter["w_PrimaryAddressCity"];
-                PrimaryAddressCity.AdvancedSearch.Save();
-            }
-
-            // Field PrimaryAddressPostCode
-            if (filter?.TryGetValue("x_PrimaryAddressPostCode", out sv) ?? false) {
-                PrimaryAddressPostCode.AdvancedSearch.SearchValue = sv;
-                PrimaryAddressPostCode.AdvancedSearch.SearchOperator = filter["z_PrimaryAddressPostCode"];
-                PrimaryAddressPostCode.AdvancedSearch.SearchCondition = filter["v_PrimaryAddressPostCode"];
-                PrimaryAddressPostCode.AdvancedSearch.SearchValue2 = filter["y_PrimaryAddressPostCode"];
-                PrimaryAddressPostCode.AdvancedSearch.SearchOperator2 = filter["w_PrimaryAddressPostCode"];
-                PrimaryAddressPostCode.AdvancedSearch.Save();
-            }
-
-            // Field PrimaryAddressCountryID
-            if (filter?.TryGetValue("x_PrimaryAddressCountryID", out sv) ?? false) {
-                PrimaryAddressCountryID.AdvancedSearch.SearchValue = sv;
-                PrimaryAddressCountryID.AdvancedSearch.SearchOperator = filter["z_PrimaryAddressCountryID"];
-                PrimaryAddressCountryID.AdvancedSearch.SearchCondition = filter["v_PrimaryAddressCountryID"];
-                PrimaryAddressCountryID.AdvancedSearch.SearchValue2 = filter["y_PrimaryAddressCountryID"];
-                PrimaryAddressCountryID.AdvancedSearch.SearchOperator2 = filter["w_PrimaryAddressCountryID"];
-                PrimaryAddressCountryID.AdvancedSearch.Save();
-            }
-
-            // Field AlternativeAddress
-            if (filter?.TryGetValue("x_AlternativeAddress", out sv) ?? false) {
-                AlternativeAddress.AdvancedSearch.SearchValue = sv;
-                AlternativeAddress.AdvancedSearch.SearchOperator = filter["z_AlternativeAddress"];
-                AlternativeAddress.AdvancedSearch.SearchCondition = filter["v_AlternativeAddress"];
-                AlternativeAddress.AdvancedSearch.SearchValue2 = filter["y_AlternativeAddress"];
-                AlternativeAddress.AdvancedSearch.SearchOperator2 = filter["w_AlternativeAddress"];
-                AlternativeAddress.AdvancedSearch.Save();
-            }
-
-            // Field AlternativeAddressCity
-            if (filter?.TryGetValue("x_AlternativeAddressCity", out sv) ?? false) {
-                AlternativeAddressCity.AdvancedSearch.SearchValue = sv;
-                AlternativeAddressCity.AdvancedSearch.SearchOperator = filter["z_AlternativeAddressCity"];
-                AlternativeAddressCity.AdvancedSearch.SearchCondition = filter["v_AlternativeAddressCity"];
-                AlternativeAddressCity.AdvancedSearch.SearchValue2 = filter["y_AlternativeAddressCity"];
-                AlternativeAddressCity.AdvancedSearch.SearchOperator2 = filter["w_AlternativeAddressCity"];
-                AlternativeAddressCity.AdvancedSearch.Save();
-            }
-
-            // Field AlternativeAddressPostCode
-            if (filter?.TryGetValue("x_AlternativeAddressPostCode", out sv) ?? false) {
-                AlternativeAddressPostCode.AdvancedSearch.SearchValue = sv;
-                AlternativeAddressPostCode.AdvancedSearch.SearchOperator = filter["z_AlternativeAddressPostCode"];
-                AlternativeAddressPostCode.AdvancedSearch.SearchCondition = filter["v_AlternativeAddressPostCode"];
-                AlternativeAddressPostCode.AdvancedSearch.SearchValue2 = filter["y_AlternativeAddressPostCode"];
-                AlternativeAddressPostCode.AdvancedSearch.SearchOperator2 = filter["w_AlternativeAddressPostCode"];
-                AlternativeAddressPostCode.AdvancedSearch.Save();
-            }
-
-            // Field AlternativeAddressCountryID
-            if (filter?.TryGetValue("x_AlternativeAddressCountryID", out sv) ?? false) {
-                AlternativeAddressCountryID.AdvancedSearch.SearchValue = sv;
-                AlternativeAddressCountryID.AdvancedSearch.SearchOperator = filter["z_AlternativeAddressCountryID"];
-                AlternativeAddressCountryID.AdvancedSearch.SearchCondition = filter["v_AlternativeAddressCountryID"];
-                AlternativeAddressCountryID.AdvancedSearch.SearchValue2 = filter["y_AlternativeAddressCountryID"];
-                AlternativeAddressCountryID.AdvancedSearch.SearchOperator2 = filter["w_AlternativeAddressCountryID"];
-                AlternativeAddressCountryID.AdvancedSearch.Save();
-            }
-
-            // Field MobileNumber
-            if (filter?.TryGetValue("x_MobileNumber", out sv) ?? false) {
-                MobileNumber.AdvancedSearch.SearchValue = sv;
-                MobileNumber.AdvancedSearch.SearchOperator = filter["z_MobileNumber"];
-                MobileNumber.AdvancedSearch.SearchCondition = filter["v_MobileNumber"];
-                MobileNumber.AdvancedSearch.SearchValue2 = filter["y_MobileNumber"];
-                MobileNumber.AdvancedSearch.SearchOperator2 = filter["w_MobileNumber"];
-                MobileNumber.AdvancedSearch.Save();
-            }
-
-            // Field UserID
-            if (filter?.TryGetValue("x_UserID", out sv) ?? false) {
-                UserID.AdvancedSearch.SearchValue = sv;
-                UserID.AdvancedSearch.SearchOperator = filter["z_UserID"];
-                UserID.AdvancedSearch.SearchCondition = filter["v_UserID"];
-                UserID.AdvancedSearch.SearchValue2 = filter["y_UserID"];
-                UserID.AdvancedSearch.SearchOperator2 = filter["w_UserID"];
-                UserID.AdvancedSearch.Save();
-            }
-
-            // Field Status
-            if (filter?.TryGetValue("x_Status", out sv) ?? false) {
-                Status.AdvancedSearch.SearchValue = sv;
-                Status.AdvancedSearch.SearchOperator = filter["z_Status"];
-                Status.AdvancedSearch.SearchCondition = filter["v_Status"];
-                Status.AdvancedSearch.SearchValue2 = filter["y_Status"];
-                Status.AdvancedSearch.SearchOperator2 = filter["w_Status"];
-                Status.AdvancedSearch.Save();
-            }
-
-            // Field CreatedBy
-            if (filter?.TryGetValue("x_CreatedBy", out sv) ?? false) {
-                CreatedBy.AdvancedSearch.SearchValue = sv;
-                CreatedBy.AdvancedSearch.SearchOperator = filter["z_CreatedBy"];
-                CreatedBy.AdvancedSearch.SearchCondition = filter["v_CreatedBy"];
-                CreatedBy.AdvancedSearch.SearchValue2 = filter["y_CreatedBy"];
-                CreatedBy.AdvancedSearch.SearchOperator2 = filter["w_CreatedBy"];
-                CreatedBy.AdvancedSearch.Save();
-            }
-
-            // Field CreatedDateTime
-            if (filter?.TryGetValue("x_CreatedDateTime", out sv) ?? false) {
-                CreatedDateTime.AdvancedSearch.SearchValue = sv;
-                CreatedDateTime.AdvancedSearch.SearchOperator = filter["z_CreatedDateTime"];
-                CreatedDateTime.AdvancedSearch.SearchCondition = filter["v_CreatedDateTime"];
-                CreatedDateTime.AdvancedSearch.SearchValue2 = filter["y_CreatedDateTime"];
-                CreatedDateTime.AdvancedSearch.SearchOperator2 = filter["w_CreatedDateTime"];
-                CreatedDateTime.AdvancedSearch.Save();
-            }
-
-            // Field UpdatedBy
-            if (filter?.TryGetValue("x_UpdatedBy", out sv) ?? false) {
-                UpdatedBy.AdvancedSearch.SearchValue = sv;
-                UpdatedBy.AdvancedSearch.SearchOperator = filter["z_UpdatedBy"];
-                UpdatedBy.AdvancedSearch.SearchCondition = filter["v_UpdatedBy"];
-                UpdatedBy.AdvancedSearch.SearchValue2 = filter["y_UpdatedBy"];
-                UpdatedBy.AdvancedSearch.SearchOperator2 = filter["w_UpdatedBy"];
-                UpdatedBy.AdvancedSearch.Save();
-            }
-
-            // Field UpdatedDateTime
-            if (filter?.TryGetValue("x_UpdatedDateTime", out sv) ?? false) {
-                UpdatedDateTime.AdvancedSearch.SearchValue = sv;
-                UpdatedDateTime.AdvancedSearch.SearchOperator = filter["z_UpdatedDateTime"];
-                UpdatedDateTime.AdvancedSearch.SearchCondition = filter["v_UpdatedDateTime"];
-                UpdatedDateTime.AdvancedSearch.SearchValue2 = filter["y_UpdatedDateTime"];
-                UpdatedDateTime.AdvancedSearch.SearchOperator2 = filter["w_UpdatedDateTime"];
-                UpdatedDateTime.AdvancedSearch.Save();
-            }
             if (filter?.TryGetValue(Config.TableBasicSearch, out string? keyword) ?? false)
                 BasicSearch.SessionKeyword = keyword;
             if (filter?.TryGetValue(Config.TableBasicSearchType, out string? type) ?? false)
@@ -1345,13 +1132,284 @@ public partial class mecommerce {
             return true;
         }
 
+        // Advanced search WHERE clause based on QueryString
+        public string AdvancedSearchWhere(bool def = false) {
+            string where = "";
+            if (!Security.CanSearch)
+                return "";
+            BuildSearchSql(ref where, FirstName, def, true); // FirstName
+            BuildSearchSql(ref where, MiddleName, def, true); // MiddleName
+            BuildSearchSql(ref where, LastName, def, true); // LastName
+            BuildSearchSql(ref where, Gender, def, true); // Gender
+            BuildSearchSql(ref where, PlaceOfBirth, def, true); // PlaceOfBirth
+            BuildSearchSql(ref where, PrimaryAddress, def, true); // PrimaryAddress
+            BuildSearchSql(ref where, PrimaryAddressCity, def, true); // PrimaryAddressCity
+            BuildSearchSql(ref where, PrimaryAddressPostCode, def, true); // PrimaryAddressPostCode
+            BuildSearchSql(ref where, PrimaryAddressCountryID, def, true); // PrimaryAddressCountryID
+            BuildSearchSql(ref where, AlternativeAddress, def, true); // AlternativeAddress
+            BuildSearchSql(ref where, AlternativeAddressCity, def, true); // AlternativeAddressCity
+            BuildSearchSql(ref where, AlternativeAddressPostCode, def, true); // AlternativeAddressPostCode
+            BuildSearchSql(ref where, AlternativeAddressCountryID, def, true); // AlternativeAddressCountryID
+            BuildSearchSql(ref where, MobileNumber, def, true); // MobileNumber
+            BuildSearchSql(ref where, UserID, def, true); // UserID
+            BuildSearchSql(ref where, Status, def, true); // Status
+            BuildSearchSql(ref where, CreatedBy, def, true); // CreatedBy
+            BuildSearchSql(ref where, UpdatedBy, def, true); // UpdatedBy
+
+            // Set up search command
+            if (!def && !Empty(where) && (new[] { "", "reset", "resetall" }).Contains(Command))
+                Command = "search";
+            if (!def && Command == "search") {
+                // Clear rules for QueryBuilder
+                SessionRules = "";
+            }
+            return where;
+        }
+
+        // Parse query builder rule function
+        protected string ParseRules(Dictionary<string, object>? group, string fieldName = "") {
+            if (group == null)
+                return "";
+            string condition = group.ContainsKey("condition") ? ConvertToString(group["condition"]) : "AND";
+            if (!(new [] { "AND", "OR" }).Contains(condition))
+                throw new System.Exception("Unable to build SQL query with condition '" + condition + "'");
+            List<string> parts = new ();
+            string where = "";
+            var groupRules = group.ContainsKey("rules") ? group["rules"] : null;
+            if (groupRules is IEnumerable<object> rules) {
+                foreach (object rule in rules) {
+                    var subRules = JObject.FromObject(rule).ToObject<Dictionary<string, object>>();
+                    if (subRules == null)
+                        continue;
+                    if (subRules.ContainsKey("rules")) {
+                        parts.Add("(" + " " + ParseRules(subRules, fieldName) + " " + ")" + " ");
+                    } else {
+                        string field = subRules.ContainsKey("field") ? ConvertToString(subRules["field"]) : "";
+                        var fld = FieldByParam(field);
+                        if (fld == null)
+                            throw new System.Exception("Failed to find field '" + field + "'");
+                        if (Empty(fieldName) || fld.Name == fieldName) { // Field name not specified or matched field name
+                            string opr = subRules.ContainsKey("operator") ? ConvertToString(subRules["operator"]) : "";
+                            string fldOpr = Config.ClientSearchOperators.FirstOrDefault(o => o.Value == opr).Key;
+                            Dictionary<string, object>? ope = Config.QueryBuilderOperators.ContainsKey(opr) ? Config.QueryBuilderOperators[opr] : null;
+                            if (ope == null || Empty(fldOpr))
+                                throw new System.Exception("Unknown SQL operation for operator '" + opr + "'");
+                            int nb_inputs = ope.ContainsKey("nb_inputs") ? ConvertToInt(ope["nb_inputs"]) : 0;
+                            object val = subRules.ContainsKey("value") ? subRules["value"] : "";
+                            if (nb_inputs > 0 && !Empty(val) || IsNullOrEmptyOperator(fldOpr)) {
+                                string fldVal = val is List<object> list
+                                    ? (list[0] is IEnumerable<string> ? String.Join(Config.MultipleOptionSeparator, list[0]) : ConvertToString(list[0]))
+                                    : ConvertToString(val);
+                                bool useFilter = fld.UseFilter; // Query builder does not use filter
+                                try {
+                                    if (fld.IsMultiSelect) {
+                                        parts.Add(!Empty(fldVal) ? GetMultiSearchSql(fld, fldOpr, ConvertSearchValue(fldVal, fldOpr, fld), DbId) : "");
+                                    } else {
+                                        string fldVal2 = fldOpr.Contains("BETWEEN")
+                                            ? (val is List<object> list2 && list2.Count > 1
+                                                ? (list2[1] is IEnumerable<string> ? String.Join(Config.MultipleOptionSeparator, list2[1]) : ConvertToString(list2[1]))
+                                                : "")
+                                            : ""; // BETWEEN
+                                        parts.Add(GetSearchSql(
+                                            fld,
+                                            ConvertSearchValue(fldVal, fldOpr, fld), // fldVal
+                                            fldOpr,
+                                            "", // fldCond not used
+                                            ConvertSearchValue(fldVal2, fldOpr, fld), // $fldVal2
+                                            "", // fldOpr2 not used
+                                            DbId
+                                        ));
+                                    }
+                                } finally {
+                                    fld.UseFilter = useFilter;
+                                }
+                            }
+                        }
+                    }
+                }
+                where = String.Join(" " + condition + " ", parts);
+                bool not = group.ContainsKey("not") ? ConvertToBool(group["not"]) : false;
+                if (not)
+                    where = "NOT (" + where + ")";
+            }
+            return where;
+        }
+
+        // Quey builder WHERE clause
+        public string QueryBuilderWhere(string fieldName = "")
+        {
+            if (!Security.CanSearch)
+                return "";
+
+            // Get rules by query builder
+            string rules = "";
+            if (Post("rules", out StringValues sv))
+                rules = sv.ToString();
+            else
+                rules = SessionRules;
+
+            // Decode and parse rules
+            string where = !Empty(rules) ? ParseRules(JsonConvert.DeserializeObject<Dictionary<string, object>>(rules), fieldName) : "";
+
+            // Clear other search and save rules to session
+            if (!Empty(where) && Empty(fieldName)) { // Skip if get query for specific field
+                ResetSearchParms();
+                SessionRules = rules;
+            }
+
+            // Return query
+            return where;
+        }
+
+        // Build search SQL
+        public void BuildSearchSql(ref string where, DbField fld, bool def, bool multiValue)
+        {
+            string fldParm = fld.Param;
+            string fldVal = def ? ConvertToString(fld.AdvancedSearch.SearchValueDefault) : ConvertToString(fld.AdvancedSearch.SearchValue);
+            string fldOpr = def ? fld.AdvancedSearch.SearchOperatorDefault : fld.AdvancedSearch.SearchOperator;
+            string fldCond = def ? fld.AdvancedSearch.SearchConditionDefault : fld.AdvancedSearch.SearchCondition;
+            string fldVal2 = def ? ConvertToString(fld.AdvancedSearch.SearchValue2Default) : ConvertToString(fld.AdvancedSearch.SearchValue2);
+            string fldOpr2 = def ? fld.AdvancedSearch.SearchOperator2Default : fld.AdvancedSearch.SearchOperator2;
+            fldVal = ConvertSearchValue(fldVal, fldOpr, fld);
+            fldVal2 = ConvertSearchValue(fldVal2, fldOpr2, fld);
+            fldOpr = ConvertSearchOperator(fldOpr, fld, fldVal);
+            fldOpr2 = ConvertSearchOperator(fldOpr2, fld, fldVal2);
+            string wrk = "";
+            if (Config.SearchMultiValueOption == 1 && !fld.UseFilter || !IsMultiSearchOperator(fldOpr))
+                multiValue = false;
+            if (multiValue) {
+                wrk = !Empty(fldVal) ? GetMultiSearchSql(fld, fldOpr, fldVal, DbId) : ""; // Field value 1
+                string wrk2 = !Empty(fldVal2) ? GetMultiSearchSql(fld, fldOpr2, fldVal2, DbId) : ""; // Field value 2
+                AddFilter(ref wrk, wrk2, fldCond);
+            } else {
+                wrk = GetSearchSql(fld, fldVal, fldOpr, fldCond, fldVal2, fldOpr2, DbId);
+            }
+            string cond = SearchOption == "AUTO" && (new[] {"AND", "OR"}).Contains(BasicSearch.Type)
+                ? BasicSearch.Type
+                : SameText(SearchOption, "OR") ? "OR" : "AND";
+            AddFilter(ref where, wrk, cond);
+        }
+
         // Show list of filters
         public void ShowFilterList()
         {
             // Initialize
             string filterList = "",
+                filter = "",
                 captionClass = IsExport("email") ? "ew-filter-caption-email" : "ew-filter-caption",
                 captionSuffix = IsExport("email") ? ": " : "";
+
+            // Field FirstName
+            filter = QueryBuilderWhere("FirstName");
+            if (Empty(filter))
+                BuildSearchSql(ref filter, FirstName, false, true);
+            if (!Empty(filter))
+                filterList += "<div><span class=\"" + captionClass + "\">" + FirstName.Caption + "</span>" + captionSuffix + filter + "</div>";
+
+            // Field MiddleName
+            filter = QueryBuilderWhere("MiddleName");
+            if (Empty(filter))
+                BuildSearchSql(ref filter, MiddleName, false, true);
+            if (!Empty(filter))
+                filterList += "<div><span class=\"" + captionClass + "\">" + MiddleName.Caption + "</span>" + captionSuffix + filter + "</div>";
+
+            // Field LastName
+            filter = QueryBuilderWhere("LastName");
+            if (Empty(filter))
+                BuildSearchSql(ref filter, LastName, false, true);
+            if (!Empty(filter))
+                filterList += "<div><span class=\"" + captionClass + "\">" + LastName.Caption + "</span>" + captionSuffix + filter + "</div>";
+
+            // Field Gender
+            filter = QueryBuilderWhere("Gender");
+            if (Empty(filter))
+                BuildSearchSql(ref filter, Gender, false, true);
+            if (!Empty(filter))
+                filterList += "<div><span class=\"" + captionClass + "\">" + Gender.Caption + "</span>" + captionSuffix + filter + "</div>";
+
+            // Field PlaceOfBirth
+            filter = QueryBuilderWhere("PlaceOfBirth");
+            if (Empty(filter))
+                BuildSearchSql(ref filter, PlaceOfBirth, false, true);
+            if (!Empty(filter))
+                filterList += "<div><span class=\"" + captionClass + "\">" + PlaceOfBirth.Caption + "</span>" + captionSuffix + filter + "</div>";
+
+            // Field PrimaryAddressCity
+            filter = QueryBuilderWhere("PrimaryAddressCity");
+            if (Empty(filter))
+                BuildSearchSql(ref filter, PrimaryAddressCity, false, true);
+            if (!Empty(filter))
+                filterList += "<div><span class=\"" + captionClass + "\">" + PrimaryAddressCity.Caption + "</span>" + captionSuffix + filter + "</div>";
+
+            // Field PrimaryAddressPostCode
+            filter = QueryBuilderWhere("PrimaryAddressPostCode");
+            if (Empty(filter))
+                BuildSearchSql(ref filter, PrimaryAddressPostCode, false, true);
+            if (!Empty(filter))
+                filterList += "<div><span class=\"" + captionClass + "\">" + PrimaryAddressPostCode.Caption + "</span>" + captionSuffix + filter + "</div>";
+
+            // Field PrimaryAddressCountryID
+            filter = QueryBuilderWhere("PrimaryAddressCountryID");
+            if (Empty(filter))
+                BuildSearchSql(ref filter, PrimaryAddressCountryID, false, true);
+            if (!Empty(filter))
+                filterList += "<div><span class=\"" + captionClass + "\">" + PrimaryAddressCountryID.Caption + "</span>" + captionSuffix + filter + "</div>";
+
+            // Field AlternativeAddressCity
+            filter = QueryBuilderWhere("AlternativeAddressCity");
+            if (Empty(filter))
+                BuildSearchSql(ref filter, AlternativeAddressCity, false, true);
+            if (!Empty(filter))
+                filterList += "<div><span class=\"" + captionClass + "\">" + AlternativeAddressCity.Caption + "</span>" + captionSuffix + filter + "</div>";
+
+            // Field AlternativeAddressPostCode
+            filter = QueryBuilderWhere("AlternativeAddressPostCode");
+            if (Empty(filter))
+                BuildSearchSql(ref filter, AlternativeAddressPostCode, false, true);
+            if (!Empty(filter))
+                filterList += "<div><span class=\"" + captionClass + "\">" + AlternativeAddressPostCode.Caption + "</span>" + captionSuffix + filter + "</div>";
+
+            // Field AlternativeAddressCountryID
+            filter = QueryBuilderWhere("AlternativeAddressCountryID");
+            if (Empty(filter))
+                BuildSearchSql(ref filter, AlternativeAddressCountryID, false, true);
+            if (!Empty(filter))
+                filterList += "<div><span class=\"" + captionClass + "\">" + AlternativeAddressCountryID.Caption + "</span>" + captionSuffix + filter + "</div>";
+
+            // Field MobileNumber
+            filter = QueryBuilderWhere("MobileNumber");
+            if (Empty(filter))
+                BuildSearchSql(ref filter, MobileNumber, false, true);
+            if (!Empty(filter))
+                filterList += "<div><span class=\"" + captionClass + "\">" + MobileNumber.Caption + "</span>" + captionSuffix + filter + "</div>";
+
+            // Field UserID
+            filter = QueryBuilderWhere("UserID");
+            if (Empty(filter))
+                BuildSearchSql(ref filter, UserID, false, true);
+            if (!Empty(filter))
+                filterList += "<div><span class=\"" + captionClass + "\">" + UserID.Caption + "</span>" + captionSuffix + filter + "</div>";
+
+            // Field Status
+            filter = QueryBuilderWhere("Status");
+            if (Empty(filter))
+                BuildSearchSql(ref filter, Status, false, true);
+            if (!Empty(filter))
+                filterList += "<div><span class=\"" + captionClass + "\">" + Status.Caption + "</span>" + captionSuffix + filter + "</div>";
+
+            // Field CreatedBy
+            filter = QueryBuilderWhere("CreatedBy");
+            if (Empty(filter))
+                BuildSearchSql(ref filter, CreatedBy, false, true);
+            if (!Empty(filter))
+                filterList += "<div><span class=\"" + captionClass + "\">" + CreatedBy.Caption + "</span>" + captionSuffix + filter + "</div>";
+
+            // Field UpdatedBy
+            filter = QueryBuilderWhere("UpdatedBy");
+            if (Empty(filter))
+                BuildSearchSql(ref filter, UpdatedBy, false, true);
+            if (!Empty(filter))
+                filterList += "<div><span class=\"" + captionClass + "\">" + UpdatedBy.Caption + "</span>" + captionSuffix + filter + "</div>";
             if (!Empty(BasicSearch.Keyword))
                 filterList += "<div><span class=\"" + captionClass + "\">" + Language.Phrase("BasicSearchKeyword") + "</span>" + captionSuffix + BasicSearch.Keyword + "</div>";
 
@@ -1412,6 +1470,42 @@ public partial class mecommerce {
             // Check basic search
             if (BasicSearch.IssetSession)
                 return true;
+            if (FirstName.AdvancedSearch.IssetSession)
+                return true;
+            if (MiddleName.AdvancedSearch.IssetSession)
+                return true;
+            if (LastName.AdvancedSearch.IssetSession)
+                return true;
+            if (Gender.AdvancedSearch.IssetSession)
+                return true;
+            if (PlaceOfBirth.AdvancedSearch.IssetSession)
+                return true;
+            if (PrimaryAddress.AdvancedSearch.IssetSession)
+                return true;
+            if (PrimaryAddressCity.AdvancedSearch.IssetSession)
+                return true;
+            if (PrimaryAddressPostCode.AdvancedSearch.IssetSession)
+                return true;
+            if (PrimaryAddressCountryID.AdvancedSearch.IssetSession)
+                return true;
+            if (AlternativeAddress.AdvancedSearch.IssetSession)
+                return true;
+            if (AlternativeAddressCity.AdvancedSearch.IssetSession)
+                return true;
+            if (AlternativeAddressPostCode.AdvancedSearch.IssetSession)
+                return true;
+            if (AlternativeAddressCountryID.AdvancedSearch.IssetSession)
+                return true;
+            if (MobileNumber.AdvancedSearch.IssetSession)
+                return true;
+            if (UserID.AdvancedSearch.IssetSession)
+                return true;
+            if (Status.AdvancedSearch.IssetSession)
+                return true;
+            if (CreatedBy.AdvancedSearch.IssetSession)
+                return true;
+            if (UpdatedBy.AdvancedSearch.IssetSession)
+                return true;
             return false;
         }
 
@@ -1422,6 +1516,9 @@ public partial class mecommerce {
 
             // Clear basic search parameters
             ResetBasicSearchParms();
+
+            // Clear advanced search parameters
+            ResetAdvancedSearchParms();
 
             // Clear queryBuilder
             SessionRules = "";
@@ -1437,12 +1534,54 @@ public partial class mecommerce {
             BasicSearch.UnsetSession();
         }
 
+        // Clear all advanced search parameters
+        protected void ResetAdvancedSearchParms() {
+            FirstName.AdvancedSearch.UnsetSession();
+            MiddleName.AdvancedSearch.UnsetSession();
+            LastName.AdvancedSearch.UnsetSession();
+            Gender.AdvancedSearch.UnsetSession();
+            PlaceOfBirth.AdvancedSearch.UnsetSession();
+            PrimaryAddress.AdvancedSearch.UnsetSession();
+            PrimaryAddressCity.AdvancedSearch.UnsetSession();
+            PrimaryAddressPostCode.AdvancedSearch.UnsetSession();
+            PrimaryAddressCountryID.AdvancedSearch.UnsetSession();
+            AlternativeAddress.AdvancedSearch.UnsetSession();
+            AlternativeAddressCity.AdvancedSearch.UnsetSession();
+            AlternativeAddressPostCode.AdvancedSearch.UnsetSession();
+            AlternativeAddressCountryID.AdvancedSearch.UnsetSession();
+            MobileNumber.AdvancedSearch.UnsetSession();
+            UserID.AdvancedSearch.UnsetSession();
+            Status.AdvancedSearch.UnsetSession();
+            CreatedBy.AdvancedSearch.UnsetSession();
+            UpdatedBy.AdvancedSearch.UnsetSession();
+        }
+
         // Restore all search parameters
         protected void RestoreSearchParms() {
             RestoreSearch = true;
 
             // Restore basic search values
             BasicSearch.Load();
+
+            // Restore advanced search values
+            FirstName.AdvancedSearch.Load();
+            MiddleName.AdvancedSearch.Load();
+            LastName.AdvancedSearch.Load();
+            Gender.AdvancedSearch.Load();
+            PlaceOfBirth.AdvancedSearch.Load();
+            PrimaryAddress.AdvancedSearch.Load();
+            PrimaryAddressCity.AdvancedSearch.Load();
+            PrimaryAddressPostCode.AdvancedSearch.Load();
+            PrimaryAddressCountryID.AdvancedSearch.Load();
+            AlternativeAddress.AdvancedSearch.Load();
+            AlternativeAddressCity.AdvancedSearch.Load();
+            AlternativeAddressPostCode.AdvancedSearch.Load();
+            AlternativeAddressCountryID.AdvancedSearch.Load();
+            MobileNumber.AdvancedSearch.Load();
+            UserID.AdvancedSearch.Load();
+            Status.AdvancedSearch.Load();
+            CreatedBy.AdvancedSearch.Load();
+            UpdatedBy.AdvancedSearch.Load();
         }
 
         // Set up sort parameters
@@ -1458,7 +1597,6 @@ public partial class mecommerce {
             if (Get("order", out StringValues sv)) {
                 CurrentOrder = sv.ToString();
                 CurrentOrderType = Get("ordertype");
-                UpdateSort(CustomerID); // CustomerID
                 UpdateSort(FirstName); // FirstName
                 UpdateSort(MiddleName); // MiddleName
                 UpdateSort(LastName); // LastName
@@ -1734,7 +1872,6 @@ public partial class mecommerce {
                 item = option.AddGroupOption();
                 item.Body = "";
                 item.Visible = UseColumnVisibility;
-                CreateColumnOption(option.Add("CustomerID")); // DN
                 CreateColumnOption(option.Add("FirstName")); // DN
                 CreateColumnOption(option.Add("MiddleName")); // DN
                 CreateColumnOption(option.Add("LastName")); // DN
@@ -2038,6 +2175,214 @@ public partial class mecommerce {
                 BasicSearch.Type = type.ToString();
         }
 
+        // Load search values for validation // DN
+        protected void LoadSearchValues() {
+            // Load query builder rules
+            string rules = Post("rules");
+            if (!Empty(rules) && Empty(Command)) {
+                QueryRules = rules;
+                Command = "search";
+            }
+
+            // FirstName
+            if (!IsAddOrEdit)
+                if (Query.ContainsKey("x_FirstName[]"))
+                    FirstName.AdvancedSearch.SearchValue = Get("x_FirstName[]");
+                else
+                    FirstName.AdvancedSearch.SearchValue = Get("FirstName"); // Default Value // DN
+            if (!Empty(FirstName.AdvancedSearch.SearchValue) && Command == "")
+                Command = "search";
+            if (Query.ContainsKey("z_FirstName"))
+                FirstName.AdvancedSearch.SearchOperator = Get("z_FirstName");
+
+            // MiddleName
+            if (!IsAddOrEdit)
+                if (Query.ContainsKey("x_MiddleName[]"))
+                    MiddleName.AdvancedSearch.SearchValue = Get("x_MiddleName[]");
+                else
+                    MiddleName.AdvancedSearch.SearchValue = Get("MiddleName"); // Default Value // DN
+            if (!Empty(MiddleName.AdvancedSearch.SearchValue) && Command == "")
+                Command = "search";
+            if (Query.ContainsKey("z_MiddleName"))
+                MiddleName.AdvancedSearch.SearchOperator = Get("z_MiddleName");
+
+            // LastName
+            if (!IsAddOrEdit)
+                if (Query.ContainsKey("x_LastName[]"))
+                    LastName.AdvancedSearch.SearchValue = Get("x_LastName[]");
+                else
+                    LastName.AdvancedSearch.SearchValue = Get("LastName"); // Default Value // DN
+            if (!Empty(LastName.AdvancedSearch.SearchValue) && Command == "")
+                Command = "search";
+            if (Query.ContainsKey("z_LastName"))
+                LastName.AdvancedSearch.SearchOperator = Get("z_LastName");
+
+            // Gender
+            if (!IsAddOrEdit)
+                if (Query.ContainsKey("x_Gender[]"))
+                    Gender.AdvancedSearch.SearchValue = Get("x_Gender[]");
+                else
+                    Gender.AdvancedSearch.SearchValue = Get("Gender"); // Default Value // DN
+            if (!Empty(Gender.AdvancedSearch.SearchValue) && Command == "")
+                Command = "search";
+            if (Query.ContainsKey("z_Gender"))
+                Gender.AdvancedSearch.SearchOperator = Get("z_Gender");
+
+            // PlaceOfBirth
+            if (!IsAddOrEdit)
+                if (Query.ContainsKey("x_PlaceOfBirth[]"))
+                    PlaceOfBirth.AdvancedSearch.SearchValue = Get("x_PlaceOfBirth[]");
+                else
+                    PlaceOfBirth.AdvancedSearch.SearchValue = Get("PlaceOfBirth"); // Default Value // DN
+            if (!Empty(PlaceOfBirth.AdvancedSearch.SearchValue) && Command == "")
+                Command = "search";
+            if (Query.ContainsKey("z_PlaceOfBirth"))
+                PlaceOfBirth.AdvancedSearch.SearchOperator = Get("z_PlaceOfBirth");
+
+            // PrimaryAddress
+            if (!IsAddOrEdit)
+                if (Query.ContainsKey("x_PrimaryAddress[]"))
+                    PrimaryAddress.AdvancedSearch.SearchValue = Get("x_PrimaryAddress[]");
+                else
+                    PrimaryAddress.AdvancedSearch.SearchValue = Get("PrimaryAddress"); // Default Value // DN
+            if (!Empty(PrimaryAddress.AdvancedSearch.SearchValue) && Command == "")
+                Command = "search";
+            if (Query.ContainsKey("z_PrimaryAddress"))
+                PrimaryAddress.AdvancedSearch.SearchOperator = Get("z_PrimaryAddress");
+
+            // PrimaryAddressCity
+            if (!IsAddOrEdit)
+                if (Query.ContainsKey("x_PrimaryAddressCity[]"))
+                    PrimaryAddressCity.AdvancedSearch.SearchValue = Get("x_PrimaryAddressCity[]");
+                else
+                    PrimaryAddressCity.AdvancedSearch.SearchValue = Get("PrimaryAddressCity"); // Default Value // DN
+            if (!Empty(PrimaryAddressCity.AdvancedSearch.SearchValue) && Command == "")
+                Command = "search";
+            if (Query.ContainsKey("z_PrimaryAddressCity"))
+                PrimaryAddressCity.AdvancedSearch.SearchOperator = Get("z_PrimaryAddressCity");
+
+            // PrimaryAddressPostCode
+            if (!IsAddOrEdit)
+                if (Query.ContainsKey("x_PrimaryAddressPostCode[]"))
+                    PrimaryAddressPostCode.AdvancedSearch.SearchValue = Get("x_PrimaryAddressPostCode[]");
+                else
+                    PrimaryAddressPostCode.AdvancedSearch.SearchValue = Get("PrimaryAddressPostCode"); // Default Value // DN
+            if (!Empty(PrimaryAddressPostCode.AdvancedSearch.SearchValue) && Command == "")
+                Command = "search";
+            if (Query.ContainsKey("z_PrimaryAddressPostCode"))
+                PrimaryAddressPostCode.AdvancedSearch.SearchOperator = Get("z_PrimaryAddressPostCode");
+
+            // PrimaryAddressCountryID
+            if (!IsAddOrEdit)
+                if (Query.ContainsKey("x_PrimaryAddressCountryID[]"))
+                    PrimaryAddressCountryID.AdvancedSearch.SearchValue = Get("x_PrimaryAddressCountryID[]");
+                else
+                    PrimaryAddressCountryID.AdvancedSearch.SearchValue = Get("PrimaryAddressCountryID"); // Default Value // DN
+            if (!Empty(PrimaryAddressCountryID.AdvancedSearch.SearchValue) && Command == "")
+                Command = "search";
+            if (Query.ContainsKey("z_PrimaryAddressCountryID"))
+                PrimaryAddressCountryID.AdvancedSearch.SearchOperator = Get("z_PrimaryAddressCountryID");
+
+            // AlternativeAddress
+            if (!IsAddOrEdit)
+                if (Query.ContainsKey("x_AlternativeAddress[]"))
+                    AlternativeAddress.AdvancedSearch.SearchValue = Get("x_AlternativeAddress[]");
+                else
+                    AlternativeAddress.AdvancedSearch.SearchValue = Get("AlternativeAddress"); // Default Value // DN
+            if (!Empty(AlternativeAddress.AdvancedSearch.SearchValue) && Command == "")
+                Command = "search";
+            if (Query.ContainsKey("z_AlternativeAddress"))
+                AlternativeAddress.AdvancedSearch.SearchOperator = Get("z_AlternativeAddress");
+
+            // AlternativeAddressCity
+            if (!IsAddOrEdit)
+                if (Query.ContainsKey("x_AlternativeAddressCity[]"))
+                    AlternativeAddressCity.AdvancedSearch.SearchValue = Get("x_AlternativeAddressCity[]");
+                else
+                    AlternativeAddressCity.AdvancedSearch.SearchValue = Get("AlternativeAddressCity"); // Default Value // DN
+            if (!Empty(AlternativeAddressCity.AdvancedSearch.SearchValue) && Command == "")
+                Command = "search";
+            if (Query.ContainsKey("z_AlternativeAddressCity"))
+                AlternativeAddressCity.AdvancedSearch.SearchOperator = Get("z_AlternativeAddressCity");
+
+            // AlternativeAddressPostCode
+            if (!IsAddOrEdit)
+                if (Query.ContainsKey("x_AlternativeAddressPostCode[]"))
+                    AlternativeAddressPostCode.AdvancedSearch.SearchValue = Get("x_AlternativeAddressPostCode[]");
+                else
+                    AlternativeAddressPostCode.AdvancedSearch.SearchValue = Get("AlternativeAddressPostCode"); // Default Value // DN
+            if (!Empty(AlternativeAddressPostCode.AdvancedSearch.SearchValue) && Command == "")
+                Command = "search";
+            if (Query.ContainsKey("z_AlternativeAddressPostCode"))
+                AlternativeAddressPostCode.AdvancedSearch.SearchOperator = Get("z_AlternativeAddressPostCode");
+
+            // AlternativeAddressCountryID
+            if (!IsAddOrEdit)
+                if (Query.ContainsKey("x_AlternativeAddressCountryID[]"))
+                    AlternativeAddressCountryID.AdvancedSearch.SearchValue = Get("x_AlternativeAddressCountryID[]");
+                else
+                    AlternativeAddressCountryID.AdvancedSearch.SearchValue = Get("AlternativeAddressCountryID"); // Default Value // DN
+            if (!Empty(AlternativeAddressCountryID.AdvancedSearch.SearchValue) && Command == "")
+                Command = "search";
+            if (Query.ContainsKey("z_AlternativeAddressCountryID"))
+                AlternativeAddressCountryID.AdvancedSearch.SearchOperator = Get("z_AlternativeAddressCountryID");
+
+            // MobileNumber
+            if (!IsAddOrEdit)
+                if (Query.ContainsKey("x_MobileNumber[]"))
+                    MobileNumber.AdvancedSearch.SearchValue = Get("x_MobileNumber[]");
+                else
+                    MobileNumber.AdvancedSearch.SearchValue = Get("MobileNumber"); // Default Value // DN
+            if (!Empty(MobileNumber.AdvancedSearch.SearchValue) && Command == "")
+                Command = "search";
+            if (Query.ContainsKey("z_MobileNumber"))
+                MobileNumber.AdvancedSearch.SearchOperator = Get("z_MobileNumber");
+
+            // UserID
+            if (!IsAddOrEdit)
+                if (Query.ContainsKey("x_UserID[]"))
+                    UserID.AdvancedSearch.SearchValue = Get("x_UserID[]");
+                else
+                    UserID.AdvancedSearch.SearchValue = Get("UserID"); // Default Value // DN
+            if (!Empty(UserID.AdvancedSearch.SearchValue) && Command == "")
+                Command = "search";
+            if (Query.ContainsKey("z_UserID"))
+                UserID.AdvancedSearch.SearchOperator = Get("z_UserID");
+
+            // Status
+            if (!IsAddOrEdit)
+                if (Query.ContainsKey("x_Status[]"))
+                    Status.AdvancedSearch.SearchValue = Get("x_Status[]");
+                else
+                    Status.AdvancedSearch.SearchValue = Get("Status"); // Default Value // DN
+            if (!Empty(Status.AdvancedSearch.SearchValue) && Command == "")
+                Command = "search";
+            if (Query.ContainsKey("z_Status"))
+                Status.AdvancedSearch.SearchOperator = Get("z_Status");
+
+            // CreatedBy
+            if (!IsAddOrEdit)
+                if (Query.ContainsKey("x_CreatedBy[]"))
+                    CreatedBy.AdvancedSearch.SearchValue = Get("x_CreatedBy[]");
+                else
+                    CreatedBy.AdvancedSearch.SearchValue = Get("CreatedBy"); // Default Value // DN
+            if (!Empty(CreatedBy.AdvancedSearch.SearchValue) && Command == "")
+                Command = "search";
+            if (Query.ContainsKey("z_CreatedBy"))
+                CreatedBy.AdvancedSearch.SearchOperator = Get("z_CreatedBy");
+
+            // UpdatedBy
+            if (!IsAddOrEdit)
+                if (Query.ContainsKey("x_UpdatedBy[]"))
+                    UpdatedBy.AdvancedSearch.SearchValue = Get("x_UpdatedBy[]");
+                else
+                    UpdatedBy.AdvancedSearch.SearchValue = Get("UpdatedBy"); // Default Value // DN
+            if (!Empty(UpdatedBy.AdvancedSearch.SearchValue) && Command == "")
+                Command = "search";
+            if (Query.ContainsKey("z_UpdatedBy"))
+                UpdatedBy.AdvancedSearch.SearchOperator = Get("z_UpdatedBy");
+        }
+
         // Load recordset // DN
         public async Task<DbDataReader?> LoadRecordset(int offset = -1, int rowcnt = -1)
         {
@@ -2254,10 +2599,6 @@ public partial class mecommerce {
 
             // View row
             if (RowType == RowType.View) {
-                // CustomerID
-                CustomerID.ViewValue = CustomerID.CurrentValue;
-                CustomerID.ViewCustomAttributes = "";
-
                 // FirstName
                 FirstName.ViewValue = ConvertToString(FirstName.CurrentValue); // DN
                 FirstName.ViewCustomAttributes = "";
@@ -2271,7 +2612,11 @@ public partial class mecommerce {
                 LastName.ViewCustomAttributes = "";
 
                 // Gender
-                Gender.ViewValue = ConvertToString(Gender.CurrentValue); // DN
+                if (!Empty(Gender.CurrentValue)) {
+                    Gender.ViewValue = Gender.HighlightLookup(ConvertToString(Gender.CurrentValue), Gender.OptionCaption(ConvertToString(Gender.CurrentValue)));
+                } else {
+                    Gender.ViewValue = DbNullValue;
+                }
                 Gender.ViewCustomAttributes = "";
 
                 // PlaceOfBirth
@@ -2292,8 +2637,24 @@ public partial class mecommerce {
                 PrimaryAddressPostCode.ViewCustomAttributes = "";
 
                 // PrimaryAddressCountryID
-                PrimaryAddressCountryID.ViewValue = PrimaryAddressCountryID.CurrentValue;
-                PrimaryAddressCountryID.ViewValue = FormatNumber(PrimaryAddressCountryID.ViewValue, PrimaryAddressCountryID.FormatPattern);
+                curVal = ConvertToString(PrimaryAddressCountryID.CurrentValue);
+                if (!Empty(curVal)) {
+                    if (PrimaryAddressCountryID.Lookup != null && IsDictionary(PrimaryAddressCountryID.Lookup?.Options) && PrimaryAddressCountryID.Lookup?.Options.Values.Count > 0) { // Load from cache // DN
+                        PrimaryAddressCountryID.ViewValue = PrimaryAddressCountryID.LookupCacheOption(curVal);
+                    } else { // Lookup from database // DN
+                        filterWrk = SearchFilter("[CountryID]", "=", PrimaryAddressCountryID.CurrentValue, DataType.Number, "");
+                        sqlWrk = PrimaryAddressCountryID.Lookup?.GetSql(false, filterWrk, null, this, true, true);
+                        rswrk = sqlWrk != null ? Connection.GetRows(sqlWrk) : null; // Must use Sync to avoid overwriting ViewValue in RenderViewRow
+                        if (rswrk?.Count > 0 && PrimaryAddressCountryID.Lookup != null) { // Lookup values found
+                            var listwrk = PrimaryAddressCountryID.Lookup?.RenderViewRow(rswrk[0]);
+                            PrimaryAddressCountryID.ViewValue = PrimaryAddressCountryID.HighlightLookup(ConvertToString(rswrk[0]), PrimaryAddressCountryID.DisplayValue(listwrk));
+                        } else {
+                            PrimaryAddressCountryID.ViewValue = FormatNumber(PrimaryAddressCountryID.CurrentValue, PrimaryAddressCountryID.FormatPattern);
+                        }
+                    }
+                } else {
+                    PrimaryAddressCountryID.ViewValue = DbNullValue;
+                }
                 PrimaryAddressCountryID.ViewCustomAttributes = "";
 
                 // AlternativeAddressCity
@@ -2305,8 +2666,24 @@ public partial class mecommerce {
                 AlternativeAddressPostCode.ViewCustomAttributes = "";
 
                 // AlternativeAddressCountryID
-                AlternativeAddressCountryID.ViewValue = AlternativeAddressCountryID.CurrentValue;
-                AlternativeAddressCountryID.ViewValue = FormatNumber(AlternativeAddressCountryID.ViewValue, AlternativeAddressCountryID.FormatPattern);
+                curVal = ConvertToString(AlternativeAddressCountryID.CurrentValue);
+                if (!Empty(curVal)) {
+                    if (AlternativeAddressCountryID.Lookup != null && IsDictionary(AlternativeAddressCountryID.Lookup?.Options) && AlternativeAddressCountryID.Lookup?.Options.Values.Count > 0) { // Load from cache // DN
+                        AlternativeAddressCountryID.ViewValue = AlternativeAddressCountryID.LookupCacheOption(curVal);
+                    } else { // Lookup from database // DN
+                        filterWrk = SearchFilter("[CountryID]", "=", AlternativeAddressCountryID.CurrentValue, DataType.Number, "");
+                        sqlWrk = AlternativeAddressCountryID.Lookup?.GetSql(false, filterWrk, null, this, true, true);
+                        rswrk = sqlWrk != null ? Connection.GetRows(sqlWrk) : null; // Must use Sync to avoid overwriting ViewValue in RenderViewRow
+                        if (rswrk?.Count > 0 && AlternativeAddressCountryID.Lookup != null) { // Lookup values found
+                            var listwrk = AlternativeAddressCountryID.Lookup?.RenderViewRow(rswrk[0]);
+                            AlternativeAddressCountryID.ViewValue = AlternativeAddressCountryID.HighlightLookup(ConvertToString(rswrk[0]), AlternativeAddressCountryID.DisplayValue(listwrk));
+                        } else {
+                            AlternativeAddressCountryID.ViewValue = FormatNumber(AlternativeAddressCountryID.CurrentValue, AlternativeAddressCountryID.FormatPattern);
+                        }
+                    }
+                } else {
+                    AlternativeAddressCountryID.ViewValue = DbNullValue;
+                }
                 AlternativeAddressCountryID.ViewCustomAttributes = "";
 
                 // MobileNumber
@@ -2314,8 +2691,24 @@ public partial class mecommerce {
                 MobileNumber.ViewCustomAttributes = "";
 
                 // UserID
-                UserID.ViewValue = UserID.CurrentValue;
-                UserID.ViewValue = FormatNumber(UserID.ViewValue, UserID.FormatPattern);
+                curVal = ConvertToString(UserID.CurrentValue);
+                if (!Empty(curVal)) {
+                    if (UserID.Lookup != null && IsDictionary(UserID.Lookup?.Options) && UserID.Lookup?.Options.Values.Count > 0) { // Load from cache // DN
+                        UserID.ViewValue = UserID.LookupCacheOption(curVal);
+                    } else { // Lookup from database // DN
+                        filterWrk = SearchFilter("[UserID]", "=", UserID.CurrentValue, DataType.Number, "");
+                        sqlWrk = UserID.Lookup?.GetSql(false, filterWrk, null, this, true, true);
+                        rswrk = sqlWrk != null ? Connection.GetRows(sqlWrk) : null; // Must use Sync to avoid overwriting ViewValue in RenderViewRow
+                        if (rswrk?.Count > 0 && UserID.Lookup != null) { // Lookup values found
+                            var listwrk = UserID.Lookup?.RenderViewRow(rswrk[0]);
+                            UserID.ViewValue = UserID.HighlightLookup(ConvertToString(rswrk[0]), UserID.DisplayValue(listwrk));
+                        } else {
+                            UserID.ViewValue = FormatNumber(UserID.CurrentValue, UserID.FormatPattern);
+                        }
+                    }
+                } else {
+                    UserID.ViewValue = DbNullValue;
+                }
                 UserID.ViewCustomAttributes = "";
 
                 // Status
@@ -2323,8 +2716,24 @@ public partial class mecommerce {
                 Status.ViewCustomAttributes = "";
 
                 // CreatedBy
-                CreatedBy.ViewValue = CreatedBy.CurrentValue;
-                CreatedBy.ViewValue = FormatNumber(CreatedBy.ViewValue, CreatedBy.FormatPattern);
+                curVal = ConvertToString(CreatedBy.CurrentValue);
+                if (!Empty(curVal)) {
+                    if (CreatedBy.Lookup != null && IsDictionary(CreatedBy.Lookup?.Options) && CreatedBy.Lookup?.Options.Values.Count > 0) { // Load from cache // DN
+                        CreatedBy.ViewValue = CreatedBy.LookupCacheOption(curVal);
+                    } else { // Lookup from database // DN
+                        filterWrk = SearchFilter("[UserID]", "=", CreatedBy.CurrentValue, DataType.Number, "");
+                        sqlWrk = CreatedBy.Lookup?.GetSql(false, filterWrk, null, this, true, true);
+                        rswrk = sqlWrk != null ? Connection.GetRows(sqlWrk) : null; // Must use Sync to avoid overwriting ViewValue in RenderViewRow
+                        if (rswrk?.Count > 0 && CreatedBy.Lookup != null) { // Lookup values found
+                            var listwrk = CreatedBy.Lookup?.RenderViewRow(rswrk[0]);
+                            CreatedBy.ViewValue = CreatedBy.HighlightLookup(ConvertToString(rswrk[0]), CreatedBy.DisplayValue(listwrk));
+                        } else {
+                            CreatedBy.ViewValue = FormatNumber(CreatedBy.CurrentValue, CreatedBy.FormatPattern);
+                        }
+                    }
+                } else {
+                    CreatedBy.ViewValue = DbNullValue;
+                }
                 CreatedBy.ViewCustomAttributes = "";
 
                 // CreatedDateTime
@@ -2333,18 +2742,30 @@ public partial class mecommerce {
                 CreatedDateTime.ViewCustomAttributes = "";
 
                 // UpdatedBy
-                UpdatedBy.ViewValue = UpdatedBy.CurrentValue;
-                UpdatedBy.ViewValue = FormatNumber(UpdatedBy.ViewValue, UpdatedBy.FormatPattern);
+                curVal = ConvertToString(UpdatedBy.CurrentValue);
+                if (!Empty(curVal)) {
+                    if (UpdatedBy.Lookup != null && IsDictionary(UpdatedBy.Lookup?.Options) && UpdatedBy.Lookup?.Options.Values.Count > 0) { // Load from cache // DN
+                        UpdatedBy.ViewValue = UpdatedBy.LookupCacheOption(curVal);
+                    } else { // Lookup from database // DN
+                        filterWrk = SearchFilter("[UserID]", "=", UpdatedBy.CurrentValue, DataType.Number, "");
+                        sqlWrk = UpdatedBy.Lookup?.GetSql(false, filterWrk, null, this, true, true);
+                        rswrk = sqlWrk != null ? Connection.GetRows(sqlWrk) : null; // Must use Sync to avoid overwriting ViewValue in RenderViewRow
+                        if (rswrk?.Count > 0 && UpdatedBy.Lookup != null) { // Lookup values found
+                            var listwrk = UpdatedBy.Lookup?.RenderViewRow(rswrk[0]);
+                            UpdatedBy.ViewValue = UpdatedBy.HighlightLookup(ConvertToString(rswrk[0]), UpdatedBy.DisplayValue(listwrk));
+                        } else {
+                            UpdatedBy.ViewValue = FormatNumber(UpdatedBy.CurrentValue, UpdatedBy.FormatPattern);
+                        }
+                    }
+                } else {
+                    UpdatedBy.ViewValue = DbNullValue;
+                }
                 UpdatedBy.ViewCustomAttributes = "";
 
                 // UpdatedDateTime
                 UpdatedDateTime.ViewValue = UpdatedDateTime.CurrentValue;
                 UpdatedDateTime.ViewValue = FormatDateTime(UpdatedDateTime.ViewValue, UpdatedDateTime.FormatPattern);
                 UpdatedDateTime.ViewCustomAttributes = "";
-
-                // CustomerID
-                CustomerID.HrefValue = "";
-                CustomerID.TooltipValue = "";
 
                 // FirstName
                 FirstName.HrefValue = "";
@@ -2421,6 +2842,101 @@ public partial class mecommerce {
                 // UpdatedDateTime
                 UpdatedDateTime.HrefValue = "";
                 UpdatedDateTime.TooltipValue = "";
+            } else if (RowType == RowType.Search) {
+                // FirstName
+                if (FirstName.UseFilter && !Empty(FirstName.AdvancedSearch.SearchValue)) {
+                    FirstName.EditValue = ConvertToString(FirstName.AdvancedSearch.SearchValue).Split(Config.MultipleOptionSeparator).ToList();
+                }
+
+                // MiddleName
+                if (MiddleName.UseFilter && !Empty(MiddleName.AdvancedSearch.SearchValue)) {
+                    MiddleName.EditValue = ConvertToString(MiddleName.AdvancedSearch.SearchValue).Split(Config.MultipleOptionSeparator).ToList();
+                }
+
+                // LastName
+                if (LastName.UseFilter && !Empty(LastName.AdvancedSearch.SearchValue)) {
+                    LastName.EditValue = ConvertToString(LastName.AdvancedSearch.SearchValue).Split(Config.MultipleOptionSeparator).ToList();
+                }
+
+                // Gender
+                if (Gender.UseFilter && !Empty(Gender.AdvancedSearch.SearchValue)) {
+                    Gender.EditValue = ConvertToString(Gender.AdvancedSearch.SearchValue).Split(Config.MultipleOptionSeparator).ToList();
+                }
+
+                // PlaceOfBirth
+                if (PlaceOfBirth.UseFilter && !Empty(PlaceOfBirth.AdvancedSearch.SearchValue)) {
+                    PlaceOfBirth.EditValue = ConvertToString(PlaceOfBirth.AdvancedSearch.SearchValue).Split(Config.MultipleOptionSeparator).ToList();
+                }
+
+                // DateOfBirth
+                DateOfBirth.SetupEditAttributes();
+                DateOfBirth.EditValue = FormatDateTime(UnformatDateTime(DateOfBirth.AdvancedSearch.SearchValue, DateOfBirth.FormatPattern), DateOfBirth.FormatPattern); // DN
+                DateOfBirth.PlaceHolder = RemoveHtml(DateOfBirth.Caption);
+
+                // PrimaryAddressCity
+                if (PrimaryAddressCity.UseFilter && !Empty(PrimaryAddressCity.AdvancedSearch.SearchValue)) {
+                    PrimaryAddressCity.EditValue = ConvertToString(PrimaryAddressCity.AdvancedSearch.SearchValue).Split(Config.MultipleOptionSeparator).ToList();
+                }
+
+                // PrimaryAddressPostCode
+                if (PrimaryAddressPostCode.UseFilter && !Empty(PrimaryAddressPostCode.AdvancedSearch.SearchValue)) {
+                    PrimaryAddressPostCode.EditValue = ConvertToString(PrimaryAddressPostCode.AdvancedSearch.SearchValue).Split(Config.MultipleOptionSeparator).ToList();
+                }
+
+                // PrimaryAddressCountryID
+                if (PrimaryAddressCountryID.UseFilter && !Empty(PrimaryAddressCountryID.AdvancedSearch.SearchValue)) {
+                    PrimaryAddressCountryID.EditValue = ConvertToString(PrimaryAddressCountryID.AdvancedSearch.SearchValue).Split(Config.MultipleOptionSeparator).ToList();
+                }
+
+                // AlternativeAddressCity
+                if (AlternativeAddressCity.UseFilter && !Empty(AlternativeAddressCity.AdvancedSearch.SearchValue)) {
+                    AlternativeAddressCity.EditValue = ConvertToString(AlternativeAddressCity.AdvancedSearch.SearchValue).Split(Config.MultipleOptionSeparator).ToList();
+                }
+
+                // AlternativeAddressPostCode
+                if (AlternativeAddressPostCode.UseFilter && !Empty(AlternativeAddressPostCode.AdvancedSearch.SearchValue)) {
+                    AlternativeAddressPostCode.EditValue = ConvertToString(AlternativeAddressPostCode.AdvancedSearch.SearchValue).Split(Config.MultipleOptionSeparator).ToList();
+                }
+
+                // AlternativeAddressCountryID
+                if (AlternativeAddressCountryID.UseFilter && !Empty(AlternativeAddressCountryID.AdvancedSearch.SearchValue)) {
+                    AlternativeAddressCountryID.EditValue = ConvertToString(AlternativeAddressCountryID.AdvancedSearch.SearchValue).Split(Config.MultipleOptionSeparator).ToList();
+                }
+
+                // MobileNumber
+                if (MobileNumber.UseFilter && !Empty(MobileNumber.AdvancedSearch.SearchValue)) {
+                    MobileNumber.EditValue = ConvertToString(MobileNumber.AdvancedSearch.SearchValue).Split(Config.MultipleOptionSeparator).ToList();
+                }
+
+                // UserID
+                if (UserID.UseFilter && !Empty(UserID.AdvancedSearch.SearchValue)) {
+                    UserID.EditValue = ConvertToString(UserID.AdvancedSearch.SearchValue).Split(Config.MultipleOptionSeparator).ToList();
+                }
+
+                // Status
+                if (Status.UseFilter && !Empty(Status.AdvancedSearch.SearchValue)) {
+                    Status.EditValue = ConvertToString(Status.AdvancedSearch.SearchValue).Split(Config.MultipleOptionSeparator).ToList();
+                }
+
+                // CreatedBy
+                if (CreatedBy.UseFilter && !Empty(CreatedBy.AdvancedSearch.SearchValue)) {
+                    CreatedBy.EditValue = ConvertToString(CreatedBy.AdvancedSearch.SearchValue).Split(Config.MultipleOptionSeparator).ToList();
+                }
+
+                // CreatedDateTime
+                CreatedDateTime.SetupEditAttributes();
+                CreatedDateTime.EditValue = FormatDateTime(UnformatDateTime(CreatedDateTime.AdvancedSearch.SearchValue, CreatedDateTime.FormatPattern), CreatedDateTime.FormatPattern); // DN
+                CreatedDateTime.PlaceHolder = RemoveHtml(CreatedDateTime.Caption);
+
+                // UpdatedBy
+                if (UpdatedBy.UseFilter && !Empty(UpdatedBy.AdvancedSearch.SearchValue)) {
+                    UpdatedBy.EditValue = ConvertToString(UpdatedBy.AdvancedSearch.SearchValue).Split(Config.MultipleOptionSeparator).ToList();
+                }
+
+                // UpdatedDateTime
+                UpdatedDateTime.SetupEditAttributes();
+                UpdatedDateTime.EditValue = FormatDateTime(UnformatDateTime(UpdatedDateTime.AdvancedSearch.SearchValue, UpdatedDateTime.FormatPattern), UpdatedDateTime.FormatPattern); // DN
+                UpdatedDateTime.PlaceHolder = RemoveHtml(UpdatedDateTime.Caption);
             }
 
             // Call Row Rendered event
@@ -2428,6 +2944,28 @@ public partial class mecommerce {
                 RowRendered();
         }
         #pragma warning restore 1998
+
+        // Validate search
+        protected bool ValidateSearch() {
+            // Check if validation required
+            if (!Config.ServerValidate)
+                return true;
+
+            // Return validate result
+            bool validateSearch = !HasInvalidFields();
+
+            // Call Form CustomValidate event
+            string formCustomError = "";
+            validateSearch = validateSearch && FormCustomValidate(ref formCustomError);
+            if (!Empty(formCustomError))
+                FailureMessage = formCustomError;
+            return validateSearch;
+        }
+
+        // Load advanced search
+        public void LoadAdvancedSearch()
+        {
+        }
 
         // Get export HTML tag
         protected string GetExportTag(string type, bool custom = false) {
