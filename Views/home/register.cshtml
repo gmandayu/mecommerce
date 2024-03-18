@@ -42,7 +42,7 @@ loadjs.ready(["wrapper", "head"], function () {
         .setFields([
 
             ["_Email", [fields._Email.visible && fields._Email.required ? ew.Validators.required(fields._Email.caption) : null], fields._Email.isInvalid],
-            ["MobileNumber", [fields.MobileNumber.visible && fields.MobileNumber.required ? ew.Validators.required(fields.MobileNumber.caption) : null], fields.MobileNumber.isInvalid],
+            ["MobileNumber", [fields.MobileNumber.visible && fields.MobileNumber.required ? ew.Validators.required(fields.MobileNumber.caption) : null, ew.Validators.integer], fields.MobileNumber.isInvalid],
             ["_Username", [fields._Username.visible && fields._Username.required ? ew.Validators.required(fields._Username.caption) : null, ew.Validators.username(fields._Username.raw)], fields._Username.isInvalid],
             ["c_Password", [ew.Validators.required(ew.language.phrase("ConfirmPassword")), ew.Validators.mismatchPassword], fields.Password.isInvalid],
             ["Password", [fields.Password.visible && fields.Password.required ? ew.Validators.required(fields.Password.caption) : null, ew.Validators.passwordStrength, ew.Validators.password(fields.Password.raw)], fields.Password.isInvalid],

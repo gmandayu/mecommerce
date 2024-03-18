@@ -144,6 +144,7 @@ public partial class mecommerce {
                 ViewTag = "FORMATTED TEXT",
                 HtmlTag = "TEXT",
                 InputTextType = "email",
+                Required = true, // Required field
                 UseFilter = true, // Table header filter
                 SearchOperators = new () { "=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
                 CustomMessage = Language.FieldPhrase("Users", "_Email", "CustomMsg"),
@@ -170,7 +171,9 @@ public partial class mecommerce {
                 ViewTag = "FORMATTED TEXT",
                 HtmlTag = "TEXT",
                 InputTextType = "text",
+                Required = true, // Required field
                 Sortable = false, // Allow sort
+                DefaultErrorMessage = Language.Phrase("IncorrectInteger"),
                 SearchOperators = new () { "=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
                 CustomMessage = Language.FieldPhrase("Users", "MobileNumber", "CustomMsg"),
                 IsUpload = false
@@ -248,6 +251,7 @@ public partial class mecommerce {
                 UseFilter = true, // Table header filter
                 UploadAllowedFileExtensions = "jpeg,png,jpg",
                 UploadMaxFileSize = 5000000,
+                MemoMaxLength = 30,
                 SearchOperators = new () { "=", "<>", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
                 CustomMessage = Language.FieldPhrase("Users", "ProfilePicture", "CustomMsg"),
                 IsUpload = true
@@ -257,7 +261,7 @@ public partial class mecommerce {
                 "id-ID" => new Lookup<DbField>(ProfilePicture, "Users", true, "ProfilePicture", new List<string> {"ProfilePicture", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", ""),
                 _ => new Lookup<DbField>(ProfilePicture, "Users", true, "ProfilePicture", new List<string> {"ProfilePicture", "", "", ""}, "", "", new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, new List<string> {}, "", "", "")
             };
-            ProfilePicture.GetUploadPath = () => "uploads/" + UserID.DbValue;
+            ProfilePicture.GetUploadPath = () => "uploads/" + _Username.DbValue;
             Fields.Add("ProfilePicture", ProfilePicture);
 
             // ProfileDescription
@@ -277,6 +281,7 @@ public partial class mecommerce {
                 InputTextType = "text",
                 Sortable = false, // Allow sort
                 UseFilter = true, // Table header filter
+                MemoMaxLength = 30,
                 SearchOperators = new () { "=", "<>", "IN", "NOT IN", "STARTS WITH", "NOT STARTS WITH", "LIKE", "NOT LIKE", "ENDS WITH", "NOT ENDS WITH", "IS EMPTY", "IS NOT EMPTY", "IS NULL", "IS NOT NULL" },
                 CustomMessage = Language.FieldPhrase("Users", "ProfileDescription", "CustomMsg"),
                 IsUpload = false
@@ -1469,11 +1474,12 @@ public partial class mecommerce {
             } else {
                 ProfilePicture.ViewValue = "";
             }
-            ProfilePicture.CellCssStyle += "text-align: center;";
             ProfilePicture.ViewCustomAttributes = "";
 
             // ProfileDescription
             ProfileDescription.ViewValue = ProfileDescription.CurrentValue;
+            if (!IsNull(ProfileDescription.ViewValue))
+                ProfileDescription.ViewValue = ConvertToString(ProfileDescription.ViewValue)?.Replace(new[] { "\r\n", "\n", "\r" }, "<br>");
             ProfileDescription.ViewCustomAttributes = "";
 
             // IsActive
@@ -2053,6 +2059,15 @@ public partial class mecommerce {
         public bool RowUpdating(Dictionary<string, object> rsold, Dictionary<string, object> rsnew) {
             // Enter your code here
             // To cancel, set return value to False and error message to CancelMessage
+            if (rsnew.ContainsKey("ProfilePicture")) {
+                string imageFileName = rsnew["ProfilePicture"].ToString();
+                string imageFileExtension = System.IO.Path.GetExtension(imageFileName);
+                string userIDURLFriendly = GenerateSlug(_Username.DbValue.ToString());
+                string currentDateTimeURLFriendly = GenerateSlug(DateTimeOffset.Now.ToString("yyyyMMddHHmmssfff"));
+                rsnew["ProfilePicture"] = "ProfilePicture-" + userIDURLFriendly + "-" + currentDateTimeURLFriendly + imageFileExtension;
+            }
+            rsnew["UpdatedBy"] = CurrentUserID();
+            rsnew["UpdatedDateTime"] = DateTimeOffset.Now;
             return true;
         }
 

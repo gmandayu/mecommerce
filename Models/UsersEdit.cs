@@ -823,7 +823,7 @@ public partial class mecommerce {
                 if (IsApi() && !CurrentForm.HasValue("MobileNumber") && !CurrentForm.HasValue("x_MobileNumber")) // DN
                     MobileNumber.Visible = false; // Disable update for API request
                 else
-                    MobileNumber.SetFormValue(val);
+                    MobileNumber.SetFormValue(val, true, validate);
             }
 
             // Check field name 'Username' before field var 'x__Username'
@@ -1086,7 +1086,6 @@ public partial class mecommerce {
                 } else {
                     ProfilePicture.ViewValue = "";
                 }
-                ProfilePicture.CellCssStyle += "text-align: center;";
                 ProfilePicture.ViewCustomAttributes = "";
 
                 // IsActive
@@ -1312,6 +1311,9 @@ public partial class mecommerce {
                 if (!MobileNumber.IsDetailKey && Empty(MobileNumber.FormValue)) {
                     MobileNumber.AddErrorMessage(ConvertToString(MobileNumber.RequiredErrorMessage).Replace("%s", MobileNumber.Caption));
                 }
+            }
+            if (!CheckInteger(MobileNumber.FormValue)) {
+                MobileNumber.AddErrorMessage(MobileNumber.GetErrorMessage(false));
             }
             if (_Username.Required) {
                 if (!_Username.IsDetailKey && Empty(_Username.FormValue)) {

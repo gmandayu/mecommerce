@@ -2454,6 +2454,16 @@ public partial class mecommerce {
         public bool RowUpdating(Dictionary<string, object> rsold, Dictionary<string, object> rsnew) {
             // Enter your code here
             // To cancel, set return value to False and error message to CancelMessage
+            rsnew["UpdatedBy"] = CurrentUserID();
+            rsnew["UpdatedDateTime"] = DateTimeOffset.Now;
+            // if (rsnew.ContainsKey("Logo"))
+            // {
+            //     string imageFileName = rsnew["Logo"].ToString();
+            //     string imageFileExtension = System.IO.Path.GetExtension(imageFileName);
+            //     string manningAgentCodeURLFriendly = GenerateSlug(Code.DbValue.ToString());
+            //     string currentDateTimeURLFriendly = GenerateSlug(DateTimeOffset.Now.ToString("yyyyMMddHHmmssfff"));
+            //     rsnew["Logo"] = "logo-" + manningAgentCodeURLFriendly + "-" + currentDateTimeURLFriendly + imageFileExtension;
+            // }
             return true;
         }
 

@@ -544,14 +544,8 @@ if (!usersList.IsExport() && Empty(usersList.CurrentAction) && usersList.HasSear
     @if (usersList.ProfilePicture.Visible) { // usersList.ProfilePicture.Visible (begin)
         <td data-name="ProfilePicture" @Html.Raw(usersList.ProfilePicture.CellAttributes)>
 <span id="el@(usersList.RowIndex == "$rowindex$" ? "$rowindex$" : usersList.RowCount)_Users_ProfilePicture" class="el_Users_ProfilePicture">
-<span @Html.Raw(usersList.ProfilePicture.ViewAttributes)>@if (!string.IsNullOrEmpty(usersList.ProfilePicture.GetViewValue()))
-{
-    <a href="uploads/@ConvertToString(usersList.UserID.GetViewValue())/@ConvertToString(usersList.ProfilePicture.GetViewValue())" target="_blank">Attachment</a>
-}
-else
-{
-    @Html.Raw("&nbsp;")
-}
+<span @Html.Raw(usersList.ProfilePicture.ViewAttributes)>
+@Html.Raw(await GetFileViewTag((DbField)usersList.ProfilePicture, ConvertToString(usersList.ProfilePicture.GetViewValue()), false))
 </span>
 </span>
 </td>

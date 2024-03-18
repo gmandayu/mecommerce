@@ -1786,6 +1786,10 @@ public partial class mecommerce {
         public bool RowInserting(Dictionary<string, object>? rsold, Dictionary<string, object> rsnew) {
             // Enter your code here
             // To cancel, set return value to False and error message to CancelMessage
+            rsnew["CreatedBy"] = CurrentUserID();
+            rsnew["CreatedDateTime"] = DateTimeOffset.Now;
+            rsnew["UpdatedBy"] = CurrentUserID();
+            rsnew["UpdatedDateTime"] = DateTimeOffset.Now;
             return true;
         }
 
@@ -1798,6 +1802,8 @@ public partial class mecommerce {
         public bool RowUpdating(Dictionary<string, object> rsold, Dictionary<string, object> rsnew) {
             // Enter your code here
             // To cancel, set return value to False and error message to CancelMessage
+            rsnew["UpdatedBy"] = CurrentUserID();
+            rsnew["UpdatedDateTime"] = DateTimeOffset.Now;
             return true;
         }
 

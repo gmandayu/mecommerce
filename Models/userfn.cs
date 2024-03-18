@@ -96,4 +96,18 @@ public partial class mecommerce {
     }
 
     // Global user code
+    public static string GenerateSlug(string input)
+    {
+        // Mengubah huruf kecil semua
+        string slug = input.ToLower();
+        // Menghapus karakter khusus, kecuali spasi, tanda hubung, dan garis bawah
+        slug = Regex.Replace(slug, @"[^a-z0-9\s-_]", "");
+        // Mengganti spasi dengan tanda hubung
+        slug = slug.Replace(" ", "-");
+        // Mengganti dua atau lebih tanda hubung berturut-turut dengan satu tanda hubung
+        slug = Regex.Replace(slug, @"-{2,}", "-");
+        // Menghapus tanda hubung dan garis bawah di awal atau akhir slug
+        slug = slug.Trim('-', '_');
+        return slug;
+    }
 } // End Partial class

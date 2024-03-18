@@ -2293,11 +2293,12 @@ public partial class mecommerce {
                 } else {
                     ProfilePicture.ViewValue = "";
                 }
-                ProfilePicture.CellCssStyle += "text-align: center;";
                 ProfilePicture.ViewCustomAttributes = "";
 
                 // ProfileDescription
-                ProfileDescription.ViewValue = ProfileDescription.CurrentValue;
+                ProfileDescription.ViewValue = TruncateMemo(ConvertToString(ProfileDescription.CurrentValue), 30, ProfileDescription.TruncateMemoRemoveHtml);
+                if (!IsNull(ProfileDescription.ViewValue))
+                    ProfileDescription.ViewValue = ConvertToString(ProfileDescription.ViewValue)?.Replace(new[] { "\r\n", "\n", "\r" }, "<br>");
                 ProfileDescription.ViewCustomAttributes = "";
 
                 // IsActive

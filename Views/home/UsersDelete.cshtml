@@ -149,14 +149,8 @@ loadjs.ready("head", function() {
 @if (usersDelete.ProfilePicture.Visible) { // usersDelete.ProfilePicture.Visible (begin)
         <td @Html.Raw(usersDelete.ProfilePicture.CellAttributes)>
 <span id="">
-<span @Html.Raw(usersDelete.ProfilePicture.ViewAttributes)>@if (!string.IsNullOrEmpty(usersList.ProfilePicture.GetViewValue()))
-{
-    <a href="uploads/@ConvertToString(usersList.UserID.GetViewValue())/@ConvertToString(usersList.ProfilePicture.GetViewValue())" target="_blank">Attachment</a>
-}
-else
-{
-    @Html.Raw("&nbsp;")
-}
+<span @Html.Raw(usersDelete.ProfilePicture.ViewAttributes)>
+@Html.Raw(await GetFileViewTag((DbField)usersDelete.ProfilePicture, ConvertToString(usersDelete.ProfilePicture.GetViewValue()), false))
 </span>
 </span></td>
 } @* usersDelete.ProfilePicture.Visible (end) *@

@@ -113,14 +113,8 @@ loadjs.ready(["wrapper", "head"], function () {
         <td class="@(usersView.TableLeftColumnClass)"><span id="elh_Users_ProfilePicture">@Html.Raw(usersView.ProfilePicture.Caption)</span></td>
         <td data-name="ProfilePicture" @Html.Raw(usersView.ProfilePicture.CellAttributes)>
 <span id="el_Users_ProfilePicture">
-<span @Html.Raw(usersView.ProfilePicture.ViewAttributes)>@if (!string.IsNullOrEmpty(usersList.ProfilePicture.GetViewValue()))
-{
-    <a href="uploads/@ConvertToString(usersList.UserID.GetViewValue())/@ConvertToString(usersList.ProfilePicture.GetViewValue())" target="_blank">Attachment</a>
-}
-else
-{
-    @Html.Raw("&nbsp;")
-}
+<span @Html.Raw(usersView.ProfilePicture.ViewAttributes)>
+@Html.Raw(await GetFileViewTag((DbField)usersView.ProfilePicture, ConvertToString(usersView.ProfilePicture.GetViewValue()), false))
 </span>
 </span></td>
     </tr>
