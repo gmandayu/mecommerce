@@ -859,10 +859,6 @@ public partial class mecommerce {
 
             // View row
             if (RowType == RowType.View) {
-                // CountryID
-                CountryID.ViewValue = CountryID.CurrentValue;
-                CountryID.ViewCustomAttributes = "";
-
                 // ISO
                 ISO.ViewValue = ConvertToString(ISO.CurrentValue); // DN
                 ISO.ViewCustomAttributes = "";
@@ -890,8 +886,24 @@ public partial class mecommerce {
                 PhoneCode.ViewCustomAttributes = "";
 
                 // CreatedBy
-                CreatedBy.ViewValue = CreatedBy.CurrentValue;
-                CreatedBy.ViewValue = FormatNumber(CreatedBy.ViewValue, CreatedBy.FormatPattern);
+                curVal = ConvertToString(CreatedBy.CurrentValue);
+                if (!Empty(curVal)) {
+                    if (CreatedBy.Lookup != null && IsDictionary(CreatedBy.Lookup?.Options) && CreatedBy.Lookup?.Options.Values.Count > 0) { // Load from cache // DN
+                        CreatedBy.ViewValue = CreatedBy.LookupCacheOption(curVal);
+                    } else { // Lookup from database // DN
+                        filterWrk = SearchFilter("[UserID]", "=", CreatedBy.CurrentValue, DataType.Number, "");
+                        sqlWrk = CreatedBy.Lookup?.GetSql(false, filterWrk, null, this, true, true);
+                        rswrk = sqlWrk != null ? Connection.GetRows(sqlWrk) : null; // Must use Sync to avoid overwriting ViewValue in RenderViewRow
+                        if (rswrk?.Count > 0 && CreatedBy.Lookup != null) { // Lookup values found
+                            var listwrk = CreatedBy.Lookup?.RenderViewRow(rswrk[0]);
+                            CreatedBy.ViewValue = CreatedBy.HighlightLookup(ConvertToString(rswrk[0]), CreatedBy.DisplayValue(listwrk));
+                        } else {
+                            CreatedBy.ViewValue = FormatNumber(CreatedBy.CurrentValue, CreatedBy.FormatPattern);
+                        }
+                    }
+                } else {
+                    CreatedBy.ViewValue = DbNullValue;
+                }
                 CreatedBy.ViewCustomAttributes = "";
 
                 // CreatedDateTime
@@ -900,18 +912,30 @@ public partial class mecommerce {
                 CreatedDateTime.ViewCustomAttributes = "";
 
                 // UpdatedBy
-                UpdatedBy.ViewValue = UpdatedBy.CurrentValue;
-                UpdatedBy.ViewValue = FormatNumber(UpdatedBy.ViewValue, UpdatedBy.FormatPattern);
+                curVal = ConvertToString(UpdatedBy.CurrentValue);
+                if (!Empty(curVal)) {
+                    if (UpdatedBy.Lookup != null && IsDictionary(UpdatedBy.Lookup?.Options) && UpdatedBy.Lookup?.Options.Values.Count > 0) { // Load from cache // DN
+                        UpdatedBy.ViewValue = UpdatedBy.LookupCacheOption(curVal);
+                    } else { // Lookup from database // DN
+                        filterWrk = SearchFilter("[UserID]", "=", UpdatedBy.CurrentValue, DataType.Number, "");
+                        sqlWrk = UpdatedBy.Lookup?.GetSql(false, filterWrk, null, this, true, true);
+                        rswrk = sqlWrk != null ? Connection.GetRows(sqlWrk) : null; // Must use Sync to avoid overwriting ViewValue in RenderViewRow
+                        if (rswrk?.Count > 0 && UpdatedBy.Lookup != null) { // Lookup values found
+                            var listwrk = UpdatedBy.Lookup?.RenderViewRow(rswrk[0]);
+                            UpdatedBy.ViewValue = UpdatedBy.HighlightLookup(ConvertToString(rswrk[0]), UpdatedBy.DisplayValue(listwrk));
+                        } else {
+                            UpdatedBy.ViewValue = FormatNumber(UpdatedBy.CurrentValue, UpdatedBy.FormatPattern);
+                        }
+                    }
+                } else {
+                    UpdatedBy.ViewValue = DbNullValue;
+                }
                 UpdatedBy.ViewCustomAttributes = "";
 
                 // UpdatedDateTime
                 UpdatedDateTime.ViewValue = UpdatedDateTime.CurrentValue;
                 UpdatedDateTime.ViewValue = FormatDateTime(UpdatedDateTime.ViewValue, UpdatedDateTime.FormatPattern);
                 UpdatedDateTime.ViewCustomAttributes = "";
-
-                // CountryID
-                CountryID.HrefValue = "";
-                CountryID.TooltipValue = "";
 
                 // ISO
                 ISO.HrefValue = "";
