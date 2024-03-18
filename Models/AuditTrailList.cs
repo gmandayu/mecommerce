@@ -268,16 +268,16 @@ public partial class mecommerce {
         // Set field visibility
         public void SetVisibility()
         {
-            Id.SetVisibility();
+            Id.Visible = false;
             _DateTime.SetVisibility();
             Script.SetVisibility();
             _User.SetVisibility();
             _Action.SetVisibility();
             _Table.SetVisibility();
             _Field.SetVisibility();
-            KeyValue.Visible = false;
-            OldValue.Visible = false;
-            NewValue.Visible = false;
+            KeyValue.SetVisibility();
+            OldValue.SetVisibility();
+            NewValue.SetVisibility();
         }
 
         // Constructor
@@ -1050,16 +1050,6 @@ public partial class mecommerce {
 
             // Initialize
             var filters = new JObject(); // DN
-            filters.Merge(JObject.Parse(Id.AdvancedSearch.ToJson())); // Field Id
-            filters.Merge(JObject.Parse(_DateTime.AdvancedSearch.ToJson())); // Field DateTime
-            filters.Merge(JObject.Parse(Script.AdvancedSearch.ToJson())); // Field Script
-            filters.Merge(JObject.Parse(_User.AdvancedSearch.ToJson())); // Field User
-            filters.Merge(JObject.Parse(_Action.AdvancedSearch.ToJson())); // Field Action
-            filters.Merge(JObject.Parse(_Table.AdvancedSearch.ToJson())); // Field Table
-            filters.Merge(JObject.Parse(_Field.AdvancedSearch.ToJson())); // Field Field
-            filters.Merge(JObject.Parse(KeyValue.AdvancedSearch.ToJson())); // Field KeyValue
-            filters.Merge(JObject.Parse(OldValue.AdvancedSearch.ToJson())); // Field OldValue
-            filters.Merge(JObject.Parse(NewValue.AdvancedSearch.ToJson())); // Field NewValue
             filters.Merge(JObject.Parse(BasicSearch.ToJson()));
 
             // Return filter list in JSON
@@ -1094,106 +1084,6 @@ public partial class mecommerce {
             var filter = JsonConvert.DeserializeObject<Dictionary<string, string>>(Post("filter"));
             Command = "search";
             string? sv;
-
-            // Field Id
-            if (filter?.TryGetValue("x_Id", out sv) ?? false) {
-                Id.AdvancedSearch.SearchValue = sv;
-                Id.AdvancedSearch.SearchOperator = filter["z_Id"];
-                Id.AdvancedSearch.SearchCondition = filter["v_Id"];
-                Id.AdvancedSearch.SearchValue2 = filter["y_Id"];
-                Id.AdvancedSearch.SearchOperator2 = filter["w_Id"];
-                Id.AdvancedSearch.Save();
-            }
-
-            // Field DateTime
-            if (filter?.TryGetValue("x__DateTime", out sv) ?? false) {
-                _DateTime.AdvancedSearch.SearchValue = sv;
-                _DateTime.AdvancedSearch.SearchOperator = filter["z__DateTime"];
-                _DateTime.AdvancedSearch.SearchCondition = filter["v__DateTime"];
-                _DateTime.AdvancedSearch.SearchValue2 = filter["y__DateTime"];
-                _DateTime.AdvancedSearch.SearchOperator2 = filter["w__DateTime"];
-                _DateTime.AdvancedSearch.Save();
-            }
-
-            // Field Script
-            if (filter?.TryGetValue("x_Script", out sv) ?? false) {
-                Script.AdvancedSearch.SearchValue = sv;
-                Script.AdvancedSearch.SearchOperator = filter["z_Script"];
-                Script.AdvancedSearch.SearchCondition = filter["v_Script"];
-                Script.AdvancedSearch.SearchValue2 = filter["y_Script"];
-                Script.AdvancedSearch.SearchOperator2 = filter["w_Script"];
-                Script.AdvancedSearch.Save();
-            }
-
-            // Field User
-            if (filter?.TryGetValue("x__User", out sv) ?? false) {
-                _User.AdvancedSearch.SearchValue = sv;
-                _User.AdvancedSearch.SearchOperator = filter["z__User"];
-                _User.AdvancedSearch.SearchCondition = filter["v__User"];
-                _User.AdvancedSearch.SearchValue2 = filter["y__User"];
-                _User.AdvancedSearch.SearchOperator2 = filter["w__User"];
-                _User.AdvancedSearch.Save();
-            }
-
-            // Field Action
-            if (filter?.TryGetValue("x__Action", out sv) ?? false) {
-                _Action.AdvancedSearch.SearchValue = sv;
-                _Action.AdvancedSearch.SearchOperator = filter["z__Action"];
-                _Action.AdvancedSearch.SearchCondition = filter["v__Action"];
-                _Action.AdvancedSearch.SearchValue2 = filter["y__Action"];
-                _Action.AdvancedSearch.SearchOperator2 = filter["w__Action"];
-                _Action.AdvancedSearch.Save();
-            }
-
-            // Field Table
-            if (filter?.TryGetValue("x__Table", out sv) ?? false) {
-                _Table.AdvancedSearch.SearchValue = sv;
-                _Table.AdvancedSearch.SearchOperator = filter["z__Table"];
-                _Table.AdvancedSearch.SearchCondition = filter["v__Table"];
-                _Table.AdvancedSearch.SearchValue2 = filter["y__Table"];
-                _Table.AdvancedSearch.SearchOperator2 = filter["w__Table"];
-                _Table.AdvancedSearch.Save();
-            }
-
-            // Field Field
-            if (filter?.TryGetValue("x__Field", out sv) ?? false) {
-                _Field.AdvancedSearch.SearchValue = sv;
-                _Field.AdvancedSearch.SearchOperator = filter["z__Field"];
-                _Field.AdvancedSearch.SearchCondition = filter["v__Field"];
-                _Field.AdvancedSearch.SearchValue2 = filter["y__Field"];
-                _Field.AdvancedSearch.SearchOperator2 = filter["w__Field"];
-                _Field.AdvancedSearch.Save();
-            }
-
-            // Field KeyValue
-            if (filter?.TryGetValue("x_KeyValue", out sv) ?? false) {
-                KeyValue.AdvancedSearch.SearchValue = sv;
-                KeyValue.AdvancedSearch.SearchOperator = filter["z_KeyValue"];
-                KeyValue.AdvancedSearch.SearchCondition = filter["v_KeyValue"];
-                KeyValue.AdvancedSearch.SearchValue2 = filter["y_KeyValue"];
-                KeyValue.AdvancedSearch.SearchOperator2 = filter["w_KeyValue"];
-                KeyValue.AdvancedSearch.Save();
-            }
-
-            // Field OldValue
-            if (filter?.TryGetValue("x_OldValue", out sv) ?? false) {
-                OldValue.AdvancedSearch.SearchValue = sv;
-                OldValue.AdvancedSearch.SearchOperator = filter["z_OldValue"];
-                OldValue.AdvancedSearch.SearchCondition = filter["v_OldValue"];
-                OldValue.AdvancedSearch.SearchValue2 = filter["y_OldValue"];
-                OldValue.AdvancedSearch.SearchOperator2 = filter["w_OldValue"];
-                OldValue.AdvancedSearch.Save();
-            }
-
-            // Field NewValue
-            if (filter?.TryGetValue("x_NewValue", out sv) ?? false) {
-                NewValue.AdvancedSearch.SearchValue = sv;
-                NewValue.AdvancedSearch.SearchOperator = filter["z_NewValue"];
-                NewValue.AdvancedSearch.SearchCondition = filter["v_NewValue"];
-                NewValue.AdvancedSearch.SearchValue2 = filter["y_NewValue"];
-                NewValue.AdvancedSearch.SearchOperator2 = filter["w_NewValue"];
-                NewValue.AdvancedSearch.Save();
-            }
             if (filter?.TryGetValue(Config.TableBasicSearch, out string? keyword) ?? false)
                 BasicSearch.SessionKeyword = keyword;
             if (filter?.TryGetValue(Config.TableBasicSearchType, out string? type) ?? false)
@@ -1309,13 +1199,15 @@ public partial class mecommerce {
             if (Get("order", out StringValues sv)) {
                 CurrentOrder = sv.ToString();
                 CurrentOrderType = Get("ordertype");
-                UpdateSort(Id); // Id
                 UpdateSort(_DateTime); // DateTime
                 UpdateSort(Script); // Script
                 UpdateSort(_User); // User
                 UpdateSort(_Action); // Action
                 UpdateSort(_Table); // Table
                 UpdateSort(_Field); // Field
+                UpdateSort(KeyValue); // KeyValue
+                UpdateSort(OldValue); // OldValue
+                UpdateSort(NewValue); // NewValue
                 StartRecordNumber = 1; // Reset start position
             }
 
@@ -1375,18 +1267,6 @@ public partial class mecommerce {
             item.Visible = Security.CanView;
             item.OnLeft = true;
 
-            // "edit"
-            item = ListOptions.Add("edit");
-            item.CssClass = "text-nowrap";
-            item.Visible = Security.CanEdit;
-            item.OnLeft = true;
-
-            // "copy"
-            item = ListOptions.Add("copy");
-            item.CssClass = "text-nowrap";
-            item.Visible = Security.CanAdd;
-            item.OnLeft = true;
-
             // List actions
             item = ListOptions.Add("listactions");
             item.CssClass = "text-nowrap";
@@ -1398,11 +1278,19 @@ public partial class mecommerce {
             // "checkbox"
             item = ListOptions.Add("checkbox");
             item.CssStyle = "white-space: nowrap; text-align: center; vertical-align: middle; margin: 0px;";
-            item.Visible = Security.CanDelete;
+            item.Visible = false;
             item.OnLeft = true;
             item.Header = "<div class=\"form-check\"><input type=\"checkbox\" name=\"key\" id=\"key\" class=\"form-check-input\" data-ew-action=\"select-all-keys\"></div>";
             if (item.OnLeft)
                 item.MoveTo(0);
+            item.ShowInDropDown = false;
+            item.ShowInButtonGroup = false;
+
+            // "sequence"
+            item = ListOptions.Add("sequence");
+            item.CssClass = "text-nowrap";
+            item.Visible = true;
+            item.OnLeft = true; // Always on left
             item.ShowInDropDown = false;
             item.ShowInButtonGroup = false;
 
@@ -1445,6 +1333,10 @@ public partial class mecommerce {
             // Call ListOptions Rendering event
             ListOptionsRendering();
 
+            // "sequence"
+            listOption = ListOptions["sequence"];
+            listOption?.SetBody(FormatSequenceNumber(RecordCount));
+
             // "view"
             listOption = ListOptions["view"];
             string viewcaption = Language.Phrase("ViewLink", true);
@@ -1454,32 +1346,6 @@ public partial class mecommerce {
                     listOption?.SetBody($@"<a class=""ew-row-link ew-view"" title=""{viewcaption}"" data-table=""AuditTrail"" data-caption=""{viewcaption}"" data-ew-action=""modal"" data-action=""view"" data-ajax=""" + (UseAjaxActions ? "true" : "false") + "\" data-url=\"" + HtmlEncode(AppPath(ViewUrl)) + "\" data-btn=\"null\">" + Language.Phrase("ViewLink") + "</a>");
                 else
                     listOption?.SetBody($@"<a class=""ew-row-link ew-view"" title=""{viewcaption}"" data-caption=""{viewcaption}"" href=""" + HtmlEncode(AppPath(ViewUrl)) + "\">" + Language.Phrase("ViewLink") + "</a>");
-            } else {
-                listOption?.Clear();
-            }
-
-            // "edit"
-            listOption = ListOptions["edit"];
-            string editcaption = Language.Phrase("EditLink", true);
-            isVisible = Security.CanEdit;
-            if (isVisible) {
-                if (ModalEdit && !IsMobile())
-                    listOption?.SetBody($@"<a class=""ew-row-link ew-edit"" title=""{editcaption}"" data-table=""AuditTrail"" data-caption=""{editcaption}"" data-ew-action=""modal"" data-action=""edit"" data-ajax=""" + (UseAjaxActions ? "true" : "false") + "\" data-url=\"" + HtmlEncode(AppPath(EditUrl)) + "\" data-btn=\"SaveBtn\">" + Language.Phrase("EditLink") + "</a>");
-                else
-                    listOption?.SetBody($@"<a class=""ew-row-link ew-edit"" title=""{editcaption}"" data-caption=""{editcaption}"" href=""" + HtmlEncode(AppPath(EditUrl)) + "\">" + Language.Phrase("EditLink") + "</a>");
-            } else {
-                listOption?.Clear();
-            }
-
-            // "copy"
-            listOption = ListOptions["copy"];
-            string copycaption = Language.Phrase("CopyLink", true);
-            isVisible = Security.CanAdd;
-            if (isVisible) {
-                if (ModalAdd && !IsMobile())
-                    listOption?.SetBody($@"<a class=""ew-row-link ew-copy"" title=""{copycaption}"" data-table=""AuditTrail"" data-caption=""{copycaption}"" data-ew-action=""modal"" data-action=""add"" data-ajax=""" + (UseAjaxActions ? "true" : "false") + "\" data-url=\"" + HtmlEncode(AppPath(CopyUrl)) + "\" data-btn=\"AddBtn\">" + Language.Phrase("CopyLink") + "</a>");
-                else
-                    listOption?.SetBody($@"<a class=""ew-row-link ew-copy"" title=""{copycaption}"" data-caption=""{copycaption}"" href=""" + HtmlEncode(AppPath(CopyUrl)) + "\">" + Language.Phrase("CopyLink") + "</a>");
             } else {
                 listOption?.Clear();
             }
@@ -1531,28 +1397,7 @@ public partial class mecommerce {
             ListOptions option;
             ListOption item;
             var options = OtherOptions;
-            option = options["addedit"];
-
-            // Add
-            item = option.Add("add");
-            string addTitle = Language.Phrase("AddLink", true);
-            if (ModalAdd && !IsMobile())
-                item.Body = $@"<a class=""ew-add-edit ew-add"" title=""{addTitle}"" data-table=""AuditTrail"" data-caption=""{addTitle}"" data-ew-action=""modal"" data-action=""add"" data-ajax=""" + (UseAjaxActions ? "true" : "false") + "\" data-url=\"" + HtmlEncode(AppPath(AddUrl)) + "\" data-btn=\"AddBtn\">" + Language.Phrase("AddLink") + "</a>";
-            else
-                item.Body = $@"<a class=""ew-add-edit ew-add"" title=""{addTitle}"" data-caption=""{addTitle}"" href=""" + HtmlEncode(AppPath(AddUrl)) + "\">" + Language.Phrase("AddLink") + "</a>";
-            item.Visible = AddUrl != "" && Security.CanAdd;
             option = options["action"];
-
-            // Add multi delete
-            item = option.Add("multidelete");
-            string deleteTitle = Language.Phrase("DeleteSelectedLink", true);
-            item.Body = $@"<button type=""button"" class=""ew-action ew-multi-delete"" title=""{deleteTitle}"" data-caption=""{deleteTitle}"" form=""fAuditTraillist""" +
-                " data-ew-action=\"" + (UseAjaxActions ? "inline" : "submit") + "\"" +
-                (UseAjaxActions ? " data-action=\"delete\"" : "") +
-                " data-url=\"" + HtmlEncode(AppPath(MultiDeleteUrl)) + "\"" +
-                (InlineDelete ? " data-msg=\"" + HtmlEncode(Language.Phrase("DeleteConfirm")) + "\" data-data='{\"action\":\"delete\"}'" : " data-data='{\"action\":\"show\"}'") +
-                ">" + Language.Phrase("DeleteSelectedLink") + "</button>";
-            item.Visible = Security.CanDelete;
 
             // Show column list for column visibility
             if (UseColumnVisibility) {
@@ -1560,13 +1405,15 @@ public partial class mecommerce {
                 item = option.AddGroupOption();
                 item.Body = "";
                 item.Visible = UseColumnVisibility;
-                CreateColumnOption(option.Add("Id")); // DN
                 CreateColumnOption(option.Add("DateTime")); // DN
                 CreateColumnOption(option.Add("Script")); // DN
                 CreateColumnOption(option.Add("User")); // DN
                 CreateColumnOption(option.Add("Action")); // DN
                 CreateColumnOption(option.Add("Table")); // DN
                 CreateColumnOption(option.Add("Field")); // DN
+                CreateColumnOption(option.Add("KeyValue")); // DN
+                CreateColumnOption(option.Add("OldValue")); // DN
+                CreateColumnOption(option.Add("NewValue")); // DN
             }
 
             // Set up options default
@@ -1976,31 +1823,37 @@ public partial class mecommerce {
             // Common render codes for all row types
 
             // Id
+            Id.CellCssStyle = "white-space: nowrap;";
 
             // DateTime
+            _DateTime.CellCssStyle = "white-space: nowrap;";
 
             // Script
+            Script.CellCssStyle = "white-space: nowrap;";
 
             // User
+            _User.CellCssStyle = "white-space: nowrap;";
 
             // Action
+            _Action.CellCssStyle = "white-space: nowrap;";
 
             // Table
+            _Table.CellCssStyle = "white-space: nowrap;";
 
             // Field
+            _Field.CellCssStyle = "white-space: nowrap;";
 
             // KeyValue
+            KeyValue.CellCssStyle = "white-space: nowrap;";
 
             // OldValue
+            OldValue.CellCssStyle = "white-space: nowrap;";
 
             // NewValue
+            NewValue.CellCssStyle = "white-space: nowrap;";
 
             // View row
             if (RowType == RowType.View) {
-                // Id
-                Id.ViewValue = Id.CurrentValue;
-                Id.ViewCustomAttributes = "";
-
                 // DateTime
                 _DateTime.ViewValue = _DateTime.CurrentValue;
                 _DateTime.ViewValue = FormatDateTime(_DateTime.ViewValue, _DateTime.FormatPattern);
@@ -2026,9 +1879,17 @@ public partial class mecommerce {
                 _Field.ViewValue = ConvertToString(_Field.CurrentValue); // DN
                 _Field.ViewCustomAttributes = "";
 
-                // Id
-                Id.HrefValue = "";
-                Id.TooltipValue = "";
+                // KeyValue
+                KeyValue.ViewValue = KeyValue.CurrentValue;
+                KeyValue.ViewCustomAttributes = "";
+
+                // OldValue
+                OldValue.ViewValue = OldValue.CurrentValue;
+                OldValue.ViewCustomAttributes = "";
+
+                // NewValue
+                NewValue.ViewValue = NewValue.CurrentValue;
+                NewValue.ViewCustomAttributes = "";
 
                 // DateTime
                 _DateTime.HrefValue = "";
@@ -2053,6 +1914,18 @@ public partial class mecommerce {
                 // Field
                 _Field.HrefValue = "";
                 _Field.TooltipValue = "";
+
+                // KeyValue
+                KeyValue.HrefValue = "";
+                KeyValue.TooltipValue = "";
+
+                // OldValue
+                OldValue.HrefValue = "";
+                OldValue.TooltipValue = "";
+
+                // NewValue
+                NewValue.HrefValue = "";
+                NewValue.TooltipValue = "";
             }
 
             // Call Row Rendered event

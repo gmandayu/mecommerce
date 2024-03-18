@@ -46,13 +46,8 @@ loadjs.ready(["wrapper", "head"], function () {
             ["_Username", [fields._Username.visible && fields._Username.required ? ew.Validators.required(fields._Username.caption) : null], fields._Username.isInvalid],
             ["Password", [fields.Password.visible && fields.Password.required ? ew.Validators.required(fields.Password.caption) : null, ew.Validators.passwordStrength], fields.Password.isInvalid],
             ["ProfilePicture", [fields.ProfilePicture.visible && fields.ProfilePicture.required ? ew.Validators.fileRequired(fields.ProfilePicture.caption) : null], fields.ProfilePicture.isInvalid],
-            ["ProfileDescription", [fields.ProfileDescription.visible && fields.ProfileDescription.required ? ew.Validators.required(fields.ProfileDescription.caption) : null], fields.ProfileDescription.isInvalid],
             ["IsActive", [fields.IsActive.visible && fields.IsActive.required ? ew.Validators.required(fields.IsActive.caption) : null], fields.IsActive.isInvalid],
-            ["UserLevelID", [fields.UserLevelID.visible && fields.UserLevelID.required ? ew.Validators.required(fields.UserLevelID.caption) : null], fields.UserLevelID.isInvalid],
-            ["CreatedBy", [fields.CreatedBy.visible && fields.CreatedBy.required ? ew.Validators.required(fields.CreatedBy.caption) : null, ew.Validators.integer], fields.CreatedBy.isInvalid],
-            ["CreatedDateTime", [fields.CreatedDateTime.visible && fields.CreatedDateTime.required ? ew.Validators.required(fields.CreatedDateTime.caption) : null, ew.Validators.datetime(fields.CreatedDateTime.clientFormatPattern)], fields.CreatedDateTime.isInvalid],
-            ["UpdatedBy", [fields.UpdatedBy.visible && fields.UpdatedBy.required ? ew.Validators.required(fields.UpdatedBy.caption) : null, ew.Validators.integer], fields.UpdatedBy.isInvalid],
-            ["UpdatedDateTime", [fields.UpdatedDateTime.visible && fields.UpdatedDateTime.required ? ew.Validators.required(fields.UpdatedDateTime.caption) : null, ew.Validators.datetime(fields.UpdatedDateTime.clientFormatPattern)], fields.UpdatedDateTime.isInvalid]
+            ["UserLevelID", [fields.UserLevelID.visible && fields.UserLevelID.required ? ew.Validators.required(fields.UserLevelID.caption) : null], fields.UserLevelID.isInvalid]
         ])
 
         // Form_CustomValidate
@@ -186,18 +181,6 @@ loadjs.ready("head", function() {
 </div></div>
     </div>
 } @* usersAdd.ProfilePicture.Visible (end) *@
-@if (usersAdd.ProfileDescription.Visible) { // usersAdd.ProfileDescription.Visible (begin)
-    <div id="r_ProfileDescription" @Html.Raw(usersAdd.ProfileDescription.RowAttributes)>
-        <label id="elh_Users_ProfileDescription" for="x_ProfileDescription" class="@(usersAdd.LeftColumnClass)">@Html.Raw(usersAdd.ProfileDescription.Caption)@Html.Raw(usersAdd.ProfileDescription.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
-        <div class="@(usersAdd.RightColumnClass)"><div @Html.Raw(usersAdd.ProfileDescription.CellAttributes)>
-<span id="el_Users_ProfileDescription">
-<textarea data-table="Users" data-field="x_ProfileDescription" name="x_ProfileDescription" id="x_ProfileDescription" cols="35" rows="4" placeholder="@Html.Raw(HtmlEncode(usersAdd.ProfileDescription.PlaceHolder))"@Html.Raw(usersAdd.ProfileDescription.EditAttributes) aria-describedby="x_ProfileDescription_help">@(usersAdd.ProfileDescription.EditValue)</textarea>
-@Html.Raw(usersAdd.ProfileDescription.GetCustomMessage)
-<div class="invalid-feedback">@Html.Raw(usersAdd.ProfileDescription.GetErrorMessage())</div>
-</span>
-</div></div>
-    </div>
-} @* usersAdd.ProfileDescription.Visible (end) *@
 @if (usersAdd.IsActive.Visible) { // usersAdd.IsActive.Visible (begin)
     <div id="r_IsActive" @Html.Raw(usersAdd.IsActive.RowAttributes)>
         <label id="elh_Users_IsActive" class="@(usersAdd.LeftColumnClass)">@Html.Raw(usersAdd.IsActive.Caption)@Html.Raw(usersAdd.IsActive.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
@@ -260,110 +243,6 @@ loadjs.ready("fUsersadd", function() {
 </div></div>
     </div>
 } @* usersAdd.UserLevelID.Visible (end) *@
-@if (usersAdd.CreatedBy.Visible) { // usersAdd.CreatedBy.Visible (begin)
-    <div id="r_CreatedBy" @Html.Raw(usersAdd.CreatedBy.RowAttributes)>
-        <label id="elh_Users_CreatedBy" for="x_CreatedBy" class="@(usersAdd.LeftColumnClass)">@Html.Raw(usersAdd.CreatedBy.Caption)@Html.Raw(usersAdd.CreatedBy.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
-        <div class="@(usersAdd.RightColumnClass)"><div @Html.Raw(usersAdd.CreatedBy.CellAttributes)>
-<span id="el_Users_CreatedBy">
-<input type="@(usersAdd.CreatedBy.InputTextType)" name="x_CreatedBy" id="x_CreatedBy" data-table="Users" data-field="x_CreatedBy" value="@Html.Raw(usersAdd.CreatedBy.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(usersAdd.CreatedBy.PlaceHolder))" data-format-pattern="@(usersAdd.CreatedBy.FormatPattern)"@Html.Raw(usersAdd.CreatedBy.EditAttributes) aria-describedby="x_CreatedBy_help">
-@Html.Raw(usersAdd.CreatedBy.GetCustomMessage)
-<div class="invalid-feedback">@Html.Raw(usersAdd.CreatedBy.GetErrorMessage())</div>
-</span>
-</div></div>
-    </div>
-} @* usersAdd.CreatedBy.Visible (end) *@
-@if (usersAdd.CreatedDateTime.Visible) { // usersAdd.CreatedDateTime.Visible (begin)
-    <div id="r_CreatedDateTime" @Html.Raw(usersAdd.CreatedDateTime.RowAttributes)>
-        <label id="elh_Users_CreatedDateTime" for="x_CreatedDateTime" class="@(usersAdd.LeftColumnClass)">@Html.Raw(usersAdd.CreatedDateTime.Caption)@Html.Raw(usersAdd.CreatedDateTime.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
-        <div class="@(usersAdd.RightColumnClass)"><div @Html.Raw(usersAdd.CreatedDateTime.CellAttributes)>
-<span id="el_Users_CreatedDateTime">
-<input type="@(usersAdd.CreatedDateTime.InputTextType)" name="x_CreatedDateTime" id="x_CreatedDateTime" data-table="Users" data-field="x_CreatedDateTime" value="@Html.Raw(usersAdd.CreatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(usersAdd.CreatedDateTime.PlaceHolder))" data-format-pattern="@(usersAdd.CreatedDateTime.FormatPattern)"@Html.Raw(usersAdd.CreatedDateTime.EditAttributes) aria-describedby="x_CreatedDateTime_help">
-@Html.Raw(usersAdd.CreatedDateTime.GetCustomMessage)
-<div class="invalid-feedback">@Html.Raw(usersAdd.CreatedDateTime.GetErrorMessage())</div>
-@if (!usersAdd.CreatedDateTime.ReadOnly && !usersAdd.CreatedDateTime.Disabled && !usersAdd.CreatedDateTime.EditAttrs.Is("readonly") && !usersAdd.CreatedDateTime.EditAttrs.Is("disabled")) {
-<script>
-loadjs.ready(["fUsersadd", "datetimepicker"], function () {
-    let format = "@Html.Raw(DateFormat(0))", // DN
-        options = {
-                localization: {
-                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
-                    hourCycle: format.match(/H/) ? "h24" : "h12",
-                    format,
-                    ...ew.language.phrase("datetimepicker")
-                },
-                display: {
-                    icons: {
-                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
-                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
-                    },
-                    components: {
-                        hours: !!format.match(/h/i),
-                        minutes: !!format.match(/m/),
-                        seconds: !!format.match(/s/i)
-                    },
-                    theme: ew.isDark() ? "dark" : "auto"
-                }
-            };
-    ew.createDateTimePicker("fUsersadd", "x_CreatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
-});
-</script>
-}
-</span>
-</div></div>
-    </div>
-} @* usersAdd.CreatedDateTime.Visible (end) *@
-@if (usersAdd.UpdatedBy.Visible) { // usersAdd.UpdatedBy.Visible (begin)
-    <div id="r_UpdatedBy" @Html.Raw(usersAdd.UpdatedBy.RowAttributes)>
-        <label id="elh_Users_UpdatedBy" for="x_UpdatedBy" class="@(usersAdd.LeftColumnClass)">@Html.Raw(usersAdd.UpdatedBy.Caption)@Html.Raw(usersAdd.UpdatedBy.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
-        <div class="@(usersAdd.RightColumnClass)"><div @Html.Raw(usersAdd.UpdatedBy.CellAttributes)>
-<span id="el_Users_UpdatedBy">
-<input type="@(usersAdd.UpdatedBy.InputTextType)" name="x_UpdatedBy" id="x_UpdatedBy" data-table="Users" data-field="x_UpdatedBy" value="@Html.Raw(usersAdd.UpdatedBy.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(usersAdd.UpdatedBy.PlaceHolder))" data-format-pattern="@(usersAdd.UpdatedBy.FormatPattern)"@Html.Raw(usersAdd.UpdatedBy.EditAttributes) aria-describedby="x_UpdatedBy_help">
-@Html.Raw(usersAdd.UpdatedBy.GetCustomMessage)
-<div class="invalid-feedback">@Html.Raw(usersAdd.UpdatedBy.GetErrorMessage())</div>
-</span>
-</div></div>
-    </div>
-} @* usersAdd.UpdatedBy.Visible (end) *@
-@if (usersAdd.UpdatedDateTime.Visible) { // usersAdd.UpdatedDateTime.Visible (begin)
-    <div id="r_UpdatedDateTime" @Html.Raw(usersAdd.UpdatedDateTime.RowAttributes)>
-        <label id="elh_Users_UpdatedDateTime" for="x_UpdatedDateTime" class="@(usersAdd.LeftColumnClass)">@Html.Raw(usersAdd.UpdatedDateTime.Caption)@Html.Raw(usersAdd.UpdatedDateTime.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
-        <div class="@(usersAdd.RightColumnClass)"><div @Html.Raw(usersAdd.UpdatedDateTime.CellAttributes)>
-<span id="el_Users_UpdatedDateTime">
-<input type="@(usersAdd.UpdatedDateTime.InputTextType)" name="x_UpdatedDateTime" id="x_UpdatedDateTime" data-table="Users" data-field="x_UpdatedDateTime" value="@Html.Raw(usersAdd.UpdatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(usersAdd.UpdatedDateTime.PlaceHolder))" data-format-pattern="@(usersAdd.UpdatedDateTime.FormatPattern)"@Html.Raw(usersAdd.UpdatedDateTime.EditAttributes) aria-describedby="x_UpdatedDateTime_help">
-@Html.Raw(usersAdd.UpdatedDateTime.GetCustomMessage)
-<div class="invalid-feedback">@Html.Raw(usersAdd.UpdatedDateTime.GetErrorMessage())</div>
-@if (!usersAdd.UpdatedDateTime.ReadOnly && !usersAdd.UpdatedDateTime.Disabled && !usersAdd.UpdatedDateTime.EditAttrs.Is("readonly") && !usersAdd.UpdatedDateTime.EditAttrs.Is("disabled")) {
-<script>
-loadjs.ready(["fUsersadd", "datetimepicker"], function () {
-    let format = "@Html.Raw(DateFormat(0))", // DN
-        options = {
-                localization: {
-                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
-                    hourCycle: format.match(/H/) ? "h24" : "h12",
-                    format,
-                    ...ew.language.phrase("datetimepicker")
-                },
-                display: {
-                    icons: {
-                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
-                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
-                    },
-                    components: {
-                        hours: !!format.match(/h/i),
-                        minutes: !!format.match(/m/),
-                        seconds: !!format.match(/s/i)
-                    },
-                    theme: ew.isDark() ? "dark" : "auto"
-                }
-            };
-    ew.createDateTimePicker("fUsersadd", "x_UpdatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
-});
-</script>
-}
-</span>
-</div></div>
-    </div>
-} @* usersAdd.UpdatedDateTime.Visible (end) *@
 </div><!-- /page* -->
 @{ usersAdd.CloseRecordset(); }
 @Html.Raw(usersAdd.IsModal ? "<template class=\"ew-modal-buttons\">" : "<div class=\"row ew-buttons\">")<!-- buttons .row -->

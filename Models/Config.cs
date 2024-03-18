@@ -11,7 +11,7 @@ public partial class mecommerce {
             // Authentications
             Authentications = new () {
                 {"Google", new () {
-                    Enabled = false,
+                    Enabled = true,
                     Id = Configuration["Google:Id"] ?? "",
                     Color = Configuration["Google:Color"] ?? "",
                     Secret = Configuration["Google:Secret"] ?? ""
@@ -78,7 +78,7 @@ public partial class mecommerce {
 
         public const string ProjectId = "{0AA1F10E-58AB-481A-991C-E9F0FF4ED711}"; // Project ID (GUID)
 
-        public static string RandomKey = "XR7CaO8gf4oioXp3"; // Random key for encryption
+        public static string RandomKey = "KMwu64l1pt6xgLpE"; // Random key for encryption
 
         public static string EncryptionKey = ""; // Encryption key for data protection
 

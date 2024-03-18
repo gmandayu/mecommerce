@@ -50,7 +50,6 @@ loadjs.ready(["wrapper", "head"], function () {
         // Add fields
         .setFields([
 
-            ["CustomerID", [fields.CustomerID.visible && fields.CustomerID.required ? ew.Validators.required(fields.CustomerID.caption) : null], fields.CustomerID.isInvalid],
             ["FirstName", [fields.FirstName.visible && fields.FirstName.required ? ew.Validators.required(fields.FirstName.caption) : null], fields.FirstName.isInvalid],
             ["MiddleName", [fields.MiddleName.visible && fields.MiddleName.required ? ew.Validators.required(fields.MiddleName.caption) : null], fields.MiddleName.isInvalid],
             ["LastName", [fields.LastName.visible && fields.LastName.required ? ew.Validators.required(fields.LastName.caption) : null], fields.LastName.isInvalid],
@@ -60,18 +59,14 @@ loadjs.ready(["wrapper", "head"], function () {
             ["PrimaryAddress", [fields.PrimaryAddress.visible && fields.PrimaryAddress.required ? ew.Validators.required(fields.PrimaryAddress.caption) : null], fields.PrimaryAddress.isInvalid],
             ["PrimaryAddressCity", [fields.PrimaryAddressCity.visible && fields.PrimaryAddressCity.required ? ew.Validators.required(fields.PrimaryAddressCity.caption) : null], fields.PrimaryAddressCity.isInvalid],
             ["PrimaryAddressPostCode", [fields.PrimaryAddressPostCode.visible && fields.PrimaryAddressPostCode.required ? ew.Validators.required(fields.PrimaryAddressPostCode.caption) : null], fields.PrimaryAddressPostCode.isInvalid],
-            ["PrimaryAddressCountryID", [fields.PrimaryAddressCountryID.visible && fields.PrimaryAddressCountryID.required ? ew.Validators.required(fields.PrimaryAddressCountryID.caption) : null, ew.Validators.integer], fields.PrimaryAddressCountryID.isInvalid],
+            ["PrimaryAddressCountryID", [fields.PrimaryAddressCountryID.visible && fields.PrimaryAddressCountryID.required ? ew.Validators.required(fields.PrimaryAddressCountryID.caption) : null], fields.PrimaryAddressCountryID.isInvalid],
             ["AlternativeAddress", [fields.AlternativeAddress.visible && fields.AlternativeAddress.required ? ew.Validators.required(fields.AlternativeAddress.caption) : null], fields.AlternativeAddress.isInvalid],
             ["AlternativeAddressCity", [fields.AlternativeAddressCity.visible && fields.AlternativeAddressCity.required ? ew.Validators.required(fields.AlternativeAddressCity.caption) : null], fields.AlternativeAddressCity.isInvalid],
             ["AlternativeAddressPostCode", [fields.AlternativeAddressPostCode.visible && fields.AlternativeAddressPostCode.required ? ew.Validators.required(fields.AlternativeAddressPostCode.caption) : null], fields.AlternativeAddressPostCode.isInvalid],
-            ["AlternativeAddressCountryID", [fields.AlternativeAddressCountryID.visible && fields.AlternativeAddressCountryID.required ? ew.Validators.required(fields.AlternativeAddressCountryID.caption) : null, ew.Validators.integer], fields.AlternativeAddressCountryID.isInvalid],
+            ["AlternativeAddressCountryID", [fields.AlternativeAddressCountryID.visible && fields.AlternativeAddressCountryID.required ? ew.Validators.required(fields.AlternativeAddressCountryID.caption) : null], fields.AlternativeAddressCountryID.isInvalid],
             ["MobileNumber", [fields.MobileNumber.visible && fields.MobileNumber.required ? ew.Validators.required(fields.MobileNumber.caption) : null], fields.MobileNumber.isInvalid],
-            ["UserID", [fields.UserID.visible && fields.UserID.required ? ew.Validators.required(fields.UserID.caption) : null, ew.Validators.integer], fields.UserID.isInvalid],
-            ["Status", [fields.Status.visible && fields.Status.required ? ew.Validators.required(fields.Status.caption) : null], fields.Status.isInvalid],
-            ["CreatedBy", [fields.CreatedBy.visible && fields.CreatedBy.required ? ew.Validators.required(fields.CreatedBy.caption) : null, ew.Validators.integer], fields.CreatedBy.isInvalid],
-            ["CreatedDateTime", [fields.CreatedDateTime.visible && fields.CreatedDateTime.required ? ew.Validators.required(fields.CreatedDateTime.caption) : null, ew.Validators.datetime(fields.CreatedDateTime.clientFormatPattern)], fields.CreatedDateTime.isInvalid],
-            ["UpdatedBy", [fields.UpdatedBy.visible && fields.UpdatedBy.required ? ew.Validators.required(fields.UpdatedBy.caption) : null, ew.Validators.integer], fields.UpdatedBy.isInvalid],
-            ["UpdatedDateTime", [fields.UpdatedDateTime.visible && fields.UpdatedDateTime.required ? ew.Validators.required(fields.UpdatedDateTime.caption) : null, ew.Validators.datetime(fields.UpdatedDateTime.clientFormatPattern)], fields.UpdatedDateTime.isInvalid]
+            ["UserID", [fields.UserID.visible && fields.UserID.required ? ew.Validators.required(fields.UserID.caption) : null], fields.UserID.isInvalid],
+            ["Status", [fields.Status.visible && fields.Status.required ? ew.Validators.required(fields.Status.caption) : null], fields.Status.isInvalid]
         ])
 
         // Form_CustomValidate
@@ -87,6 +82,10 @@ loadjs.ready(["wrapper", "head"], function () {
 
         // Dynamic selection lists
         .setLists({
+            "Gender": @Html.Raw(customersEdit.Gender.ToClientList(customersEdit)),
+            "PrimaryAddressCountryID": @Html.Raw(customersEdit.PrimaryAddressCountryID.ToClientList(customersEdit)),
+            "AlternativeAddressCountryID": @Html.Raw(customersEdit.AlternativeAddressCountryID.ToClientList(customersEdit)),
+            "UserID": @Html.Raw(customersEdit.UserID.ToClientList(customersEdit)),
         })
         .build();
     window[form.id] = form;
@@ -105,18 +104,6 @@ loadjs.ready(["wrapper", "head"], function () {
 }
 <input type="hidden" name="@(customersEdit.OldKeyName)" value="@Html.Raw(customersEdit.OldKey)">
 <div class="ew-edit-div"><!-- page* -->
-@if (customersEdit.CustomerID.Visible) { // customersEdit.CustomerID.Visible (begin)
-    <div id="r_CustomerID" @Html.Raw(customersEdit.CustomerID.RowAttributes)>
-        <label id="elh_Customers_CustomerID" class="@(customersEdit.LeftColumnClass)">@Html.Raw(customersEdit.CustomerID.Caption)@Html.Raw(customersEdit.CustomerID.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
-        <div class="@(customersEdit.RightColumnClass)"><div @Html.Raw(customersEdit.CustomerID.CellAttributes)>
-<span id="el_Customers_CustomerID">
-<span @Html.Raw(customersEdit.CustomerID.ViewAttributes)>
-<input type="text" readonly class="form-control-plaintext" value="@Html.Raw(RemoveHtml(ConvertToString(customersEdit.CustomerID.EditValue)))"></span>
-<input type="hidden" data-table="Customers" data-field="x_CustomerID" data-hidden="1" name="x_CustomerID" id="x_CustomerID" value="@Html.Raw(HtmlEncode(customersEdit.CustomerID.CurrentValue))">
-</span>
-</div></div>
-    </div>
-} @* customersEdit.CustomerID.Visible (end) *@
 @if (customersEdit.FirstName.Visible) { // customersEdit.FirstName.Visible (begin)
     <div id="r_FirstName" @Html.Raw(customersEdit.FirstName.RowAttributes)>
         <label id="elh_Customers_FirstName" for="x_FirstName" class="@(customersEdit.LeftColumnClass)">@Html.Raw(customersEdit.FirstName.Caption)@Html.Raw(customersEdit.FirstName.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
@@ -158,9 +145,38 @@ loadjs.ready(["wrapper", "head"], function () {
         <label id="elh_Customers_Gender" for="x_Gender" class="@(customersEdit.LeftColumnClass)">@Html.Raw(customersEdit.Gender.Caption)@Html.Raw(customersEdit.Gender.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
         <div class="@(customersEdit.RightColumnClass)"><div @Html.Raw(customersEdit.Gender.CellAttributes)>
 <span id="el_Customers_Gender">
-<input type="@(customersEdit.Gender.InputTextType)" name="x_Gender" id="x_Gender" data-table="Customers" data-field="x_Gender" value="@Html.Raw(customersEdit.Gender.EditValue)" size="30" maxlength="10" placeholder="@Html.Raw(HtmlEncode(customersEdit.Gender.PlaceHolder))" data-format-pattern="@(customersEdit.Gender.FormatPattern)"@Html.Raw(customersEdit.Gender.EditAttributes) aria-describedby="x_Gender_help">
-@Html.Raw(customersEdit.Gender.GetCustomMessage)
-<div class="invalid-feedback">@Html.Raw(customersEdit.Gender.GetErrorMessage())</div>
+    <select
+        id="x_Gender"
+        name="x_Gender"
+        class="form-select ew-select@(customersEdit.Gender.IsInvalidClass)"
+        data-select2-id="fCustomersedit_x_Gender"
+        data-table="Customers"
+        data-field="x_Gender"
+        data-value-separator="@(customersEdit.Gender.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(customersEdit.Gender.PlaceHolder))"
+        @Html.Raw(customersEdit.Gender.EditAttributes)>
+        @(customersEdit.Gender.SelectOptionListHtml("x_Gender"))
+    </select>
+    @Html.Raw(customersEdit.Gender.GetCustomMessage)
+    <div class="invalid-feedback">@Html.Raw(customersEdit.Gender.GetErrorMessage())</div>
+<script>
+loadjs.ready("fCustomersedit", function() {
+    var options = { name: "x_Gender", selectId: "fCustomersedit_x_Gender" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fCustomersedit.lists.Gender?.lookupOptions.length) {
+        options.data = { id: "x_Gender", form: "fCustomersedit" };
+    } else {
+        options.ajax = { id: "x_Gender", form: "fCustomersedit", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumResultsForSearch = Infinity;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.Customers.fields.Gender.selectOptions);
+    ew.createSelect(options);
+});
+</script>
 </span>
 </div></div>
     </div>
@@ -258,9 +274,39 @@ loadjs.ready(["fCustomersedit", "datetimepicker"], function () {
         <label id="elh_Customers_PrimaryAddressCountryID" for="x_PrimaryAddressCountryID" class="@(customersEdit.LeftColumnClass)">@Html.Raw(customersEdit.PrimaryAddressCountryID.Caption)@Html.Raw(customersEdit.PrimaryAddressCountryID.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
         <div class="@(customersEdit.RightColumnClass)"><div @Html.Raw(customersEdit.PrimaryAddressCountryID.CellAttributes)>
 <span id="el_Customers_PrimaryAddressCountryID">
-<input type="@(customersEdit.PrimaryAddressCountryID.InputTextType)" name="x_PrimaryAddressCountryID" id="x_PrimaryAddressCountryID" data-table="Customers" data-field="x_PrimaryAddressCountryID" value="@Html.Raw(customersEdit.PrimaryAddressCountryID.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(customersEdit.PrimaryAddressCountryID.PlaceHolder))" data-format-pattern="@(customersEdit.PrimaryAddressCountryID.FormatPattern)"@Html.Raw(customersEdit.PrimaryAddressCountryID.EditAttributes) aria-describedby="x_PrimaryAddressCountryID_help">
-@Html.Raw(customersEdit.PrimaryAddressCountryID.GetCustomMessage)
-<div class="invalid-feedback">@Html.Raw(customersEdit.PrimaryAddressCountryID.GetErrorMessage())</div>
+    <select
+        id="x_PrimaryAddressCountryID"
+        name="x_PrimaryAddressCountryID"
+        class="form-select ew-select@(customersEdit.PrimaryAddressCountryID.IsInvalidClass)"
+        data-select2-id="fCustomersedit_x_PrimaryAddressCountryID"
+        data-table="Customers"
+        data-field="x_PrimaryAddressCountryID"
+        data-value-separator="@(customersEdit.PrimaryAddressCountryID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(customersEdit.PrimaryAddressCountryID.PlaceHolder))"
+        @Html.Raw(customersEdit.PrimaryAddressCountryID.EditAttributes)>
+        @(customersEdit.PrimaryAddressCountryID.SelectOptionListHtml("x_PrimaryAddressCountryID"))
+    </select>
+    @Html.Raw(customersEdit.PrimaryAddressCountryID.GetCustomMessage)
+    <div class="invalid-feedback">@Html.Raw(customersEdit.PrimaryAddressCountryID.GetErrorMessage())</div>
+@Html.Raw(customersEdit.PrimaryAddressCountryID.Lookup.GetParamTag(customersEdit, "p_x_PrimaryAddressCountryID"))
+<script>
+loadjs.ready("fCustomersedit", function() {
+    var options = { name: "x_PrimaryAddressCountryID", selectId: "fCustomersedit_x_PrimaryAddressCountryID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fCustomersedit.lists.PrimaryAddressCountryID?.lookupOptions.length) {
+        options.data = { id: "x_PrimaryAddressCountryID", form: "fCustomersedit" };
+    } else {
+        options.ajax = { id: "x_PrimaryAddressCountryID", form: "fCustomersedit", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumResultsForSearch = Infinity;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.Customers.fields.PrimaryAddressCountryID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
 </span>
 </div></div>
     </div>
@@ -306,9 +352,39 @@ loadjs.ready(["fCustomersedit", "datetimepicker"], function () {
         <label id="elh_Customers_AlternativeAddressCountryID" for="x_AlternativeAddressCountryID" class="@(customersEdit.LeftColumnClass)">@Html.Raw(customersEdit.AlternativeAddressCountryID.Caption)@Html.Raw(customersEdit.AlternativeAddressCountryID.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
         <div class="@(customersEdit.RightColumnClass)"><div @Html.Raw(customersEdit.AlternativeAddressCountryID.CellAttributes)>
 <span id="el_Customers_AlternativeAddressCountryID">
-<input type="@(customersEdit.AlternativeAddressCountryID.InputTextType)" name="x_AlternativeAddressCountryID" id="x_AlternativeAddressCountryID" data-table="Customers" data-field="x_AlternativeAddressCountryID" value="@Html.Raw(customersEdit.AlternativeAddressCountryID.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(customersEdit.AlternativeAddressCountryID.PlaceHolder))" data-format-pattern="@(customersEdit.AlternativeAddressCountryID.FormatPattern)"@Html.Raw(customersEdit.AlternativeAddressCountryID.EditAttributes) aria-describedby="x_AlternativeAddressCountryID_help">
-@Html.Raw(customersEdit.AlternativeAddressCountryID.GetCustomMessage)
-<div class="invalid-feedback">@Html.Raw(customersEdit.AlternativeAddressCountryID.GetErrorMessage())</div>
+    <select
+        id="x_AlternativeAddressCountryID"
+        name="x_AlternativeAddressCountryID"
+        class="form-select ew-select@(customersEdit.AlternativeAddressCountryID.IsInvalidClass)"
+        data-select2-id="fCustomersedit_x_AlternativeAddressCountryID"
+        data-table="Customers"
+        data-field="x_AlternativeAddressCountryID"
+        data-value-separator="@(customersEdit.AlternativeAddressCountryID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(customersEdit.AlternativeAddressCountryID.PlaceHolder))"
+        @Html.Raw(customersEdit.AlternativeAddressCountryID.EditAttributes)>
+        @(customersEdit.AlternativeAddressCountryID.SelectOptionListHtml("x_AlternativeAddressCountryID"))
+    </select>
+    @Html.Raw(customersEdit.AlternativeAddressCountryID.GetCustomMessage)
+    <div class="invalid-feedback">@Html.Raw(customersEdit.AlternativeAddressCountryID.GetErrorMessage())</div>
+@Html.Raw(customersEdit.AlternativeAddressCountryID.Lookup.GetParamTag(customersEdit, "p_x_AlternativeAddressCountryID"))
+<script>
+loadjs.ready("fCustomersedit", function() {
+    var options = { name: "x_AlternativeAddressCountryID", selectId: "fCustomersedit_x_AlternativeAddressCountryID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fCustomersedit.lists.AlternativeAddressCountryID?.lookupOptions.length) {
+        options.data = { id: "x_AlternativeAddressCountryID", form: "fCustomersedit" };
+    } else {
+        options.ajax = { id: "x_AlternativeAddressCountryID", form: "fCustomersedit", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumResultsForSearch = Infinity;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.Customers.fields.AlternativeAddressCountryID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
 </span>
 </div></div>
     </div>
@@ -330,9 +406,39 @@ loadjs.ready(["fCustomersedit", "datetimepicker"], function () {
         <label id="elh_Customers_UserID" for="x_UserID" class="@(customersEdit.LeftColumnClass)">@Html.Raw(customersEdit.UserID.Caption)@Html.Raw(customersEdit.UserID.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
         <div class="@(customersEdit.RightColumnClass)"><div @Html.Raw(customersEdit.UserID.CellAttributes)>
 <span id="el_Customers_UserID">
-<input type="@(customersEdit.UserID.InputTextType)" name="x_UserID" id="x_UserID" data-table="Customers" data-field="x_UserID" value="@Html.Raw(customersEdit.UserID.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(customersEdit.UserID.PlaceHolder))" data-format-pattern="@(customersEdit.UserID.FormatPattern)"@Html.Raw(customersEdit.UserID.EditAttributes) aria-describedby="x_UserID_help">
-@Html.Raw(customersEdit.UserID.GetCustomMessage)
-<div class="invalid-feedback">@Html.Raw(customersEdit.UserID.GetErrorMessage())</div>
+    <select
+        id="x_UserID"
+        name="x_UserID"
+        class="form-select ew-select@(customersEdit.UserID.IsInvalidClass)"
+        data-select2-id="fCustomersedit_x_UserID"
+        data-table="Customers"
+        data-field="x_UserID"
+        data-value-separator="@(customersEdit.UserID.DisplayValueSeparatorAttribute)"
+        data-placeholder="@(HtmlEncode(customersEdit.UserID.PlaceHolder))"
+        @Html.Raw(customersEdit.UserID.EditAttributes)>
+        @(customersEdit.UserID.SelectOptionListHtml("x_UserID"))
+    </select>
+    @Html.Raw(customersEdit.UserID.GetCustomMessage)
+    <div class="invalid-feedback">@Html.Raw(customersEdit.UserID.GetErrorMessage())</div>
+@Html.Raw(customersEdit.UserID.Lookup.GetParamTag(customersEdit, "p_x_UserID"))
+<script>
+loadjs.ready("fCustomersedit", function() {
+    var options = { name: "x_UserID", selectId: "fCustomersedit_x_UserID" },
+        el = document.querySelector("select[data-select2-id='" + options.selectId + "']");
+    if (!el)
+        return;
+    options.closeOnSelect = !options.multiple;
+    options.dropdownParent = el.closest("#ew-modal-dialog, #ew-add-opt-dialog");
+    if (fCustomersedit.lists.UserID?.lookupOptions.length) {
+        options.data = { id: "x_UserID", form: "fCustomersedit" };
+    } else {
+        options.ajax = { id: "x_UserID", form: "fCustomersedit", limit: ew.LOOKUP_PAGE_SIZE };
+    }
+    options.minimumResultsForSearch = Infinity;
+    options = Object.assign({}, ew.selectOptions, options, ew.vars.tables.Customers.fields.UserID.selectOptions);
+    ew.createSelect(options);
+});
+</script>
 </span>
 </div></div>
     </div>
@@ -349,111 +455,8 @@ loadjs.ready(["fCustomersedit", "datetimepicker"], function () {
 </div></div>
     </div>
 } @* customersEdit.Status.Visible (end) *@
-@if (customersEdit.CreatedBy.Visible) { // customersEdit.CreatedBy.Visible (begin)
-    <div id="r_CreatedBy" @Html.Raw(customersEdit.CreatedBy.RowAttributes)>
-        <label id="elh_Customers_CreatedBy" for="x_CreatedBy" class="@(customersEdit.LeftColumnClass)">@Html.Raw(customersEdit.CreatedBy.Caption)@Html.Raw(customersEdit.CreatedBy.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
-        <div class="@(customersEdit.RightColumnClass)"><div @Html.Raw(customersEdit.CreatedBy.CellAttributes)>
-<span id="el_Customers_CreatedBy">
-<input type="@(customersEdit.CreatedBy.InputTextType)" name="x_CreatedBy" id="x_CreatedBy" data-table="Customers" data-field="x_CreatedBy" value="@Html.Raw(customersEdit.CreatedBy.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(customersEdit.CreatedBy.PlaceHolder))" data-format-pattern="@(customersEdit.CreatedBy.FormatPattern)"@Html.Raw(customersEdit.CreatedBy.EditAttributes) aria-describedby="x_CreatedBy_help">
-@Html.Raw(customersEdit.CreatedBy.GetCustomMessage)
-<div class="invalid-feedback">@Html.Raw(customersEdit.CreatedBy.GetErrorMessage())</div>
-</span>
-</div></div>
-    </div>
-} @* customersEdit.CreatedBy.Visible (end) *@
-@if (customersEdit.CreatedDateTime.Visible) { // customersEdit.CreatedDateTime.Visible (begin)
-    <div id="r_CreatedDateTime" @Html.Raw(customersEdit.CreatedDateTime.RowAttributes)>
-        <label id="elh_Customers_CreatedDateTime" for="x_CreatedDateTime" class="@(customersEdit.LeftColumnClass)">@Html.Raw(customersEdit.CreatedDateTime.Caption)@Html.Raw(customersEdit.CreatedDateTime.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
-        <div class="@(customersEdit.RightColumnClass)"><div @Html.Raw(customersEdit.CreatedDateTime.CellAttributes)>
-<span id="el_Customers_CreatedDateTime">
-<input type="@(customersEdit.CreatedDateTime.InputTextType)" name="x_CreatedDateTime" id="x_CreatedDateTime" data-table="Customers" data-field="x_CreatedDateTime" value="@Html.Raw(customersEdit.CreatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(customersEdit.CreatedDateTime.PlaceHolder))" data-format-pattern="@(customersEdit.CreatedDateTime.FormatPattern)"@Html.Raw(customersEdit.CreatedDateTime.EditAttributes) aria-describedby="x_CreatedDateTime_help">
-@Html.Raw(customersEdit.CreatedDateTime.GetCustomMessage)
-<div class="invalid-feedback">@Html.Raw(customersEdit.CreatedDateTime.GetErrorMessage())</div>
-@if (!customersEdit.CreatedDateTime.ReadOnly && !customersEdit.CreatedDateTime.Disabled && !customersEdit.CreatedDateTime.EditAttrs.Is("readonly") && !customersEdit.CreatedDateTime.EditAttrs.Is("disabled")) {
-<script>
-loadjs.ready(["fCustomersedit", "datetimepicker"], function () {
-    let format = "@Html.Raw(DateFormat(0))", // DN
-        options = {
-                localization: {
-                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
-                    hourCycle: format.match(/H/) ? "h24" : "h12",
-                    format,
-                    ...ew.language.phrase("datetimepicker")
-                },
-                display: {
-                    icons: {
-                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
-                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
-                    },
-                    components: {
-                        hours: !!format.match(/h/i),
-                        minutes: !!format.match(/m/),
-                        seconds: !!format.match(/s/i)
-                    },
-                    theme: ew.isDark() ? "dark" : "auto"
-                }
-            };
-    ew.createDateTimePicker("fCustomersedit", "x_CreatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
-});
-</script>
-}
-</span>
-</div></div>
-    </div>
-} @* customersEdit.CreatedDateTime.Visible (end) *@
-@if (customersEdit.UpdatedBy.Visible) { // customersEdit.UpdatedBy.Visible (begin)
-    <div id="r_UpdatedBy" @Html.Raw(customersEdit.UpdatedBy.RowAttributes)>
-        <label id="elh_Customers_UpdatedBy" for="x_UpdatedBy" class="@(customersEdit.LeftColumnClass)">@Html.Raw(customersEdit.UpdatedBy.Caption)@Html.Raw(customersEdit.UpdatedBy.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
-        <div class="@(customersEdit.RightColumnClass)"><div @Html.Raw(customersEdit.UpdatedBy.CellAttributes)>
-<span id="el_Customers_UpdatedBy">
-<input type="@(customersEdit.UpdatedBy.InputTextType)" name="x_UpdatedBy" id="x_UpdatedBy" data-table="Customers" data-field="x_UpdatedBy" value="@Html.Raw(customersEdit.UpdatedBy.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(customersEdit.UpdatedBy.PlaceHolder))" data-format-pattern="@(customersEdit.UpdatedBy.FormatPattern)"@Html.Raw(customersEdit.UpdatedBy.EditAttributes) aria-describedby="x_UpdatedBy_help">
-@Html.Raw(customersEdit.UpdatedBy.GetCustomMessage)
-<div class="invalid-feedback">@Html.Raw(customersEdit.UpdatedBy.GetErrorMessage())</div>
-</span>
-</div></div>
-    </div>
-} @* customersEdit.UpdatedBy.Visible (end) *@
-@if (customersEdit.UpdatedDateTime.Visible) { // customersEdit.UpdatedDateTime.Visible (begin)
-    <div id="r_UpdatedDateTime" @Html.Raw(customersEdit.UpdatedDateTime.RowAttributes)>
-        <label id="elh_Customers_UpdatedDateTime" for="x_UpdatedDateTime" class="@(customersEdit.LeftColumnClass)">@Html.Raw(customersEdit.UpdatedDateTime.Caption)@Html.Raw(customersEdit.UpdatedDateTime.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
-        <div class="@(customersEdit.RightColumnClass)"><div @Html.Raw(customersEdit.UpdatedDateTime.CellAttributes)>
-<span id="el_Customers_UpdatedDateTime">
-<input type="@(customersEdit.UpdatedDateTime.InputTextType)" name="x_UpdatedDateTime" id="x_UpdatedDateTime" data-table="Customers" data-field="x_UpdatedDateTime" value="@Html.Raw(customersEdit.UpdatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(customersEdit.UpdatedDateTime.PlaceHolder))" data-format-pattern="@(customersEdit.UpdatedDateTime.FormatPattern)"@Html.Raw(customersEdit.UpdatedDateTime.EditAttributes) aria-describedby="x_UpdatedDateTime_help">
-@Html.Raw(customersEdit.UpdatedDateTime.GetCustomMessage)
-<div class="invalid-feedback">@Html.Raw(customersEdit.UpdatedDateTime.GetErrorMessage())</div>
-@if (!customersEdit.UpdatedDateTime.ReadOnly && !customersEdit.UpdatedDateTime.Disabled && !customersEdit.UpdatedDateTime.EditAttrs.Is("readonly") && !customersEdit.UpdatedDateTime.EditAttrs.Is("disabled")) {
-<script>
-loadjs.ready(["fCustomersedit", "datetimepicker"], function () {
-    let format = "@Html.Raw(DateFormat(0))", // DN
-        options = {
-                localization: {
-                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
-                    hourCycle: format.match(/H/) ? "h24" : "h12",
-                    format,
-                    ...ew.language.phrase("datetimepicker")
-                },
-                display: {
-                    icons: {
-                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
-                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
-                    },
-                    components: {
-                        hours: !!format.match(/h/i),
-                        minutes: !!format.match(/m/),
-                        seconds: !!format.match(/s/i)
-                    },
-                    theme: ew.isDark() ? "dark" : "auto"
-                }
-            };
-    ew.createDateTimePicker("fCustomersedit", "x_UpdatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
-});
-</script>
-}
-</span>
-</div></div>
-    </div>
-} @* customersEdit.UpdatedDateTime.Visible (end) *@
 </div><!-- /page* -->
+    <input type="hidden" data-table="Customers" data-field="x_CustomerID" data-hidden="1" name="x_CustomerID" id="x_CustomerID" value="@Html.Raw(HtmlEncode(customersEdit.CustomerID.CurrentValue))">
 @{ customersEdit.CloseRecordset(); }
 @Html.Raw(customersEdit.IsModal ? "<template class=\"ew-modal-buttons\">" : "<div class=\"row ew-buttons\">")<!-- buttons .row -->
     <div class="@(customersEdit.OffsetColumnClass)"><!-- buttons offset -->

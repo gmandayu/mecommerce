@@ -27,6 +27,19 @@ public partial class mecommerce {
         }
 
         // Server events
+
+        // Email Sending event
+        public override bool EmailSending(Email email, dynamic? args) {
+            //Log(email);
+            if (Email.Mailer == null)
+            {
+                var smtpClient = new SmtpClient();
+                smtpClient.CheckCertificateRevocation = false;
+                Email.Mailer = smtpClient;
+            }
+            else { Email.Mailer.CheckCertificateRevocation = false; }
+            return true;
+        }
     }
 
     /// <summary>
@@ -479,6 +492,19 @@ public partial class mecommerce {
         public virtual void PageDataRendered(ref string footer) {
             // Example:
             //footer = "your footer";
+        }
+
+        // Email Sending event
+        public override bool EmailSending(Email email, dynamic? args) {
+            //Log(email);
+            if (Email.Mailer == null)
+            {
+                var smtpClient = new SmtpClient();
+                smtpClient.CheckCertificateRevocation = false;
+                Email.Mailer = smtpClient;
+            }
+            else { Email.Mailer.CheckCertificateRevocation = false; }
+            return true;
         }
 
         // Form Custom Validate event

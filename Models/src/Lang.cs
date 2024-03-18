@@ -320,8 +320,18 @@ public partial class mecommerce {
 
         // Language Load event
         public void LanguageLoad() {
-            // Example:
-            //SetPhrase("SaveBtn", "Save Me"); // Refer to language XML file for phrase IDs
+            // Set the Type, supported types are: LI/DROPDOWN (for used with top Navbar) or SELECT/RADIO (NOT for used with top Navbar)
+            // Template = "<My JsRender template>"; // OR use custom JsRender template
+            Type = "DROPDOWN";
+            CurrentDateTimeFormat.TimeSeparator = ":";
+            string invalidUidPwdPhrase = CurrentLanguage == "en-US" 
+                ? "Incorrect email or password" 
+                : (CurrentLanguage == "id-ID" ? "Email atau kata sandi tidak valid" : "Incorrect email or password");
+            string logoutPhrase = CurrentLanguage == "en-US" 
+                ? "Logout" 
+                : (CurrentLanguage == "id-ID" ? "Keluar" : "Logout");
+            SetPhrase("InvalidUidPwd", invalidUidPwdPhrase);
+            SetPhrase("Logout", logoutPhrase);
         }
     }
 } // End Partial class

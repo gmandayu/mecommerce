@@ -268,13 +268,13 @@ public partial class mecommerce {
         // Set field visibility
         public void SetVisibility()
         {
-            UserID.SetVisibility();
+            UserID.Visible = false;
             _Email.SetVisibility();
             MobileNumber.SetVisibility();
             _Username.SetVisibility();
             Password.SetVisibility();
-            ProfilePicture.Visible = false;
-            ProfileDescription.Visible = false;
+            ProfilePicture.SetVisibility();
+            ProfileDescription.SetVisibility();
             IsActive.SetVisibility();
             UserLevelID.SetVisibility();
             CreatedBy.SetVisibility();
@@ -802,9 +802,14 @@ public partial class mecommerce {
 
             // Get default search criteria
             AddFilter(ref DefaultSearchWhere, BasicSearchWhere(true));
+            AddFilter(ref DefaultSearchWhere, AdvancedSearchWhere(true));
 
             // Get basic search values
             LoadBasicSearchValues();
+
+            // Get and validate search values for advanced search
+            if (Empty(UserAction)) // Skip if user action
+                LoadSearchValues(); // Get search values
 
             // Process filter list
             var filterResult = await ProcessFilterList();
@@ -813,6 +818,10 @@ public partial class mecommerce {
                 if (!Config.Debug)
                     Response?.Clear();
                 return Controller.Json(filterResult);
+            }
+            CurrentForm?.ResetIndex();
+            if (!ValidateSearch()) {
+                // Nothing to do
             }
 
             // Restore search parms from Session if not searching / reset / export
@@ -829,6 +838,13 @@ public partial class mecommerce {
             if (!HasInvalidFields())
                 srchBasic = BasicSearchWhere();
 
+            // Get search criteria for advanced search
+            if (!HasInvalidFields())
+                srchAdvanced = AdvancedSearchWhere();
+
+            // Get query builder criteria
+            query = QueryBuilderWhere();
+
             // Restore display records
             if (Command != "json" && (RecordsPerPage == -1 || RecordsPerPage > 0)) {
                 DisplayRecords = RecordsPerPage; // Restore from Session
@@ -843,7 +859,15 @@ public partial class mecommerce {
                 BasicSearch.LoadDefault();
                 if (!Empty(BasicSearch.Keyword))
                     srchBasic = BasicSearchWhere(); // Save to session
+
+                // Load advanced search from default
+                if (LoadAdvancedSearchDefault())
+                    srchAdvanced = AdvancedSearchWhere(); // Save to session
             }
+
+            // Restore search settings from Session
+            if (!HasInvalidFields())
+                LoadAdvancedSearch();
 
             // Build search criteria
             if (!Empty(query)) {
@@ -1059,19 +1083,6 @@ public partial class mecommerce {
 
             // Initialize
             var filters = new JObject(); // DN
-            filters.Merge(JObject.Parse(UserID.AdvancedSearch.ToJson())); // Field UserID
-            filters.Merge(JObject.Parse(_Email.AdvancedSearch.ToJson())); // Field Email
-            filters.Merge(JObject.Parse(MobileNumber.AdvancedSearch.ToJson())); // Field MobileNumber
-            filters.Merge(JObject.Parse(_Username.AdvancedSearch.ToJson())); // Field Username
-            filters.Merge(JObject.Parse(Password.AdvancedSearch.ToJson())); // Field Password
-            filters.Merge(JObject.Parse(ProfilePicture.AdvancedSearch.ToJson())); // Field ProfilePicture
-            filters.Merge(JObject.Parse(ProfileDescription.AdvancedSearch.ToJson())); // Field ProfileDescription
-            filters.Merge(JObject.Parse(IsActive.AdvancedSearch.ToJson())); // Field IsActive
-            filters.Merge(JObject.Parse(UserLevelID.AdvancedSearch.ToJson())); // Field UserLevelID
-            filters.Merge(JObject.Parse(CreatedBy.AdvancedSearch.ToJson())); // Field CreatedBy
-            filters.Merge(JObject.Parse(CreatedDateTime.AdvancedSearch.ToJson())); // Field CreatedDateTime
-            filters.Merge(JObject.Parse(UpdatedBy.AdvancedSearch.ToJson())); // Field UpdatedBy
-            filters.Merge(JObject.Parse(UpdatedDateTime.AdvancedSearch.ToJson())); // Field UpdatedDateTime
             filters.Merge(JObject.Parse(BasicSearch.ToJson()));
 
             // Return filter list in JSON
@@ -1106,136 +1117,6 @@ public partial class mecommerce {
             var filter = JsonConvert.DeserializeObject<Dictionary<string, string>>(Post("filter"));
             Command = "search";
             string? sv;
-
-            // Field UserID
-            if (filter?.TryGetValue("x_UserID", out sv) ?? false) {
-                UserID.AdvancedSearch.SearchValue = sv;
-                UserID.AdvancedSearch.SearchOperator = filter["z_UserID"];
-                UserID.AdvancedSearch.SearchCondition = filter["v_UserID"];
-                UserID.AdvancedSearch.SearchValue2 = filter["y_UserID"];
-                UserID.AdvancedSearch.SearchOperator2 = filter["w_UserID"];
-                UserID.AdvancedSearch.Save();
-            }
-
-            // Field Email
-            if (filter?.TryGetValue("x__Email", out sv) ?? false) {
-                _Email.AdvancedSearch.SearchValue = sv;
-                _Email.AdvancedSearch.SearchOperator = filter["z__Email"];
-                _Email.AdvancedSearch.SearchCondition = filter["v__Email"];
-                _Email.AdvancedSearch.SearchValue2 = filter["y__Email"];
-                _Email.AdvancedSearch.SearchOperator2 = filter["w__Email"];
-                _Email.AdvancedSearch.Save();
-            }
-
-            // Field MobileNumber
-            if (filter?.TryGetValue("x_MobileNumber", out sv) ?? false) {
-                MobileNumber.AdvancedSearch.SearchValue = sv;
-                MobileNumber.AdvancedSearch.SearchOperator = filter["z_MobileNumber"];
-                MobileNumber.AdvancedSearch.SearchCondition = filter["v_MobileNumber"];
-                MobileNumber.AdvancedSearch.SearchValue2 = filter["y_MobileNumber"];
-                MobileNumber.AdvancedSearch.SearchOperator2 = filter["w_MobileNumber"];
-                MobileNumber.AdvancedSearch.Save();
-            }
-
-            // Field Username
-            if (filter?.TryGetValue("x__Username", out sv) ?? false) {
-                _Username.AdvancedSearch.SearchValue = sv;
-                _Username.AdvancedSearch.SearchOperator = filter["z__Username"];
-                _Username.AdvancedSearch.SearchCondition = filter["v__Username"];
-                _Username.AdvancedSearch.SearchValue2 = filter["y__Username"];
-                _Username.AdvancedSearch.SearchOperator2 = filter["w__Username"];
-                _Username.AdvancedSearch.Save();
-            }
-
-            // Field Password
-            if (filter?.TryGetValue("x_Password", out sv) ?? false) {
-                Password.AdvancedSearch.SearchValue = sv;
-                Password.AdvancedSearch.SearchOperator = filter["z_Password"];
-                Password.AdvancedSearch.SearchCondition = filter["v_Password"];
-                Password.AdvancedSearch.SearchValue2 = filter["y_Password"];
-                Password.AdvancedSearch.SearchOperator2 = filter["w_Password"];
-                Password.AdvancedSearch.Save();
-            }
-
-            // Field ProfilePicture
-            if (filter?.TryGetValue("x_ProfilePicture", out sv) ?? false) {
-                ProfilePicture.AdvancedSearch.SearchValue = sv;
-                ProfilePicture.AdvancedSearch.SearchOperator = filter["z_ProfilePicture"];
-                ProfilePicture.AdvancedSearch.SearchCondition = filter["v_ProfilePicture"];
-                ProfilePicture.AdvancedSearch.SearchValue2 = filter["y_ProfilePicture"];
-                ProfilePicture.AdvancedSearch.SearchOperator2 = filter["w_ProfilePicture"];
-                ProfilePicture.AdvancedSearch.Save();
-            }
-
-            // Field ProfileDescription
-            if (filter?.TryGetValue("x_ProfileDescription", out sv) ?? false) {
-                ProfileDescription.AdvancedSearch.SearchValue = sv;
-                ProfileDescription.AdvancedSearch.SearchOperator = filter["z_ProfileDescription"];
-                ProfileDescription.AdvancedSearch.SearchCondition = filter["v_ProfileDescription"];
-                ProfileDescription.AdvancedSearch.SearchValue2 = filter["y_ProfileDescription"];
-                ProfileDescription.AdvancedSearch.SearchOperator2 = filter["w_ProfileDescription"];
-                ProfileDescription.AdvancedSearch.Save();
-            }
-
-            // Field IsActive
-            if (filter?.TryGetValue("x_IsActive", out sv) ?? false) {
-                IsActive.AdvancedSearch.SearchValue = sv;
-                IsActive.AdvancedSearch.SearchOperator = filter["z_IsActive"];
-                IsActive.AdvancedSearch.SearchCondition = filter["v_IsActive"];
-                IsActive.AdvancedSearch.SearchValue2 = filter["y_IsActive"];
-                IsActive.AdvancedSearch.SearchOperator2 = filter["w_IsActive"];
-                IsActive.AdvancedSearch.Save();
-            }
-
-            // Field UserLevelID
-            if (filter?.TryGetValue("x_UserLevelID", out sv) ?? false) {
-                UserLevelID.AdvancedSearch.SearchValue = sv;
-                UserLevelID.AdvancedSearch.SearchOperator = filter["z_UserLevelID"];
-                UserLevelID.AdvancedSearch.SearchCondition = filter["v_UserLevelID"];
-                UserLevelID.AdvancedSearch.SearchValue2 = filter["y_UserLevelID"];
-                UserLevelID.AdvancedSearch.SearchOperator2 = filter["w_UserLevelID"];
-                UserLevelID.AdvancedSearch.Save();
-            }
-
-            // Field CreatedBy
-            if (filter?.TryGetValue("x_CreatedBy", out sv) ?? false) {
-                CreatedBy.AdvancedSearch.SearchValue = sv;
-                CreatedBy.AdvancedSearch.SearchOperator = filter["z_CreatedBy"];
-                CreatedBy.AdvancedSearch.SearchCondition = filter["v_CreatedBy"];
-                CreatedBy.AdvancedSearch.SearchValue2 = filter["y_CreatedBy"];
-                CreatedBy.AdvancedSearch.SearchOperator2 = filter["w_CreatedBy"];
-                CreatedBy.AdvancedSearch.Save();
-            }
-
-            // Field CreatedDateTime
-            if (filter?.TryGetValue("x_CreatedDateTime", out sv) ?? false) {
-                CreatedDateTime.AdvancedSearch.SearchValue = sv;
-                CreatedDateTime.AdvancedSearch.SearchOperator = filter["z_CreatedDateTime"];
-                CreatedDateTime.AdvancedSearch.SearchCondition = filter["v_CreatedDateTime"];
-                CreatedDateTime.AdvancedSearch.SearchValue2 = filter["y_CreatedDateTime"];
-                CreatedDateTime.AdvancedSearch.SearchOperator2 = filter["w_CreatedDateTime"];
-                CreatedDateTime.AdvancedSearch.Save();
-            }
-
-            // Field UpdatedBy
-            if (filter?.TryGetValue("x_UpdatedBy", out sv) ?? false) {
-                UpdatedBy.AdvancedSearch.SearchValue = sv;
-                UpdatedBy.AdvancedSearch.SearchOperator = filter["z_UpdatedBy"];
-                UpdatedBy.AdvancedSearch.SearchCondition = filter["v_UpdatedBy"];
-                UpdatedBy.AdvancedSearch.SearchValue2 = filter["y_UpdatedBy"];
-                UpdatedBy.AdvancedSearch.SearchOperator2 = filter["w_UpdatedBy"];
-                UpdatedBy.AdvancedSearch.Save();
-            }
-
-            // Field UpdatedDateTime
-            if (filter?.TryGetValue("x_UpdatedDateTime", out sv) ?? false) {
-                UpdatedDateTime.AdvancedSearch.SearchValue = sv;
-                UpdatedDateTime.AdvancedSearch.SearchOperator = filter["z_UpdatedDateTime"];
-                UpdatedDateTime.AdvancedSearch.SearchCondition = filter["v_UpdatedDateTime"];
-                UpdatedDateTime.AdvancedSearch.SearchValue2 = filter["y_UpdatedDateTime"];
-                UpdatedDateTime.AdvancedSearch.SearchOperator2 = filter["w_UpdatedDateTime"];
-                UpdatedDateTime.AdvancedSearch.Save();
-            }
             if (filter?.TryGetValue(Config.TableBasicSearch, out string? keyword) ?? false)
                 BasicSearch.SessionKeyword = keyword;
             if (filter?.TryGetValue(Config.TableBasicSearchType, out string? type) ?? false)
@@ -1243,13 +1124,202 @@ public partial class mecommerce {
             return true;
         }
 
+        // Advanced search WHERE clause based on QueryString
+        public string AdvancedSearchWhere(bool def = false) {
+            string where = "";
+            if (!Security.CanSearch)
+                return "";
+            BuildSearchSql(ref where, _Email, def, true); // _Email
+            BuildSearchSql(ref where, _Username, def, true); // _Username
+            BuildSearchSql(ref where, ProfilePicture, def, true); // ProfilePicture
+            BuildSearchSql(ref where, ProfileDescription, def, true); // ProfileDescription
+            BuildSearchSql(ref where, IsActive, def, true); // IsActive
+            BuildSearchSql(ref where, UserLevelID, def, true); // UserLevelID
+
+            // Set up search command
+            if (!def && !Empty(where) && (new[] { "", "reset", "resetall" }).Contains(Command))
+                Command = "search";
+            if (!def && Command == "search") {
+                // Clear rules for QueryBuilder
+                SessionRules = "";
+            }
+            return where;
+        }
+
+        // Parse query builder rule function
+        protected string ParseRules(Dictionary<string, object>? group, string fieldName = "") {
+            if (group == null)
+                return "";
+            string condition = group.ContainsKey("condition") ? ConvertToString(group["condition"]) : "AND";
+            if (!(new [] { "AND", "OR" }).Contains(condition))
+                throw new System.Exception("Unable to build SQL query with condition '" + condition + "'");
+            List<string> parts = new ();
+            string where = "";
+            var groupRules = group.ContainsKey("rules") ? group["rules"] : null;
+            if (groupRules is IEnumerable<object> rules) {
+                foreach (object rule in rules) {
+                    var subRules = JObject.FromObject(rule).ToObject<Dictionary<string, object>>();
+                    if (subRules == null)
+                        continue;
+                    if (subRules.ContainsKey("rules")) {
+                        parts.Add("(" + " " + ParseRules(subRules, fieldName) + " " + ")" + " ");
+                    } else {
+                        string field = subRules.ContainsKey("field") ? ConvertToString(subRules["field"]) : "";
+                        var fld = FieldByParam(field);
+                        if (fld == null)
+                            throw new System.Exception("Failed to find field '" + field + "'");
+                        if (Empty(fieldName) || fld.Name == fieldName) { // Field name not specified or matched field name
+                            string opr = subRules.ContainsKey("operator") ? ConvertToString(subRules["operator"]) : "";
+                            string fldOpr = Config.ClientSearchOperators.FirstOrDefault(o => o.Value == opr).Key;
+                            Dictionary<string, object>? ope = Config.QueryBuilderOperators.ContainsKey(opr) ? Config.QueryBuilderOperators[opr] : null;
+                            if (ope == null || Empty(fldOpr))
+                                throw new System.Exception("Unknown SQL operation for operator '" + opr + "'");
+                            int nb_inputs = ope.ContainsKey("nb_inputs") ? ConvertToInt(ope["nb_inputs"]) : 0;
+                            object val = subRules.ContainsKey("value") ? subRules["value"] : "";
+                            if (nb_inputs > 0 && !Empty(val) || IsNullOrEmptyOperator(fldOpr)) {
+                                string fldVal = val is List<object> list
+                                    ? (list[0] is IEnumerable<string> ? String.Join(Config.MultipleOptionSeparator, list[0]) : ConvertToString(list[0]))
+                                    : ConvertToString(val);
+                                bool useFilter = fld.UseFilter; // Query builder does not use filter
+                                try {
+                                    if (fld.IsMultiSelect) {
+                                        parts.Add(!Empty(fldVal) ? GetMultiSearchSql(fld, fldOpr, ConvertSearchValue(fldVal, fldOpr, fld), DbId) : "");
+                                    } else {
+                                        string fldVal2 = fldOpr.Contains("BETWEEN")
+                                            ? (val is List<object> list2 && list2.Count > 1
+                                                ? (list2[1] is IEnumerable<string> ? String.Join(Config.MultipleOptionSeparator, list2[1]) : ConvertToString(list2[1]))
+                                                : "")
+                                            : ""; // BETWEEN
+                                        parts.Add(GetSearchSql(
+                                            fld,
+                                            ConvertSearchValue(fldVal, fldOpr, fld), // fldVal
+                                            fldOpr,
+                                            "", // fldCond not used
+                                            ConvertSearchValue(fldVal2, fldOpr, fld), // $fldVal2
+                                            "", // fldOpr2 not used
+                                            DbId
+                                        ));
+                                    }
+                                } finally {
+                                    fld.UseFilter = useFilter;
+                                }
+                            }
+                        }
+                    }
+                }
+                where = String.Join(" " + condition + " ", parts);
+                bool not = group.ContainsKey("not") ? ConvertToBool(group["not"]) : false;
+                if (not)
+                    where = "NOT (" + where + ")";
+            }
+            return where;
+        }
+
+        // Quey builder WHERE clause
+        public string QueryBuilderWhere(string fieldName = "")
+        {
+            if (!Security.CanSearch)
+                return "";
+
+            // Get rules by query builder
+            string rules = "";
+            if (Post("rules", out StringValues sv))
+                rules = sv.ToString();
+            else
+                rules = SessionRules;
+
+            // Decode and parse rules
+            string where = !Empty(rules) ? ParseRules(JsonConvert.DeserializeObject<Dictionary<string, object>>(rules), fieldName) : "";
+
+            // Clear other search and save rules to session
+            if (!Empty(where) && Empty(fieldName)) { // Skip if get query for specific field
+                ResetSearchParms();
+                SessionRules = rules;
+            }
+
+            // Return query
+            return where;
+        }
+
+        // Build search SQL
+        public void BuildSearchSql(ref string where, DbField fld, bool def, bool multiValue)
+        {
+            string fldParm = fld.Param;
+            string fldVal = def ? ConvertToString(fld.AdvancedSearch.SearchValueDefault) : ConvertToString(fld.AdvancedSearch.SearchValue);
+            string fldOpr = def ? fld.AdvancedSearch.SearchOperatorDefault : fld.AdvancedSearch.SearchOperator;
+            string fldCond = def ? fld.AdvancedSearch.SearchConditionDefault : fld.AdvancedSearch.SearchCondition;
+            string fldVal2 = def ? ConvertToString(fld.AdvancedSearch.SearchValue2Default) : ConvertToString(fld.AdvancedSearch.SearchValue2);
+            string fldOpr2 = def ? fld.AdvancedSearch.SearchOperator2Default : fld.AdvancedSearch.SearchOperator2;
+            fldVal = ConvertSearchValue(fldVal, fldOpr, fld);
+            fldVal2 = ConvertSearchValue(fldVal2, fldOpr2, fld);
+            fldOpr = ConvertSearchOperator(fldOpr, fld, fldVal);
+            fldOpr2 = ConvertSearchOperator(fldOpr2, fld, fldVal2);
+            string wrk = "";
+            if (Config.SearchMultiValueOption == 1 && !fld.UseFilter || !IsMultiSearchOperator(fldOpr))
+                multiValue = false;
+            if (multiValue) {
+                wrk = !Empty(fldVal) ? GetMultiSearchSql(fld, fldOpr, fldVal, DbId) : ""; // Field value 1
+                string wrk2 = !Empty(fldVal2) ? GetMultiSearchSql(fld, fldOpr2, fldVal2, DbId) : ""; // Field value 2
+                AddFilter(ref wrk, wrk2, fldCond);
+            } else {
+                wrk = GetSearchSql(fld, fldVal, fldOpr, fldCond, fldVal2, fldOpr2, DbId);
+            }
+            string cond = SearchOption == "AUTO" && (new[] {"AND", "OR"}).Contains(BasicSearch.Type)
+                ? BasicSearch.Type
+                : SameText(SearchOption, "OR") ? "OR" : "AND";
+            AddFilter(ref where, wrk, cond);
+        }
+
         // Show list of filters
         public void ShowFilterList()
         {
             // Initialize
             string filterList = "",
+                filter = "",
                 captionClass = IsExport("email") ? "ew-filter-caption-email" : "ew-filter-caption",
                 captionSuffix = IsExport("email") ? ": " : "";
+
+            // Field Email
+            filter = QueryBuilderWhere("Email");
+            if (Empty(filter))
+                BuildSearchSql(ref filter, _Email, false, true);
+            if (!Empty(filter))
+                filterList += "<div><span class=\"" + captionClass + "\">" + _Email.Caption + "</span>" + captionSuffix + filter + "</div>";
+
+            // Field Username
+            filter = QueryBuilderWhere("Username");
+            if (Empty(filter))
+                BuildSearchSql(ref filter, _Username, false, true);
+            if (!Empty(filter))
+                filterList += "<div><span class=\"" + captionClass + "\">" + _Username.Caption + "</span>" + captionSuffix + filter + "</div>";
+
+            // Field ProfilePicture
+            filter = QueryBuilderWhere("ProfilePicture");
+            if (Empty(filter))
+                BuildSearchSql(ref filter, ProfilePicture, false, true);
+            if (!Empty(filter))
+                filterList += "<div><span class=\"" + captionClass + "\">" + ProfilePicture.Caption + "</span>" + captionSuffix + filter + "</div>";
+
+            // Field ProfileDescription
+            filter = QueryBuilderWhere("ProfileDescription");
+            if (Empty(filter))
+                BuildSearchSql(ref filter, ProfileDescription, false, true);
+            if (!Empty(filter))
+                filterList += "<div><span class=\"" + captionClass + "\">" + ProfileDescription.Caption + "</span>" + captionSuffix + filter + "</div>";
+
+            // Field IsActive
+            filter = QueryBuilderWhere("IsActive");
+            if (Empty(filter))
+                BuildSearchSql(ref filter, IsActive, false, true);
+            if (!Empty(filter))
+                filterList += "<div><span class=\"" + captionClass + "\">" + IsActive.Caption + "</span>" + captionSuffix + filter + "</div>";
+
+            // Field UserLevelID
+            filter = QueryBuilderWhere("UserLevelID");
+            if (Empty(filter))
+                BuildSearchSql(ref filter, UserLevelID, false, true);
+            if (!Empty(filter))
+                filterList += "<div><span class=\"" + captionClass + "\">" + UserLevelID.Caption + "</span>" + captionSuffix + filter + "</div>";
             if (!Empty(BasicSearch.Keyword))
                 filterList += "<div><span class=\"" + captionClass + "\">" + Language.Phrase("BasicSearchKeyword") + "</span>" + captionSuffix + BasicSearch.Keyword + "</div>";
 
@@ -1273,9 +1343,7 @@ public partial class mecommerce {
             // Fields to search
             List<DbField> searchFlds = new ();
             searchFlds.Add(_Email);
-            searchFlds.Add(MobileNumber);
             searchFlds.Add(_Username);
-            searchFlds.Add(Password);
             searchFlds.Add(ProfilePicture);
             searchFlds.Add(ProfileDescription);
             string searchKeyword = def ? BasicSearch.KeywordDefault : BasicSearch.Keyword;
@@ -1303,6 +1371,18 @@ public partial class mecommerce {
             // Check basic search
             if (BasicSearch.IssetSession)
                 return true;
+            if (_Email.AdvancedSearch.IssetSession)
+                return true;
+            if (_Username.AdvancedSearch.IssetSession)
+                return true;
+            if (ProfilePicture.AdvancedSearch.IssetSession)
+                return true;
+            if (ProfileDescription.AdvancedSearch.IssetSession)
+                return true;
+            if (IsActive.AdvancedSearch.IssetSession)
+                return true;
+            if (UserLevelID.AdvancedSearch.IssetSession)
+                return true;
             return false;
         }
 
@@ -1313,6 +1393,9 @@ public partial class mecommerce {
 
             // Clear basic search parameters
             ResetBasicSearchParms();
+
+            // Clear advanced search parameters
+            ResetAdvancedSearchParms();
 
             // Clear queryBuilder
             SessionRules = "";
@@ -1328,12 +1411,30 @@ public partial class mecommerce {
             BasicSearch.UnsetSession();
         }
 
+        // Clear all advanced search parameters
+        protected void ResetAdvancedSearchParms() {
+            _Email.AdvancedSearch.UnsetSession();
+            _Username.AdvancedSearch.UnsetSession();
+            ProfilePicture.AdvancedSearch.UnsetSession();
+            ProfileDescription.AdvancedSearch.UnsetSession();
+            IsActive.AdvancedSearch.UnsetSession();
+            UserLevelID.AdvancedSearch.UnsetSession();
+        }
+
         // Restore all search parameters
         protected void RestoreSearchParms() {
             RestoreSearch = true;
 
             // Restore basic search values
             BasicSearch.Load();
+
+            // Restore advanced search values
+            _Email.AdvancedSearch.Load();
+            _Username.AdvancedSearch.Load();
+            ProfilePicture.AdvancedSearch.Load();
+            ProfileDescription.AdvancedSearch.Load();
+            IsActive.AdvancedSearch.Load();
+            UserLevelID.AdvancedSearch.Load();
         }
 
         // Set up sort parameters
@@ -1349,11 +1450,12 @@ public partial class mecommerce {
             if (Get("order", out StringValues sv)) {
                 CurrentOrder = sv.ToString();
                 CurrentOrderType = Get("ordertype");
-                UpdateSort(UserID); // UserID
                 UpdateSort(_Email); // Email
                 UpdateSort(MobileNumber); // MobileNumber
                 UpdateSort(_Username); // Username
                 UpdateSort(Password); // Password
+                UpdateSort(ProfilePicture); // ProfilePicture
+                UpdateSort(ProfileDescription); // ProfileDescription
                 UpdateSort(IsActive); // IsActive
                 UpdateSort(UserLevelID); // UserLevelID
                 UpdateSort(CreatedBy); // CreatedBy
@@ -1607,11 +1709,12 @@ public partial class mecommerce {
                 item = option.AddGroupOption();
                 item.Body = "";
                 item.Visible = UseColumnVisibility;
-                CreateColumnOption(option.Add("UserID")); // DN
                 CreateColumnOption(option.Add("Email")); // DN
                 CreateColumnOption(option.Add("MobileNumber")); // DN
                 CreateColumnOption(option.Add("Username")); // DN
                 CreateColumnOption(option.Add("Password")); // DN
+                CreateColumnOption(option.Add("ProfilePicture")); // DN
+                CreateColumnOption(option.Add("ProfileDescription")); // DN
                 CreateColumnOption(option.Add("IsActive")); // DN
                 CreateColumnOption(option.Add("UserLevelID")); // DN
                 CreateColumnOption(option.Add("CreatedBy")); // DN
@@ -1919,6 +2022,82 @@ public partial class mecommerce {
                 BasicSearch.Type = type.ToString();
         }
 
+        // Load search values for validation // DN
+        protected void LoadSearchValues() {
+            // Load query builder rules
+            string rules = Post("rules");
+            if (!Empty(rules) && Empty(Command)) {
+                QueryRules = rules;
+                Command = "search";
+            }
+
+            // _Email
+            if (!IsAddOrEdit)
+                if (Query.ContainsKey("x__Email[]"))
+                    _Email.AdvancedSearch.SearchValue = Get("x__Email[]");
+                else
+                    _Email.AdvancedSearch.SearchValue = Get("_Email"); // Default Value // DN
+            if (!Empty(_Email.AdvancedSearch.SearchValue) && Command == "")
+                Command = "search";
+            if (Query.ContainsKey("z__Email"))
+                _Email.AdvancedSearch.SearchOperator = Get("z__Email");
+
+            // _Username
+            if (!IsAddOrEdit)
+                if (Query.ContainsKey("x__Username[]"))
+                    _Username.AdvancedSearch.SearchValue = Get("x__Username[]");
+                else
+                    _Username.AdvancedSearch.SearchValue = Get("_Username"); // Default Value // DN
+            if (!Empty(_Username.AdvancedSearch.SearchValue) && Command == "")
+                Command = "search";
+            if (Query.ContainsKey("z__Username"))
+                _Username.AdvancedSearch.SearchOperator = Get("z__Username");
+
+            // ProfilePicture
+            if (!IsAddOrEdit)
+                if (Query.ContainsKey("x_ProfilePicture[]"))
+                    ProfilePicture.AdvancedSearch.SearchValue = Get("x_ProfilePicture[]");
+                else
+                    ProfilePicture.AdvancedSearch.SearchValue = Get("ProfilePicture"); // Default Value // DN
+            if (!Empty(ProfilePicture.AdvancedSearch.SearchValue) && Command == "")
+                Command = "search";
+            if (Query.ContainsKey("z_ProfilePicture"))
+                ProfilePicture.AdvancedSearch.SearchOperator = Get("z_ProfilePicture");
+
+            // ProfileDescription
+            if (!IsAddOrEdit)
+                if (Query.ContainsKey("x_ProfileDescription[]"))
+                    ProfileDescription.AdvancedSearch.SearchValue = Get("x_ProfileDescription[]");
+                else
+                    ProfileDescription.AdvancedSearch.SearchValue = Get("ProfileDescription"); // Default Value // DN
+            if (!Empty(ProfileDescription.AdvancedSearch.SearchValue) && Command == "")
+                Command = "search";
+            if (Query.ContainsKey("z_ProfileDescription"))
+                ProfileDescription.AdvancedSearch.SearchOperator = Get("z_ProfileDescription");
+
+            // IsActive
+            if (!IsAddOrEdit)
+                if (Query.ContainsKey("x_IsActive[]"))
+                    IsActive.AdvancedSearch.SearchValue = Get("x_IsActive[]");
+                else
+                    IsActive.AdvancedSearch.SearchValue = Get("IsActive"); // Default Value // DN
+            if (!Empty(IsActive.AdvancedSearch.SearchValue) && Command == "")
+                Command = "search";
+            if (Query.ContainsKey("z_IsActive"))
+                IsActive.AdvancedSearch.SearchOperator = Get("z_IsActive");
+
+            // UserLevelID
+            if (!IsAddOrEdit)
+                if (Query.ContainsKey("x_UserLevelID[]"))
+                    UserLevelID.AdvancedSearch.SearchValue = Get("x_UserLevelID[]");
+                else
+                    UserLevelID.AdvancedSearch.SearchValue = Get("UserLevelID"); // Default Value // DN
+            if (!Empty(UserLevelID.AdvancedSearch.SearchValue) && Command == "")
+                Command = "search";
+            if (Query.ContainsKey("z_UserLevelID"))
+                UserLevelID.AdvancedSearch.SearchOperator = Get("z_UserLevelID");
+        }
+
         // Load recordset // DN
         public async Task<DbDataReader?> LoadRecordset(int offset = -1, int rowcnt = -1)
         {
@@ -2051,37 +2230,46 @@ public partial class mecommerce {
             // Common render codes for all row types
 
             // UserID
+            UserID.CellCssStyle = "white-space: nowrap;";
 
             // Email
+            _Email.CellCssStyle = "white-space: nowrap;";
 
             // MobileNumber
+            MobileNumber.CellCssStyle = "white-space: nowrap;";
 
             // Username
+            _Username.CellCssStyle = "white-space: nowrap;";
 
             // Password
+            Password.CellCssStyle = "white-space: nowrap;";
 
             // ProfilePicture
+            ProfilePicture.CellCssStyle = "white-space: nowrap;";
 
             // ProfileDescription
+            ProfileDescription.CellCssStyle = "white-space: nowrap;";
 
             // IsActive
+            IsActive.CellCssStyle = "white-space: nowrap;";
 
             // UserLevelID
+            UserLevelID.CellCssStyle = "white-space: nowrap;";
 
             // CreatedBy
+            CreatedBy.CellCssStyle = "white-space: nowrap;";
 
             // CreatedDateTime
+            CreatedDateTime.CellCssStyle = "white-space: nowrap;";
 
             // UpdatedBy
+            UpdatedBy.CellCssStyle = "white-space: nowrap;";
 
             // UpdatedDateTime
+            UpdatedDateTime.CellCssStyle = "white-space: nowrap;";
 
             // View row
             if (RowType == RowType.View) {
-                // UserID
-                UserID.ViewValue = UserID.CurrentValue;
-                UserID.ViewCustomAttributes = "";
-
                 // Email
                 _Email.ViewValue = ConvertToString(_Email.CurrentValue); // DN
                 _Email.ViewCustomAttributes = "";
@@ -2097,6 +2285,20 @@ public partial class mecommerce {
                 // Password
                 Password.ViewValue = Language.Phrase("PasswordMask");
                 Password.ViewCustomAttributes = "";
+
+                // ProfilePicture
+                ProfilePicture.UploadPath = ProfilePicture.GetUploadPath();
+                if (!IsNull(ProfilePicture.Upload.DbValue)) {
+                    ProfilePicture.ViewValue = ProfilePicture.Upload.DbValue;
+                } else {
+                    ProfilePicture.ViewValue = "";
+                }
+                ProfilePicture.CellCssStyle += "text-align: center;";
+                ProfilePicture.ViewCustomAttributes = "";
+
+                // ProfileDescription
+                ProfileDescription.ViewValue = ProfileDescription.CurrentValue;
+                ProfileDescription.ViewCustomAttributes = "";
 
                 // IsActive
                 if (ConvertToBool(IsActive.CurrentValue)) {
@@ -2132,8 +2334,24 @@ public partial class mecommerce {
                 UserLevelID.ViewCustomAttributes = "";
 
                 // CreatedBy
-                CreatedBy.ViewValue = CreatedBy.CurrentValue;
-                CreatedBy.ViewValue = FormatNumber(CreatedBy.ViewValue, CreatedBy.FormatPattern);
+                curVal = ConvertToString(CreatedBy.CurrentValue);
+                if (!Empty(curVal)) {
+                    if (CreatedBy.Lookup != null && IsDictionary(CreatedBy.Lookup?.Options) && CreatedBy.Lookup?.Options.Values.Count > 0) { // Load from cache // DN
+                        CreatedBy.ViewValue = CreatedBy.LookupCacheOption(curVal);
+                    } else { // Lookup from database // DN
+                        filterWrk = SearchFilter("[UserID]", "=", CreatedBy.CurrentValue, DataType.Number, "");
+                        sqlWrk = CreatedBy.Lookup?.GetSql(false, filterWrk, null, this, true, true);
+                        rswrk = sqlWrk != null ? Connection.GetRows(sqlWrk) : null; // Must use Sync to avoid overwriting ViewValue in RenderViewRow
+                        if (rswrk?.Count > 0 && CreatedBy.Lookup != null) { // Lookup values found
+                            var listwrk = CreatedBy.Lookup?.RenderViewRow(rswrk[0]);
+                            CreatedBy.ViewValue = CreatedBy.HighlightLookup(ConvertToString(rswrk[0]), CreatedBy.DisplayValue(listwrk));
+                        } else {
+                            CreatedBy.ViewValue = FormatNumber(CreatedBy.CurrentValue, CreatedBy.FormatPattern);
+                        }
+                    }
+                } else {
+                    CreatedBy.ViewValue = DbNullValue;
+                }
                 CreatedBy.ViewCustomAttributes = "";
 
                 // CreatedDateTime
@@ -2142,18 +2360,30 @@ public partial class mecommerce {
                 CreatedDateTime.ViewCustomAttributes = "";
 
                 // UpdatedBy
-                UpdatedBy.ViewValue = UpdatedBy.CurrentValue;
-                UpdatedBy.ViewValue = FormatNumber(UpdatedBy.ViewValue, UpdatedBy.FormatPattern);
+                curVal = ConvertToString(UpdatedBy.CurrentValue);
+                if (!Empty(curVal)) {
+                    if (UpdatedBy.Lookup != null && IsDictionary(UpdatedBy.Lookup?.Options) && UpdatedBy.Lookup?.Options.Values.Count > 0) { // Load from cache // DN
+                        UpdatedBy.ViewValue = UpdatedBy.LookupCacheOption(curVal);
+                    } else { // Lookup from database // DN
+                        filterWrk = SearchFilter("[UserID]", "=", UpdatedBy.CurrentValue, DataType.Number, "");
+                        sqlWrk = UpdatedBy.Lookup?.GetSql(false, filterWrk, null, this, true, true);
+                        rswrk = sqlWrk != null ? Connection.GetRows(sqlWrk) : null; // Must use Sync to avoid overwriting ViewValue in RenderViewRow
+                        if (rswrk?.Count > 0 && UpdatedBy.Lookup != null) { // Lookup values found
+                            var listwrk = UpdatedBy.Lookup?.RenderViewRow(rswrk[0]);
+                            UpdatedBy.ViewValue = UpdatedBy.HighlightLookup(ConvertToString(rswrk[0]), UpdatedBy.DisplayValue(listwrk));
+                        } else {
+                            UpdatedBy.ViewValue = FormatNumber(UpdatedBy.CurrentValue, UpdatedBy.FormatPattern);
+                        }
+                    }
+                } else {
+                    UpdatedBy.ViewValue = DbNullValue;
+                }
                 UpdatedBy.ViewCustomAttributes = "";
 
                 // UpdatedDateTime
                 UpdatedDateTime.ViewValue = UpdatedDateTime.CurrentValue;
                 UpdatedDateTime.ViewValue = FormatDateTime(UpdatedDateTime.ViewValue, UpdatedDateTime.FormatPattern);
                 UpdatedDateTime.ViewCustomAttributes = "";
-
-                // UserID
-                UserID.HrefValue = "";
-                UserID.TooltipValue = "";
 
                 // Email
                 _Email.HrefValue = "";
@@ -2170,6 +2400,15 @@ public partial class mecommerce {
                 // Password
                 Password.HrefValue = "";
                 Password.TooltipValue = "";
+
+                // ProfilePicture
+                ProfilePicture.HrefValue = "";
+                ProfilePicture.ExportHrefValue = ProfilePicture.UploadPath + ProfilePicture.Upload.DbValue;
+                ProfilePicture.TooltipValue = "";
+
+                // ProfileDescription
+                ProfileDescription.HrefValue = "";
+                ProfileDescription.TooltipValue = "";
 
                 // IsActive
                 IsActive.HrefValue = "";
@@ -2194,6 +2433,66 @@ public partial class mecommerce {
                 // UpdatedDateTime
                 UpdatedDateTime.HrefValue = "";
                 UpdatedDateTime.TooltipValue = "";
+            } else if (RowType == RowType.Search) {
+                // Email
+                if (_Email.UseFilter && !Empty(_Email.AdvancedSearch.SearchValue)) {
+                    _Email.EditValue = ConvertToString(_Email.AdvancedSearch.SearchValue).Split(Config.MultipleOptionSeparator).ToList();
+                }
+
+                // MobileNumber
+                MobileNumber.SetupEditAttributes();
+                if (!MobileNumber.Raw)
+                    MobileNumber.AdvancedSearch.SearchValue = HtmlDecode(MobileNumber.AdvancedSearch.SearchValue);
+                MobileNumber.EditValue = HtmlEncode(MobileNumber.AdvancedSearch.SearchValue);
+                MobileNumber.PlaceHolder = RemoveHtml(MobileNumber.Caption);
+
+                // Username
+                if (_Username.UseFilter && !Empty(_Username.AdvancedSearch.SearchValue)) {
+                    _Username.EditValue = ConvertToString(_Username.AdvancedSearch.SearchValue).Split(Config.MultipleOptionSeparator).ToList();
+                }
+
+                // Password
+                Password.SetupEditAttributes(new () { { "class", "ew-password-strength" } } );
+                Password.EditValue = Language.Phrase("PasswordMask"); // Show as masked password
+                Password.PlaceHolder = RemoveHtml(Password.Caption);
+
+                // ProfilePicture
+                if (ProfilePicture.UseFilter && !Empty(ProfilePicture.AdvancedSearch.SearchValue)) {
+                    ProfilePicture.EditValue = ConvertToString(ProfilePicture.AdvancedSearch.SearchValue).Split(Config.MultipleOptionSeparator).ToList();
+                }
+
+                // ProfileDescription
+                if (ProfileDescription.UseFilter && !Empty(ProfileDescription.AdvancedSearch.SearchValue)) {
+                    ProfileDescription.EditValue = ConvertToString(ProfileDescription.AdvancedSearch.SearchValue).Split(Config.MultipleOptionSeparator).ToList();
+                }
+
+                // IsActive
+                if (IsActive.UseFilter && !Empty(IsActive.AdvancedSearch.SearchValue)) {
+                    IsActive.EditValue = ConvertToString(IsActive.AdvancedSearch.SearchValue).Split(Config.MultipleOptionSeparator).ToList();
+                }
+
+                // UserLevelID
+                if (UserLevelID.UseFilter && !Empty(UserLevelID.AdvancedSearch.SearchValue)) {
+                    UserLevelID.EditValue = ConvertToString(UserLevelID.AdvancedSearch.SearchValue).Split(Config.MultipleOptionSeparator).ToList();
+                }
+
+                // CreatedBy
+                CreatedBy.SetupEditAttributes();
+                CreatedBy.PlaceHolder = RemoveHtml(CreatedBy.Caption);
+
+                // CreatedDateTime
+                CreatedDateTime.SetupEditAttributes();
+                CreatedDateTime.EditValue = FormatDateTime(UnformatDateTime(CreatedDateTime.AdvancedSearch.SearchValue, CreatedDateTime.FormatPattern), CreatedDateTime.FormatPattern); // DN
+                CreatedDateTime.PlaceHolder = RemoveHtml(CreatedDateTime.Caption);
+
+                // UpdatedBy
+                UpdatedBy.SetupEditAttributes();
+                UpdatedBy.PlaceHolder = RemoveHtml(UpdatedBy.Caption);
+
+                // UpdatedDateTime
+                UpdatedDateTime.SetupEditAttributes();
+                UpdatedDateTime.EditValue = FormatDateTime(UnformatDateTime(UpdatedDateTime.AdvancedSearch.SearchValue, UpdatedDateTime.FormatPattern), UpdatedDateTime.FormatPattern); // DN
+                UpdatedDateTime.PlaceHolder = RemoveHtml(UpdatedDateTime.Caption);
             }
 
             // Call Row Rendered event
@@ -2201,6 +2500,28 @@ public partial class mecommerce {
                 RowRendered();
         }
         #pragma warning restore 1998
+
+        // Validate search
+        protected bool ValidateSearch() {
+            // Check if validation required
+            if (!Config.ServerValidate)
+                return true;
+
+            // Return validate result
+            bool validateSearch = !HasInvalidFields();
+
+            // Call Form CustomValidate event
+            string formCustomError = "";
+            validateSearch = validateSearch && FormCustomValidate(ref formCustomError);
+            if (!Empty(formCustomError))
+                FailureMessage = formCustomError;
+            return validateSearch;
+        }
+
+        // Load advanced search
+        public void LoadAdvancedSearch()
+        {
+        }
 
         // Get export HTML tag
         protected string GetExportTag(string type, bool custom = false) {

@@ -1045,8 +1045,6 @@ public partial class mecommerce {
 
             // Initialize
             var filters = new JObject(); // DN
-            filters.Merge(JObject.Parse(UserLevelID.AdvancedSearch.ToJson())); // Field UserLevelID
-            filters.Merge(JObject.Parse(UserLevelName.AdvancedSearch.ToJson())); // Field UserLevelName
             filters.Merge(JObject.Parse(BasicSearch.ToJson()));
 
             // Return filter list in JSON
@@ -1081,26 +1079,6 @@ public partial class mecommerce {
             var filter = JsonConvert.DeserializeObject<Dictionary<string, string>>(Post("filter"));
             Command = "search";
             string? sv;
-
-            // Field UserLevelID
-            if (filter?.TryGetValue("x_UserLevelID", out sv) ?? false) {
-                UserLevelID.AdvancedSearch.SearchValue = sv;
-                UserLevelID.AdvancedSearch.SearchOperator = filter["z_UserLevelID"];
-                UserLevelID.AdvancedSearch.SearchCondition = filter["v_UserLevelID"];
-                UserLevelID.AdvancedSearch.SearchValue2 = filter["y_UserLevelID"];
-                UserLevelID.AdvancedSearch.SearchOperator2 = filter["w_UserLevelID"];
-                UserLevelID.AdvancedSearch.Save();
-            }
-
-            // Field UserLevelName
-            if (filter?.TryGetValue("x_UserLevelName", out sv) ?? false) {
-                UserLevelName.AdvancedSearch.SearchValue = sv;
-                UserLevelName.AdvancedSearch.SearchOperator = filter["z_UserLevelName"];
-                UserLevelName.AdvancedSearch.SearchCondition = filter["v_UserLevelName"];
-                UserLevelName.AdvancedSearch.SearchValue2 = filter["y_UserLevelName"];
-                UserLevelName.AdvancedSearch.SearchOperator2 = filter["w_UserLevelName"];
-                UserLevelName.AdvancedSearch.Save();
-            }
             if (filter?.TryGetValue(Config.TableBasicSearch, out string? keyword) ?? false)
                 BasicSearch.SessionKeyword = keyword;
             if (filter?.TryGetValue(Config.TableBasicSearchType, out string? type) ?? false)
@@ -1300,6 +1278,14 @@ public partial class mecommerce {
             item.ShowInDropDown = false;
             item.ShowInButtonGroup = false;
 
+            // "sequence"
+            item = ListOptions.Add("sequence");
+            item.CssClass = "text-nowrap";
+            item.Visible = true;
+            item.OnLeft = true; // Always on left
+            item.ShowInDropDown = false;
+            item.ShowInButtonGroup = false;
+
             // Drop down button for ListOptions
             ListOptions.UseDropDownButton = true;
             ListOptions.DropDownButtonPhrase = "ButtonListOptions";
@@ -1338,6 +1324,10 @@ public partial class mecommerce {
 
             // Call ListOptions Rendering event
             ListOptionsRendering();
+
+            // "sequence"
+            listOption = ListOptions["sequence"];
+            listOption?.SetBody(FormatSequenceNumber(RecordCount));
 
             // "view"
             listOption = ListOptions["view"];
@@ -1858,8 +1848,10 @@ public partial class mecommerce {
             // Common render codes for all row types
 
             // UserLevelID
+            UserLevelID.CellCssStyle = "white-space: nowrap;";
 
             // UserLevelName
+            UserLevelName.CellCssStyle = "white-space: nowrap;";
 
             // View row
             if (RowType == RowType.View) {

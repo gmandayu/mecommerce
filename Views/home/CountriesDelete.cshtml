@@ -64,9 +64,6 @@ loadjs.ready("head", function() {
 <table class="@(countriesDelete.TableClass)">
     <thead>
     <tr class="ew-table-header">
-@if (countriesDelete.CountryID.Visible) { // countriesDelete.CountryID.Visible (begin)
-        <th class="@Html.Raw(countriesDelete.CountryID.HeaderCellClass)"><span id="elh_Countries_CountryID" class="Countries_CountryID">@Html.Raw(countriesDelete.CountryID.Caption)</span></th>
-} @* countriesDelete.CountryID.Visible (end) *@
 @if (countriesDelete.ISO.Visible) { // countriesDelete.ISO.Visible (begin)
         <th class="@Html.Raw(countriesDelete.ISO.HeaderCellClass)"><span id="elh_Countries_ISO" class="Countries_ISO">@Html.Raw(countriesDelete.ISO.Caption)</span></th>
 } @* countriesDelete.ISO.Visible (end) *@
@@ -115,13 +112,6 @@ loadjs.ready("head", function() {
     // Render row
     await countriesDelete.RenderRow();
     <tr @Html.Raw(countriesDelete.RowAttributes)>
-@if (countriesDelete.CountryID.Visible) { // countriesDelete.CountryID.Visible (begin)
-        <td @Html.Raw(countriesDelete.CountryID.CellAttributes)>
-<span id="">
-<span @Html.Raw(countriesDelete.CountryID.ViewAttributes)>
-@Html.Raw(countriesDelete.CountryID.GetViewValue())</span>
-</span></td>
-} @* countriesDelete.CountryID.Visible (end) *@
 @if (countriesDelete.ISO.Visible) { // countriesDelete.ISO.Visible (begin)
         <td @Html.Raw(countriesDelete.ISO.CellAttributes)>
 <span id="">

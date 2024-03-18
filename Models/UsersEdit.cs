@@ -202,19 +202,19 @@ public partial class mecommerce {
         // Set field visibility
         public void SetVisibility()
         {
-            UserID.SetVisibility();
+            UserID.Visible = false;
             _Email.SetVisibility();
             MobileNumber.SetVisibility();
             _Username.SetVisibility();
             Password.SetVisibility();
             ProfilePicture.SetVisibility();
-            ProfileDescription.SetVisibility();
+            ProfileDescription.Visible = false;
             IsActive.SetVisibility();
             UserLevelID.SetVisibility();
-            CreatedBy.SetVisibility();
-            CreatedDateTime.SetVisibility();
-            UpdatedBy.SetVisibility();
-            UpdatedDateTime.SetVisibility();
+            CreatedBy.Visible = false;
+            CreatedDateTime.Visible = false;
+            UpdatedBy.Visible = false;
+            UpdatedDateTime.Visible = false;
         }
 
         // Constructor
@@ -724,7 +724,7 @@ public partial class mecommerce {
                     break;
                 case "update": // Update // DN
                     CloseRecordset(); // DN
-                    string returnUrl = ReturnUrl;
+                    string returnUrl = ViewUrl;
                     if (GetPageName(returnUrl) == "userslist")
                         returnUrl = AddMasterUrl(ListUrl); // List page, return to List page with correct master key if necessary
                     SendEmail = true; // Send email on update success
@@ -808,11 +808,6 @@ public partial class mecommerce {
             bool validate = !Config.ServerValidate;
             string val;
 
-            // Check field name 'UserID' before field var 'x_UserID'
-            val = CurrentForm.HasValue("UserID") ? CurrentForm.GetValue("UserID") : CurrentForm.GetValue("x_UserID");
-            if (!UserID.IsDetailKey)
-                UserID.SetFormValue(val);
-
             // Check field name 'Email' before field var 'x__Email'
             val = CurrentForm.HasValue("Email") ? CurrentForm.GetValue("Email") : CurrentForm.GetValue("x__Email");
             if (!_Email.IsDetailKey) {
@@ -849,15 +844,6 @@ public partial class mecommerce {
                     Password.SetFormValue(val);
             }
 
-            // Check field name 'ProfileDescription' before field var 'x_ProfileDescription'
-            val = CurrentForm.HasValue("ProfileDescription") ? CurrentForm.GetValue("ProfileDescription") : CurrentForm.GetValue("x_ProfileDescription");
-            if (!ProfileDescription.IsDetailKey) {
-                if (IsApi() && !CurrentForm.HasValue("ProfileDescription") && !CurrentForm.HasValue("x_ProfileDescription")) // DN
-                    ProfileDescription.Visible = false; // Disable update for API request
-                else
-                    ProfileDescription.SetFormValue(val);
-            }
-
             // Check field name 'IsActive' before field var 'x_IsActive'
             val = CurrentForm.HasValue("IsActive") ? CurrentForm.GetValue("IsActive") : CurrentForm.GetValue("x_IsActive");
             if (!IsActive.IsDetailKey) {
@@ -876,43 +862,10 @@ public partial class mecommerce {
                     UserLevelID.SetFormValue(val);
             }
 
-            // Check field name 'CreatedBy' before field var 'x_CreatedBy'
-            val = CurrentForm.HasValue("CreatedBy") ? CurrentForm.GetValue("CreatedBy") : CurrentForm.GetValue("x_CreatedBy");
-            if (!CreatedBy.IsDetailKey) {
-                if (IsApi() && !CurrentForm.HasValue("CreatedBy") && !CurrentForm.HasValue("x_CreatedBy")) // DN
-                    CreatedBy.Visible = false; // Disable update for API request
-                else
-                    CreatedBy.SetFormValue(val, true, validate);
-            }
-
-            // Check field name 'CreatedDateTime' before field var 'x_CreatedDateTime'
-            val = CurrentForm.HasValue("CreatedDateTime") ? CurrentForm.GetValue("CreatedDateTime") : CurrentForm.GetValue("x_CreatedDateTime");
-            if (!CreatedDateTime.IsDetailKey) {
-                if (IsApi() && !CurrentForm.HasValue("CreatedDateTime") && !CurrentForm.HasValue("x_CreatedDateTime")) // DN
-                    CreatedDateTime.Visible = false; // Disable update for API request
-                else
-                    CreatedDateTime.SetFormValue(val, true, validate);
-                CreatedDateTime.CurrentValue = UnformatDateTime(CreatedDateTime.CurrentValue, CreatedDateTime.FormatPattern);
-            }
-
-            // Check field name 'UpdatedBy' before field var 'x_UpdatedBy'
-            val = CurrentForm.HasValue("UpdatedBy") ? CurrentForm.GetValue("UpdatedBy") : CurrentForm.GetValue("x_UpdatedBy");
-            if (!UpdatedBy.IsDetailKey) {
-                if (IsApi() && !CurrentForm.HasValue("UpdatedBy") && !CurrentForm.HasValue("x_UpdatedBy")) // DN
-                    UpdatedBy.Visible = false; // Disable update for API request
-                else
-                    UpdatedBy.SetFormValue(val, true, validate);
-            }
-
-            // Check field name 'UpdatedDateTime' before field var 'x_UpdatedDateTime'
-            val = CurrentForm.HasValue("UpdatedDateTime") ? CurrentForm.GetValue("UpdatedDateTime") : CurrentForm.GetValue("x_UpdatedDateTime");
-            if (!UpdatedDateTime.IsDetailKey) {
-                if (IsApi() && !CurrentForm.HasValue("UpdatedDateTime") && !CurrentForm.HasValue("x_UpdatedDateTime")) // DN
-                    UpdatedDateTime.Visible = false; // Disable update for API request
-                else
-                    UpdatedDateTime.SetFormValue(val, true, validate);
-                UpdatedDateTime.CurrentValue = UnformatDateTime(UpdatedDateTime.CurrentValue, UpdatedDateTime.FormatPattern);
-            }
+            // Check field name 'UserID' before field var 'x_UserID'
+            val = CurrentForm.HasValue("UserID") ? CurrentForm.GetValue("UserID") : CurrentForm.GetValue("x_UserID");
+            if (!UserID.IsDetailKey)
+                UserID.SetFormValue(val);
             ProfilePicture.OldUploadPath = ProfilePicture.GetUploadPath();
             ProfilePicture.UploadPath = ProfilePicture.OldUploadPath;
             await GetUploadFiles(); // Get upload files
@@ -927,15 +880,8 @@ public partial class mecommerce {
             MobileNumber.CurrentValue = MobileNumber.FormValue;
             _Username.CurrentValue = _Username.FormValue;
             Password.CurrentValue = Password.FormValue;
-            ProfileDescription.CurrentValue = ProfileDescription.FormValue;
             IsActive.CurrentValue = IsActive.FormValue;
             UserLevelID.CurrentValue = UserLevelID.FormValue;
-            CreatedBy.CurrentValue = CreatedBy.FormValue;
-            CreatedDateTime.CurrentValue = CreatedDateTime.FormValue;
-            CreatedDateTime.CurrentValue = UnformatDateTime(CreatedDateTime.CurrentValue, CreatedDateTime.FormatPattern);
-            UpdatedBy.CurrentValue = UpdatedBy.FormValue;
-            UpdatedDateTime.CurrentValue = UpdatedDateTime.FormValue;
-            UpdatedDateTime.CurrentValue = UnformatDateTime(UpdatedDateTime.CurrentValue, UpdatedDateTime.FormatPattern);
         }
 
         // Load recordset // DN
@@ -1117,10 +1063,6 @@ public partial class mecommerce {
 
             // View row
             if (RowType == RowType.View) {
-                // UserID
-                UserID.ViewValue = UserID.CurrentValue;
-                UserID.ViewCustomAttributes = "";
-
                 // Email
                 _Email.ViewValue = ConvertToString(_Email.CurrentValue); // DN
                 _Email.ViewCustomAttributes = "";
@@ -1144,11 +1086,8 @@ public partial class mecommerce {
                 } else {
                     ProfilePicture.ViewValue = "";
                 }
+                ProfilePicture.CellCssStyle += "text-align: center;";
                 ProfilePicture.ViewCustomAttributes = "";
-
-                // ProfileDescription
-                ProfileDescription.ViewValue = ProfileDescription.CurrentValue;
-                ProfileDescription.ViewCustomAttributes = "";
 
                 // IsActive
                 if (ConvertToBool(IsActive.CurrentValue)) {
@@ -1184,8 +1123,24 @@ public partial class mecommerce {
                 UserLevelID.ViewCustomAttributes = "";
 
                 // CreatedBy
-                CreatedBy.ViewValue = CreatedBy.CurrentValue;
-                CreatedBy.ViewValue = FormatNumber(CreatedBy.ViewValue, CreatedBy.FormatPattern);
+                curVal = ConvertToString(CreatedBy.CurrentValue);
+                if (!Empty(curVal)) {
+                    if (CreatedBy.Lookup != null && IsDictionary(CreatedBy.Lookup?.Options) && CreatedBy.Lookup?.Options.Values.Count > 0) { // Load from cache // DN
+                        CreatedBy.ViewValue = CreatedBy.LookupCacheOption(curVal);
+                    } else { // Lookup from database // DN
+                        filterWrk = SearchFilter("[UserID]", "=", CreatedBy.CurrentValue, DataType.Number, "");
+                        sqlWrk = CreatedBy.Lookup?.GetSql(false, filterWrk, null, this, true, true);
+                        rswrk = sqlWrk != null ? Connection.GetRows(sqlWrk) : null; // Must use Sync to avoid overwriting ViewValue in RenderViewRow
+                        if (rswrk?.Count > 0 && CreatedBy.Lookup != null) { // Lookup values found
+                            var listwrk = CreatedBy.Lookup?.RenderViewRow(rswrk[0]);
+                            CreatedBy.ViewValue = CreatedBy.HighlightLookup(ConvertToString(rswrk[0]), CreatedBy.DisplayValue(listwrk));
+                        } else {
+                            CreatedBy.ViewValue = FormatNumber(CreatedBy.CurrentValue, CreatedBy.FormatPattern);
+                        }
+                    }
+                } else {
+                    CreatedBy.ViewValue = DbNullValue;
+                }
                 CreatedBy.ViewCustomAttributes = "";
 
                 // CreatedDateTime
@@ -1194,17 +1149,30 @@ public partial class mecommerce {
                 CreatedDateTime.ViewCustomAttributes = "";
 
                 // UpdatedBy
-                UpdatedBy.ViewValue = UpdatedBy.CurrentValue;
-                UpdatedBy.ViewValue = FormatNumber(UpdatedBy.ViewValue, UpdatedBy.FormatPattern);
+                curVal = ConvertToString(UpdatedBy.CurrentValue);
+                if (!Empty(curVal)) {
+                    if (UpdatedBy.Lookup != null && IsDictionary(UpdatedBy.Lookup?.Options) && UpdatedBy.Lookup?.Options.Values.Count > 0) { // Load from cache // DN
+                        UpdatedBy.ViewValue = UpdatedBy.LookupCacheOption(curVal);
+                    } else { // Lookup from database // DN
+                        filterWrk = SearchFilter("[UserID]", "=", UpdatedBy.CurrentValue, DataType.Number, "");
+                        sqlWrk = UpdatedBy.Lookup?.GetSql(false, filterWrk, null, this, true, true);
+                        rswrk = sqlWrk != null ? Connection.GetRows(sqlWrk) : null; // Must use Sync to avoid overwriting ViewValue in RenderViewRow
+                        if (rswrk?.Count > 0 && UpdatedBy.Lookup != null) { // Lookup values found
+                            var listwrk = UpdatedBy.Lookup?.RenderViewRow(rswrk[0]);
+                            UpdatedBy.ViewValue = UpdatedBy.HighlightLookup(ConvertToString(rswrk[0]), UpdatedBy.DisplayValue(listwrk));
+                        } else {
+                            UpdatedBy.ViewValue = FormatNumber(UpdatedBy.CurrentValue, UpdatedBy.FormatPattern);
+                        }
+                    }
+                } else {
+                    UpdatedBy.ViewValue = DbNullValue;
+                }
                 UpdatedBy.ViewCustomAttributes = "";
 
                 // UpdatedDateTime
                 UpdatedDateTime.ViewValue = UpdatedDateTime.CurrentValue;
                 UpdatedDateTime.ViewValue = FormatDateTime(UpdatedDateTime.ViewValue, UpdatedDateTime.FormatPattern);
                 UpdatedDateTime.ViewCustomAttributes = "";
-
-                // UserID
-                UserID.HrefValue = "";
 
                 // Email
                 _Email.HrefValue = "";
@@ -1222,32 +1190,12 @@ public partial class mecommerce {
                 ProfilePicture.HrefValue = "";
                 ProfilePicture.ExportHrefValue = ProfilePicture.UploadPath + ProfilePicture.Upload.DbValue;
 
-                // ProfileDescription
-                ProfileDescription.HrefValue = "";
-
                 // IsActive
                 IsActive.HrefValue = "";
 
                 // UserLevelID
                 UserLevelID.HrefValue = "";
-
-                // CreatedBy
-                CreatedBy.HrefValue = "";
-
-                // CreatedDateTime
-                CreatedDateTime.HrefValue = "";
-
-                // UpdatedBy
-                UpdatedBy.HrefValue = "";
-
-                // UpdatedDateTime
-                UpdatedDateTime.HrefValue = "";
             } else if (RowType == RowType.Edit) {
-                // UserID
-                UserID.SetupEditAttributes();
-                UserID.EditValue = UserID.CurrentValue;
-                UserID.ViewCustomAttributes = "";
-
                 // Email
                 _Email.SetupEditAttributes();
                 if (!_Email.Raw)
@@ -1288,11 +1236,6 @@ public partial class mecommerce {
                 if (IsShow && !EventCancelled)
                     await RenderUploadField(ProfilePicture);
 
-                // ProfileDescription
-                ProfileDescription.SetupEditAttributes();
-                ProfileDescription.EditValue = ProfileDescription.CurrentValue; // DN
-                ProfileDescription.PlaceHolder = RemoveHtml(ProfileDescription.Caption);
-
                 // IsActive
                 IsActive.EditValue = IsActive.Options(false);
                 IsActive.PlaceHolder = RemoveHtml(IsActive.Caption);
@@ -1320,34 +1263,7 @@ public partial class mecommerce {
                         UserLevelID.EditValue = FormatNumber(UserLevelID.EditValue, UserLevelID.FormatPattern);
                 }
 
-                // CreatedBy
-                CreatedBy.SetupEditAttributes();
-                CreatedBy.EditValue = CreatedBy.CurrentValue; // DN
-                CreatedBy.PlaceHolder = RemoveHtml(CreatedBy.Caption);
-                if (!Empty(CreatedBy.EditValue) && IsNumeric(CreatedBy.EditValue))
-                    CreatedBy.EditValue = FormatNumber(CreatedBy.EditValue, CreatedBy.FormatPattern);
-
-                // CreatedDateTime
-                CreatedDateTime.SetupEditAttributes();
-                CreatedDateTime.EditValue = FormatDateTime(CreatedDateTime.CurrentValue, CreatedDateTime.FormatPattern); // DN
-                CreatedDateTime.PlaceHolder = RemoveHtml(CreatedDateTime.Caption);
-
-                // UpdatedBy
-                UpdatedBy.SetupEditAttributes();
-                UpdatedBy.EditValue = UpdatedBy.CurrentValue; // DN
-                UpdatedBy.PlaceHolder = RemoveHtml(UpdatedBy.Caption);
-                if (!Empty(UpdatedBy.EditValue) && IsNumeric(UpdatedBy.EditValue))
-                    UpdatedBy.EditValue = FormatNumber(UpdatedBy.EditValue, UpdatedBy.FormatPattern);
-
-                // UpdatedDateTime
-                UpdatedDateTime.SetupEditAttributes();
-                UpdatedDateTime.EditValue = FormatDateTime(UpdatedDateTime.CurrentValue, UpdatedDateTime.FormatPattern); // DN
-                UpdatedDateTime.PlaceHolder = RemoveHtml(UpdatedDateTime.Caption);
-
                 // Edit refer script
-
-                // UserID
-                UserID.HrefValue = "";
 
                 // Email
                 _Email.HrefValue = "";
@@ -1365,26 +1281,11 @@ public partial class mecommerce {
                 ProfilePicture.HrefValue = "";
                 ProfilePicture.ExportHrefValue = ProfilePicture.UploadPath + ProfilePicture.Upload.DbValue;
 
-                // ProfileDescription
-                ProfileDescription.HrefValue = "";
-
                 // IsActive
                 IsActive.HrefValue = "";
 
                 // UserLevelID
                 UserLevelID.HrefValue = "";
-
-                // CreatedBy
-                CreatedBy.HrefValue = "";
-
-                // CreatedDateTime
-                CreatedDateTime.HrefValue = "";
-
-                // UpdatedBy
-                UpdatedBy.HrefValue = "";
-
-                // UpdatedDateTime
-                UpdatedDateTime.HrefValue = "";
             }
             if (RowType == RowType.Add || RowType == RowType.Edit || RowType == RowType.Search) // Add/Edit/Search row
                 SetupFieldTitles();
@@ -1402,11 +1303,6 @@ public partial class mecommerce {
             if (!Config.ServerValidate)
                 return true;
             bool validateForm = true;
-            if (UserID.Required) {
-                if (!UserID.IsDetailKey && Empty(UserID.FormValue)) {
-                    UserID.AddErrorMessage(ConvertToString(UserID.RequiredErrorMessage).Replace("%s", UserID.Caption));
-                }
-            }
             if (_Email.Required) {
                 if (!_Email.IsDetailKey && Empty(_Email.FormValue)) {
                     _Email.AddErrorMessage(ConvertToString(_Email.RequiredErrorMessage).Replace("%s", _Email.Caption));
@@ -1438,11 +1334,6 @@ public partial class mecommerce {
                     ProfilePicture.AddErrorMessage(ConvertToString(ProfilePicture.RequiredErrorMessage).Replace("%s", ProfilePicture.Caption));
                 }
             }
-            if (ProfileDescription.Required) {
-                if (!ProfileDescription.IsDetailKey && Empty(ProfileDescription.FormValue)) {
-                    ProfileDescription.AddErrorMessage(ConvertToString(ProfileDescription.RequiredErrorMessage).Replace("%s", ProfileDescription.Caption));
-                }
-            }
             if (IsActive.Required) {
                 if (Empty(IsActive.FormValue)) {
                     IsActive.AddErrorMessage(ConvertToString(IsActive.RequiredErrorMessage).Replace("%s", IsActive.Caption));
@@ -1452,38 +1343,6 @@ public partial class mecommerce {
                 if (Security.CanAdmin && !UserLevelID.IsDetailKey && Empty(UserLevelID.FormValue)) {
                     UserLevelID.AddErrorMessage(ConvertToString(UserLevelID.RequiredErrorMessage).Replace("%s", UserLevelID.Caption));
                 }
-            }
-            if (CreatedBy.Required) {
-                if (!CreatedBy.IsDetailKey && Empty(CreatedBy.FormValue)) {
-                    CreatedBy.AddErrorMessage(ConvertToString(CreatedBy.RequiredErrorMessage).Replace("%s", CreatedBy.Caption));
-                }
-            }
-            if (!CheckInteger(CreatedBy.FormValue)) {
-                CreatedBy.AddErrorMessage(CreatedBy.GetErrorMessage(false));
-            }
-            if (CreatedDateTime.Required) {
-                if (!CreatedDateTime.IsDetailKey && Empty(CreatedDateTime.FormValue)) {
-                    CreatedDateTime.AddErrorMessage(ConvertToString(CreatedDateTime.RequiredErrorMessage).Replace("%s", CreatedDateTime.Caption));
-                }
-            }
-            if (!CheckDate(CreatedDateTime.FormValue, CreatedDateTime.FormatPattern)) {
-                CreatedDateTime.AddErrorMessage(CreatedDateTime.GetErrorMessage(false));
-            }
-            if (UpdatedBy.Required) {
-                if (!UpdatedBy.IsDetailKey && Empty(UpdatedBy.FormValue)) {
-                    UpdatedBy.AddErrorMessage(ConvertToString(UpdatedBy.RequiredErrorMessage).Replace("%s", UpdatedBy.Caption));
-                }
-            }
-            if (!CheckInteger(UpdatedBy.FormValue)) {
-                UpdatedBy.AddErrorMessage(UpdatedBy.GetErrorMessage(false));
-            }
-            if (UpdatedDateTime.Required) {
-                if (!UpdatedDateTime.IsDetailKey && Empty(UpdatedDateTime.FormValue)) {
-                    UpdatedDateTime.AddErrorMessage(ConvertToString(UpdatedDateTime.RequiredErrorMessage).Replace("%s", UpdatedDateTime.Caption));
-                }
-            }
-            if (!CheckDate(UpdatedDateTime.FormValue, UpdatedDateTime.FormatPattern)) {
-                UpdatedDateTime.AddErrorMessage(UpdatedDateTime.GetErrorMessage(false));
             }
 
             // Return validate result
@@ -1556,9 +1415,6 @@ public partial class mecommerce {
                 }
             }
 
-            // ProfileDescription
-            ProfileDescription.SetDbValue(rsnew, ProfileDescription.CurrentValue, ProfileDescription.ReadOnly);
-
             // IsActive
             IsActive.SetDbValue(rsnew, ConvertToBool(IsActive.CurrentValue), IsActive.ReadOnly);
 
@@ -1566,18 +1422,6 @@ public partial class mecommerce {
             if (Security.CanAdmin) { // System admin
             UserLevelID.SetDbValue(rsnew, UserLevelID.CurrentValue, UserLevelID.ReadOnly);
             }
-
-            // CreatedBy
-            CreatedBy.SetDbValue(rsnew, CreatedBy.CurrentValue, CreatedBy.ReadOnly);
-
-            // CreatedDateTime
-            CreatedDateTime.SetDbValue(rsnew, ConvertToDateTimeOffset(CreatedDateTime.CurrentValue, DateTimeStyles.AssumeUniversal), CreatedDateTime.ReadOnly);
-
-            // UpdatedBy
-            UpdatedBy.SetDbValue(rsnew, UpdatedBy.CurrentValue, UpdatedBy.ReadOnly);
-
-            // UpdatedDateTime
-            UpdatedDateTime.SetDbValue(rsnew, ConvertToDateTimeOffset(UpdatedDateTime.CurrentValue, DateTimeStyles.AssumeUniversal), UpdatedDateTime.ReadOnly);
 
             // Update current values
             SetCurrentValues(rsnew);

@@ -68,16 +68,6 @@ loadjs.ready(["wrapper", "head"], function () {
 }
 <input type="hidden" name="modal" value="@ConvertToInt(subscriptionsView.IsModal)">
 <table class="@(subscriptionsView.TableClass)">
-@if (subscriptionsView.Id.Visible) { // subscriptionsView.Id.Visible (begin)
-    <tr id="r_Id" @Html.Raw(subscriptionsView.Id.RowAttributes)>
-        <td class="@(subscriptionsView.TableLeftColumnClass)"><span id="elh_Subscriptions_Id">@Html.Raw(subscriptionsView.Id.Caption)</span></td>
-        <td data-name="Id" @Html.Raw(subscriptionsView.Id.CellAttributes)>
-<span id="el_Subscriptions_Id">
-<span @Html.Raw(subscriptionsView.Id.ViewAttributes)>
-@Html.Raw(subscriptionsView.Id.GetViewValue())</span>
-</span></td>
-    </tr>
-} @* subscriptionsView.Id.Visible (end) *@
 @if (subscriptionsView._User.Visible) { // subscriptionsView._User.Visible (begin)
     <tr id="r__User" @Html.Raw(subscriptionsView._User.RowAttributes)>
         <td class="@(subscriptionsView.TableLeftColumnClass)"><span id="elh_Subscriptions__User">@Html.Raw(subscriptionsView._User.Caption)</span></td>

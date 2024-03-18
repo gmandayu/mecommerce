@@ -576,8 +576,10 @@ public partial class mecommerce {
             // Common render codes for all row types
 
             // UserLevelID
+            UserLevelID.CellCssStyle = "white-space: nowrap;";
 
             // UserLevelName
+            UserLevelName.CellCssStyle = "white-space: nowrap;";
 
             // View row
             if (RowType == RowType.View) {

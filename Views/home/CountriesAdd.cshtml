@@ -46,11 +46,7 @@ loadjs.ready(["wrapper", "head"], function () {
             ["NiceName", [fields.NiceName.visible && fields.NiceName.required ? ew.Validators.required(fields.NiceName.caption) : null], fields.NiceName.isInvalid],
             ["ISO3", [fields.ISO3.visible && fields.ISO3.required ? ew.Validators.required(fields.ISO3.caption) : null], fields.ISO3.isInvalid],
             ["NumCode", [fields.NumCode.visible && fields.NumCode.required ? ew.Validators.required(fields.NumCode.caption) : null, ew.Validators.integer], fields.NumCode.isInvalid],
-            ["PhoneCode", [fields.PhoneCode.visible && fields.PhoneCode.required ? ew.Validators.required(fields.PhoneCode.caption) : null, ew.Validators.integer], fields.PhoneCode.isInvalid],
-            ["CreatedBy", [fields.CreatedBy.visible && fields.CreatedBy.required ? ew.Validators.required(fields.CreatedBy.caption) : null, ew.Validators.integer], fields.CreatedBy.isInvalid],
-            ["CreatedDateTime", [fields.CreatedDateTime.visible && fields.CreatedDateTime.required ? ew.Validators.required(fields.CreatedDateTime.caption) : null, ew.Validators.datetime(fields.CreatedDateTime.clientFormatPattern)], fields.CreatedDateTime.isInvalid],
-            ["UpdatedBy", [fields.UpdatedBy.visible && fields.UpdatedBy.required ? ew.Validators.required(fields.UpdatedBy.caption) : null, ew.Validators.integer], fields.UpdatedBy.isInvalid],
-            ["UpdatedDateTime", [fields.UpdatedDateTime.visible && fields.UpdatedDateTime.required ? ew.Validators.required(fields.UpdatedDateTime.caption) : null, ew.Validators.datetime(fields.UpdatedDateTime.clientFormatPattern)], fields.UpdatedDateTime.isInvalid]
+            ["PhoneCode", [fields.PhoneCode.visible && fields.PhoneCode.required ? ew.Validators.required(fields.PhoneCode.caption) : null, ew.Validators.integer], fields.PhoneCode.isInvalid]
         ])
 
         // Form_CustomValidate
@@ -164,110 +160,6 @@ loadjs.ready("head", function() {
 </div></div>
     </div>
 } @* countriesAdd.PhoneCode.Visible (end) *@
-@if (countriesAdd.CreatedBy.Visible) { // countriesAdd.CreatedBy.Visible (begin)
-    <div id="r_CreatedBy" @Html.Raw(countriesAdd.CreatedBy.RowAttributes)>
-        <label id="elh_Countries_CreatedBy" for="x_CreatedBy" class="@(countriesAdd.LeftColumnClass)">@Html.Raw(countriesAdd.CreatedBy.Caption)@Html.Raw(countriesAdd.CreatedBy.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
-        <div class="@(countriesAdd.RightColumnClass)"><div @Html.Raw(countriesAdd.CreatedBy.CellAttributes)>
-<span id="el_Countries_CreatedBy">
-<input type="@(countriesAdd.CreatedBy.InputTextType)" name="x_CreatedBy" id="x_CreatedBy" data-table="Countries" data-field="x_CreatedBy" value="@Html.Raw(countriesAdd.CreatedBy.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(countriesAdd.CreatedBy.PlaceHolder))" data-format-pattern="@(countriesAdd.CreatedBy.FormatPattern)"@Html.Raw(countriesAdd.CreatedBy.EditAttributes) aria-describedby="x_CreatedBy_help">
-@Html.Raw(countriesAdd.CreatedBy.GetCustomMessage)
-<div class="invalid-feedback">@Html.Raw(countriesAdd.CreatedBy.GetErrorMessage())</div>
-</span>
-</div></div>
-    </div>
-} @* countriesAdd.CreatedBy.Visible (end) *@
-@if (countriesAdd.CreatedDateTime.Visible) { // countriesAdd.CreatedDateTime.Visible (begin)
-    <div id="r_CreatedDateTime" @Html.Raw(countriesAdd.CreatedDateTime.RowAttributes)>
-        <label id="elh_Countries_CreatedDateTime" for="x_CreatedDateTime" class="@(countriesAdd.LeftColumnClass)">@Html.Raw(countriesAdd.CreatedDateTime.Caption)@Html.Raw(countriesAdd.CreatedDateTime.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
-        <div class="@(countriesAdd.RightColumnClass)"><div @Html.Raw(countriesAdd.CreatedDateTime.CellAttributes)>
-<span id="el_Countries_CreatedDateTime">
-<input type="@(countriesAdd.CreatedDateTime.InputTextType)" name="x_CreatedDateTime" id="x_CreatedDateTime" data-table="Countries" data-field="x_CreatedDateTime" value="@Html.Raw(countriesAdd.CreatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(countriesAdd.CreatedDateTime.PlaceHolder))" data-format-pattern="@(countriesAdd.CreatedDateTime.FormatPattern)"@Html.Raw(countriesAdd.CreatedDateTime.EditAttributes) aria-describedby="x_CreatedDateTime_help">
-@Html.Raw(countriesAdd.CreatedDateTime.GetCustomMessage)
-<div class="invalid-feedback">@Html.Raw(countriesAdd.CreatedDateTime.GetErrorMessage())</div>
-@if (!countriesAdd.CreatedDateTime.ReadOnly && !countriesAdd.CreatedDateTime.Disabled && !countriesAdd.CreatedDateTime.EditAttrs.Is("readonly") && !countriesAdd.CreatedDateTime.EditAttrs.Is("disabled")) {
-<script>
-loadjs.ready(["fCountriesadd", "datetimepicker"], function () {
-    let format = "@Html.Raw(DateFormat(0))", // DN
-        options = {
-                localization: {
-                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
-                    hourCycle: format.match(/H/) ? "h24" : "h12",
-                    format,
-                    ...ew.language.phrase("datetimepicker")
-                },
-                display: {
-                    icons: {
-                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
-                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
-                    },
-                    components: {
-                        hours: !!format.match(/h/i),
-                        minutes: !!format.match(/m/),
-                        seconds: !!format.match(/s/i)
-                    },
-                    theme: ew.isDark() ? "dark" : "auto"
-                }
-            };
-    ew.createDateTimePicker("fCountriesadd", "x_CreatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
-});
-</script>
-}
-</span>
-</div></div>
-    </div>
-} @* countriesAdd.CreatedDateTime.Visible (end) *@
-@if (countriesAdd.UpdatedBy.Visible) { // countriesAdd.UpdatedBy.Visible (begin)
-    <div id="r_UpdatedBy" @Html.Raw(countriesAdd.UpdatedBy.RowAttributes)>
-        <label id="elh_Countries_UpdatedBy" for="x_UpdatedBy" class="@(countriesAdd.LeftColumnClass)">@Html.Raw(countriesAdd.UpdatedBy.Caption)@Html.Raw(countriesAdd.UpdatedBy.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
-        <div class="@(countriesAdd.RightColumnClass)"><div @Html.Raw(countriesAdd.UpdatedBy.CellAttributes)>
-<span id="el_Countries_UpdatedBy">
-<input type="@(countriesAdd.UpdatedBy.InputTextType)" name="x_UpdatedBy" id="x_UpdatedBy" data-table="Countries" data-field="x_UpdatedBy" value="@Html.Raw(countriesAdd.UpdatedBy.EditValue)" size="30" placeholder="@Html.Raw(HtmlEncode(countriesAdd.UpdatedBy.PlaceHolder))" data-format-pattern="@(countriesAdd.UpdatedBy.FormatPattern)"@Html.Raw(countriesAdd.UpdatedBy.EditAttributes) aria-describedby="x_UpdatedBy_help">
-@Html.Raw(countriesAdd.UpdatedBy.GetCustomMessage)
-<div class="invalid-feedback">@Html.Raw(countriesAdd.UpdatedBy.GetErrorMessage())</div>
-</span>
-</div></div>
-    </div>
-} @* countriesAdd.UpdatedBy.Visible (end) *@
-@if (countriesAdd.UpdatedDateTime.Visible) { // countriesAdd.UpdatedDateTime.Visible (begin)
-    <div id="r_UpdatedDateTime" @Html.Raw(countriesAdd.UpdatedDateTime.RowAttributes)>
-        <label id="elh_Countries_UpdatedDateTime" for="x_UpdatedDateTime" class="@(countriesAdd.LeftColumnClass)">@Html.Raw(countriesAdd.UpdatedDateTime.Caption)@Html.Raw(countriesAdd.UpdatedDateTime.Required ? Language.Phrase("FieldRequiredIndicator") : "")</label>
-        <div class="@(countriesAdd.RightColumnClass)"><div @Html.Raw(countriesAdd.UpdatedDateTime.CellAttributes)>
-<span id="el_Countries_UpdatedDateTime">
-<input type="@(countriesAdd.UpdatedDateTime.InputTextType)" name="x_UpdatedDateTime" id="x_UpdatedDateTime" data-table="Countries" data-field="x_UpdatedDateTime" value="@Html.Raw(countriesAdd.UpdatedDateTime.EditValue)" placeholder="@Html.Raw(HtmlEncode(countriesAdd.UpdatedDateTime.PlaceHolder))" data-format-pattern="@(countriesAdd.UpdatedDateTime.FormatPattern)"@Html.Raw(countriesAdd.UpdatedDateTime.EditAttributes) aria-describedby="x_UpdatedDateTime_help">
-@Html.Raw(countriesAdd.UpdatedDateTime.GetCustomMessage)
-<div class="invalid-feedback">@Html.Raw(countriesAdd.UpdatedDateTime.GetErrorMessage())</div>
-@if (!countriesAdd.UpdatedDateTime.ReadOnly && !countriesAdd.UpdatedDateTime.Disabled && !countriesAdd.UpdatedDateTime.EditAttrs.Is("readonly") && !countriesAdd.UpdatedDateTime.EditAttrs.Is("disabled")) {
-<script>
-loadjs.ready(["fCountriesadd", "datetimepicker"], function () {
-    let format = "@Html.Raw(DateFormat(0))", // DN
-        options = {
-                localization: {
-                    locale: ew.LANGUAGE_ID + "-u-nu-" + ew.getNumberingSystem(),
-                    hourCycle: format.match(/H/) ? "h24" : "h12",
-                    format,
-                    ...ew.language.phrase("datetimepicker")
-                },
-                display: {
-                    icons: {
-                        previous: ew.IS_RTL ? "fa-solid fa-chevron-right" : "fa-solid fa-chevron-left",
-                        next: ew.IS_RTL ? "fa-solid fa-chevron-left" : "fa-solid fa-chevron-right"
-                    },
-                    components: {
-                        hours: !!format.match(/h/i),
-                        minutes: !!format.match(/m/),
-                        seconds: !!format.match(/s/i)
-                    },
-                    theme: ew.isDark() ? "dark" : "auto"
-                }
-            };
-    ew.createDateTimePicker("fCountriesadd", "x_UpdatedDateTime", ew.deepAssign({"useCurrent":false,"display":{"sideBySide":false}}, options));
-});
-</script>
-}
-</span>
-</div></div>
-    </div>
-} @* countriesAdd.UpdatedDateTime.Visible (end) *@
 </div><!-- /page* -->
 @{ countriesAdd.CloseRecordset(); }
 @Html.Raw(countriesAdd.IsModal ? "<template class=\"ew-modal-buttons\">" : "<div class=\"row ew-buttons\">")<!-- buttons .row -->

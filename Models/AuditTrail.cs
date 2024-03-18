@@ -115,6 +115,7 @@ public partial class mecommerce {
                 IsAutoIncrement = true, // Autoincrement field
                 IsPrimaryKey = true, // Primary key field
                 Nullable = false, // NOT NULL field
+                Sortable = false, // Allow sort
                 DefaultErrorMessage = Language.Phrase("IncorrectInteger"),
                 SearchOperators = new () { "=", "<>", "IN", "NOT IN", "<", "<=", ">", ">=", "BETWEEN", "NOT BETWEEN" },
                 CustomMessage = Language.FieldPhrase("AuditTrail", "Id", "CustomMsg"),
@@ -254,6 +255,7 @@ public partial class mecommerce {
             KeyValue = new (this, "x_KeyValue", 203, SqlDbType.NText) {
                 Name = "KeyValue",
                 Expression = "[KeyValue]",
+                UseBasicSearch = true,
                 BasicSearchExpression = "[KeyValue]",
                 DateTimeFormat = -1,
                 VirtualExpression = "[KeyValue]",
@@ -275,6 +277,7 @@ public partial class mecommerce {
             OldValue = new (this, "x_OldValue", 203, SqlDbType.NText) {
                 Name = "OldValue",
                 Expression = "[OldValue]",
+                UseBasicSearch = true,
                 BasicSearchExpression = "[OldValue]",
                 DateTimeFormat = -1,
                 VirtualExpression = "[OldValue]",
@@ -296,6 +299,7 @@ public partial class mecommerce {
             NewValue = new (this, "x_NewValue", 203, SqlDbType.NText) {
                 Name = "NewValue",
                 Expression = "[NewValue]",
+                UseBasicSearch = true,
                 BasicSearchExpression = "[NewValue]",
                 DateTimeFormat = -1,
                 VirtualExpression = "[NewValue]",
@@ -1256,24 +1260,34 @@ public partial class mecommerce {
             // Common render codes
 
             // Id
+            Id.CellCssStyle = "white-space: nowrap;";
 
             // DateTime
+            _DateTime.CellCssStyle = "white-space: nowrap;";
 
             // Script
+            Script.CellCssStyle = "white-space: nowrap;";
 
             // User
+            _User.CellCssStyle = "white-space: nowrap;";
 
             // Action
+            _Action.CellCssStyle = "white-space: nowrap;";
 
             // Table
+            _Table.CellCssStyle = "white-space: nowrap;";
 
             // Field
+            _Field.CellCssStyle = "white-space: nowrap;";
 
             // KeyValue
+            KeyValue.CellCssStyle = "white-space: nowrap;";
 
             // OldValue
+            OldValue.CellCssStyle = "white-space: nowrap;";
 
             // NewValue
+            NewValue.CellCssStyle = "white-space: nowrap;";
 
             // Id
             Id.ViewValue = Id.CurrentValue;
@@ -1463,7 +1477,6 @@ public partial class mecommerce {
                 if (doc.Horizontal) { // Horizontal format, write header
                     doc.BeginExportRow();
                     if (exportType == "view") {
-                        doc.ExportCaption(Id);
                         doc.ExportCaption(_DateTime);
                         doc.ExportCaption(Script);
                         doc.ExportCaption(_User);
@@ -1474,13 +1487,15 @@ public partial class mecommerce {
                         doc.ExportCaption(OldValue);
                         doc.ExportCaption(NewValue);
                     } else {
-                        doc.ExportCaption(Id);
                         doc.ExportCaption(_DateTime);
                         doc.ExportCaption(Script);
                         doc.ExportCaption(_User);
                         doc.ExportCaption(_Action);
                         doc.ExportCaption(_Table);
                         doc.ExportCaption(_Field);
+                        doc.ExportCaption(KeyValue);
+                        doc.ExportCaption(OldValue);
+                        doc.ExportCaption(NewValue);
                     }
                     doc.EndExportRow();
                 }
@@ -1518,7 +1533,6 @@ public partial class mecommerce {
                     if (!doc.ExportCustom) {
                         doc.BeginExportRow(rowcnt); // Allow CSS styles if enabled
                         if (exportType == "view") {
-                            await doc.ExportField(Id);
                             await doc.ExportField(_DateTime);
                             await doc.ExportField(Script);
                             await doc.ExportField(_User);
@@ -1529,13 +1543,15 @@ public partial class mecommerce {
                             await doc.ExportField(OldValue);
                             await doc.ExportField(NewValue);
                         } else {
-                            await doc.ExportField(Id);
                             await doc.ExportField(_DateTime);
                             await doc.ExportField(Script);
                             await doc.ExportField(_User);
                             await doc.ExportField(_Action);
                             await doc.ExportField(_Table);
                             await doc.ExportField(_Field);
+                            await doc.ExportField(KeyValue);
+                            await doc.ExportField(OldValue);
+                            await doc.ExportField(NewValue);
                         }
                         doc.EndExportRow(rowcnt);
                     }
