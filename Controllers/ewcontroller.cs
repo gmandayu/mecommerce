@@ -8,9 +8,12 @@ public partial class HomeController : Controller
 {
     private IMemoryCache _cache;
 
+    private readonly SignInManager<ApplicationUser> _signInManager;
+
     // Constructor
-    public HomeController(ILogger<HomeController> logger, IMemoryCache memoryCache)
+    public HomeController(SignInManager<ApplicationUser> signInManager, ILogger<HomeController> logger, IMemoryCache memoryCache)
     {
+        _signInManager = signInManager;
         _cache = memoryCache;
         GLOBALS.Logger = logger;
     }
@@ -43,6 +46,32 @@ public partial class HomeController : Controller
 
         // Run the page
         return await personalData.Run();
+    }
+
+    // External provider
+    [HttpGet]
+    [Route("externallogin/{provider}", Name = "ExternalLogin")]
+    [Route("home/externallogin/{provider}", Name = "ExternalLogin-2")]
+    [AllowAnonymous]
+    public IActionResult ExternalLogin([FromRoute] string provider)
+    {
+        if (SameText(provider, "saml"))
+            return RedirectToAction("SignIn", "Saml");
+        string redirectUrl = AppPath("ExternalCallback");
+        var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+        return new ChallengeResult(provider, properties);
+    }
+
+    // External login callback
+    [Route("externalcallback", Name = "ExternalCallback")]
+    [Route("home/externalcallback", Name = "ExternalCallback-2")]
+    [AllowAnonymous]
+    public IActionResult ExternalCallback()
+    {
+        var loginInfo = _signInManager.GetExternalLoginInfoAsync().GetAwaiter().GetResult();  // Get from signInManager first
+        string provider = loginInfo?.LoginProvider ?? User.Identity?.AuthenticationType ?? ""; // Google/Facebook/Microsoft
+        object? routeValues = provider != "" && Config.Authentications.Keys.Contains(provider) ? new { provider = provider } : null;
+        return RedirectToAction("Login", "Home", routeValues); // Redirect to login/{provider}
     }
 
     // Login

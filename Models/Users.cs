@@ -1357,30 +1357,43 @@ public partial class mecommerce {
             // Common render codes
 
             // UserID
+            UserID.CellCssStyle = "white-space: nowrap;";
 
             // Email
+            _Email.CellCssStyle = "white-space: nowrap;";
 
             // MobileNumber
+            MobileNumber.CellCssStyle = "white-space: nowrap;";
 
             // Username
+            _Username.CellCssStyle = "white-space: nowrap;";
 
             // Password
+            Password.CellCssStyle = "white-space: nowrap;";
 
             // ProfilePicture
+            ProfilePicture.CellCssStyle = "white-space: nowrap;";
 
             // ProfileDescription
+            ProfileDescription.CellCssStyle = "white-space: nowrap;";
 
             // IsActive
+            IsActive.CellCssStyle = "white-space: nowrap;";
 
             // UserLevelID
+            UserLevelID.CellCssStyle = "white-space: nowrap;";
 
             // CreatedBy
+            CreatedBy.CellCssStyle = "white-space: nowrap;";
 
             // CreatedDateTime
+            CreatedDateTime.CellCssStyle = "white-space: nowrap;";
 
             // UpdatedBy
+            UpdatedBy.CellCssStyle = "white-space: nowrap;";
 
             // UpdatedDateTime
+            UpdatedDateTime.CellCssStyle = "white-space: nowrap;";
 
             // UserID
             UserID.ViewValue = UserID.CurrentValue;

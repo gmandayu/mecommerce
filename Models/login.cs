@@ -359,6 +359,23 @@ public partial class mecommerce {
                 }
             } else if (Config.UseTwoFactorAuthentication && IsLoggingIn2FA()) { // Logging in via 2FA, redirect
                 return Terminate("login2fa");
+            } else if (!Empty(provider)) { // Already authenticated in ewcontroller.cs (action ExternalProvider / ExternalLoginCallBack) // DN
+                provider = TitleCaseInvariant(provider.Trim());
+                if (User != null) { // Set up claims in profile, use ToLookup() to avoid duplicates
+                    Profile.Assign(User.Claims.ToLookup(claim => claim.Type, claim => claim.Value).ToDictionary(group => group.Key, group => group.Last()));
+                    Profile.Assign(User.Claims.Where(claim => claim.Type.StartsWith("http://")).ToLookup(claim => claim.Type.Split('/').Last(), claim => claim.Value).ToDictionary(group => group.Key, group => group.Last()));
+                }
+                validate = await Security.ValidateUser(model, false, provider); // Login by provider // DN
+                validPassword = validate;
+                if (validate) {
+                    model.Username = Profile.GetValue(ClaimTypes.Email.Split('/').Last());
+                    if (!Security.IsLoggedIn && Config.Debug) { // Show debug message
+                        validPassword = false;
+                        FailureMessage = Language.Phrase("UserNotFound").Replace("%u", model.Username);
+                    }
+                } else {
+                    FailureMessage = Language.Phrase("LoginFailed").Replace("%p", provider);
+                }
             } else { // Normal login
                 if (!Security.IsLoggedIn)
                     await Security.AutoLoginAsync();

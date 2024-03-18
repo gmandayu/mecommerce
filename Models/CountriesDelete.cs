@@ -604,26 +604,37 @@ public partial class mecommerce {
             // Common render codes for all row types
 
             // CountryID
+            CountryID.CellCssStyle = "white-space: nowrap;";
 
             // ISO
+            ISO.CellCssStyle = "white-space: nowrap;";
 
             // Name
+            _Name.CellCssStyle = "white-space: nowrap;";
 
             // NiceName
+            NiceName.CellCssStyle = "white-space: nowrap;";
 
             // ISO3
+            ISO3.CellCssStyle = "white-space: nowrap;";
 
             // NumCode
+            NumCode.CellCssStyle = "white-space: nowrap;";
 
             // PhoneCode
+            PhoneCode.CellCssStyle = "white-space: nowrap;";
 
             // CreatedBy
+            CreatedBy.CellCssStyle = "white-space: nowrap;";
 
             // CreatedDateTime
+            CreatedDateTime.CellCssStyle = "white-space: nowrap;";
 
             // UpdatedBy
+            UpdatedBy.CellCssStyle = "white-space: nowrap;";
 
             // UpdatedDateTime
+            UpdatedDateTime.CellCssStyle = "white-space: nowrap;";
 
             // View row
             if (RowType == RowType.View) {

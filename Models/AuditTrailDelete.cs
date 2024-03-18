@@ -601,24 +601,34 @@ public partial class mecommerce {
             // Common render codes for all row types
 
             // Id
+            Id.CellCssStyle = "white-space: nowrap;";
 
             // DateTime
+            _DateTime.CellCssStyle = "white-space: nowrap;";
 
             // Script
+            Script.CellCssStyle = "white-space: nowrap;";
 
             // User
+            _User.CellCssStyle = "white-space: nowrap;";
 
             // Action
+            _Action.CellCssStyle = "white-space: nowrap;";
 
             // Table
+            _Table.CellCssStyle = "white-space: nowrap;";
 
             // Field
+            _Field.CellCssStyle = "white-space: nowrap;";
 
             // KeyValue
+            KeyValue.CellCssStyle = "white-space: nowrap;";
 
             // OldValue
+            OldValue.CellCssStyle = "white-space: nowrap;";
 
             // NewValue
+            NewValue.CellCssStyle = "white-space: nowrap;";
 
             // View row
             if (RowType == RowType.View) {

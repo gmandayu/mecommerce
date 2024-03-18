@@ -544,7 +544,7 @@ public partial class mecommerce {
                                     Session[Config.SessionUserProfilePassword] = Password.FormValue;
                                     return Terminate("login2fa"); // Add two factor authentication
                                 } else {
-                                    return Terminate("index"); // Return
+                                    return Terminate(ViewUrl); // Return
                                 }
                             }
                         } else if (IsApi()) { // API request, return

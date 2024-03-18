@@ -162,25 +162,25 @@ if (!auditTrailList.IsExport() && Empty(auditTrailList.CurrentAction) && auditTr
 @* Render list options (header, left) *@
 @auditTrailList.ListOptions.RenderHeader("left")
 @if (auditTrailList.Id.Visible) { // auditTrailList.Id.Visible (begin)
-        <th data-name="Id" class="@(auditTrailList.Id.HeaderCellClass)"><div id="elh_AuditTrail_Id" class="AuditTrail_Id">@Html.Raw(auditTrailList.RenderFieldHeader(auditTrailList.Id))</div></th>
+        <th data-name="Id" class="@(auditTrailList.Id.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_AuditTrail_Id" class="AuditTrail_Id">@Html.Raw(auditTrailList.RenderFieldHeader(auditTrailList.Id))</div></th>
 } @* auditTrailList.Id.Visible (end) *@
 @if (auditTrailList._DateTime.Visible) { // auditTrailList._DateTime.Visible (begin)
-        <th data-name="_DateTime" class="@(auditTrailList._DateTime.HeaderCellClass)"><div id="elh_AuditTrail__DateTime" class="AuditTrail__DateTime">@Html.Raw(auditTrailList.RenderFieldHeader(auditTrailList._DateTime))</div></th>
+        <th data-name="_DateTime" class="@(auditTrailList._DateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_AuditTrail__DateTime" class="AuditTrail__DateTime">@Html.Raw(auditTrailList.RenderFieldHeader(auditTrailList._DateTime))</div></th>
 } @* auditTrailList._DateTime.Visible (end) *@
 @if (auditTrailList.Script.Visible) { // auditTrailList.Script.Visible (begin)
-        <th data-name="Script" class="@(auditTrailList.Script.HeaderCellClass)"><div id="elh_AuditTrail_Script" class="AuditTrail_Script">@Html.Raw(auditTrailList.RenderFieldHeader(auditTrailList.Script))</div></th>
+        <th data-name="Script" class="@(auditTrailList.Script.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_AuditTrail_Script" class="AuditTrail_Script">@Html.Raw(auditTrailList.RenderFieldHeader(auditTrailList.Script))</div></th>
 } @* auditTrailList.Script.Visible (end) *@
 @if (auditTrailList._User.Visible) { // auditTrailList._User.Visible (begin)
-        <th data-name="_User" class="@(auditTrailList._User.HeaderCellClass)"><div id="elh_AuditTrail__User" class="AuditTrail__User">@Html.Raw(auditTrailList.RenderFieldHeader(auditTrailList._User))</div></th>
+        <th data-name="_User" class="@(auditTrailList._User.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_AuditTrail__User" class="AuditTrail__User">@Html.Raw(auditTrailList.RenderFieldHeader(auditTrailList._User))</div></th>
 } @* auditTrailList._User.Visible (end) *@
 @if (auditTrailList._Action.Visible) { // auditTrailList._Action.Visible (begin)
-        <th data-name="_Action" class="@(auditTrailList._Action.HeaderCellClass)"><div id="elh_AuditTrail__Action" class="AuditTrail__Action">@Html.Raw(auditTrailList.RenderFieldHeader(auditTrailList._Action))</div></th>
+        <th data-name="_Action" class="@(auditTrailList._Action.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_AuditTrail__Action" class="AuditTrail__Action">@Html.Raw(auditTrailList.RenderFieldHeader(auditTrailList._Action))</div></th>
 } @* auditTrailList._Action.Visible (end) *@
 @if (auditTrailList._Table.Visible) { // auditTrailList._Table.Visible (begin)
-        <th data-name="_Table" class="@(auditTrailList._Table.HeaderCellClass)"><div id="elh_AuditTrail__Table" class="AuditTrail__Table">@Html.Raw(auditTrailList.RenderFieldHeader(auditTrailList._Table))</div></th>
+        <th data-name="_Table" class="@(auditTrailList._Table.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_AuditTrail__Table" class="AuditTrail__Table">@Html.Raw(auditTrailList.RenderFieldHeader(auditTrailList._Table))</div></th>
 } @* auditTrailList._Table.Visible (end) *@
 @if (auditTrailList._Field.Visible) { // auditTrailList._Field.Visible (begin)
-        <th data-name="_Field" class="@(auditTrailList._Field.HeaderCellClass)"><div id="elh_AuditTrail__Field" class="AuditTrail__Field">@Html.Raw(auditTrailList.RenderFieldHeader(auditTrailList._Field))</div></th>
+        <th data-name="_Field" class="@(auditTrailList._Field.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_AuditTrail__Field" class="AuditTrail__Field">@Html.Raw(auditTrailList.RenderFieldHeader(auditTrailList._Field))</div></th>
 } @* auditTrailList._Field.Visible (end) *@
 @* Render list options (header, right) *@
 @auditTrailList.ListOptions.RenderHeader("right")

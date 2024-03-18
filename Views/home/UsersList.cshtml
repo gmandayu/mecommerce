@@ -162,37 +162,37 @@ if (!usersList.IsExport() && Empty(usersList.CurrentAction) && usersList.HasSear
 @* Render list options (header, left) *@
 @usersList.ListOptions.RenderHeader("left")
 @if (usersList.UserID.Visible) { // usersList.UserID.Visible (begin)
-        <th data-name="UserID" class="@(usersList.UserID.HeaderCellClass)"><div id="elh_Users_UserID" class="Users_UserID">@Html.Raw(usersList.RenderFieldHeader(usersList.UserID))</div></th>
+        <th data-name="UserID" class="@(usersList.UserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Users_UserID" class="Users_UserID">@Html.Raw(usersList.RenderFieldHeader(usersList.UserID))</div></th>
 } @* usersList.UserID.Visible (end) *@
 @if (usersList._Email.Visible) { // usersList._Email.Visible (begin)
-        <th data-name="_Email" class="@(usersList._Email.HeaderCellClass)"><div id="elh_Users__Email" class="Users__Email">@Html.Raw(usersList.RenderFieldHeader(usersList._Email))</div></th>
+        <th data-name="_Email" class="@(usersList._Email.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Users__Email" class="Users__Email">@Html.Raw(usersList.RenderFieldHeader(usersList._Email))</div></th>
 } @* usersList._Email.Visible (end) *@
 @if (usersList.MobileNumber.Visible) { // usersList.MobileNumber.Visible (begin)
-        <th data-name="MobileNumber" class="@(usersList.MobileNumber.HeaderCellClass)"><div id="elh_Users_MobileNumber" class="Users_MobileNumber">@Html.Raw(usersList.RenderFieldHeader(usersList.MobileNumber))</div></th>
+        <th data-name="MobileNumber" class="@(usersList.MobileNumber.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Users_MobileNumber" class="Users_MobileNumber">@Html.Raw(usersList.RenderFieldHeader(usersList.MobileNumber))</div></th>
 } @* usersList.MobileNumber.Visible (end) *@
 @if (usersList._Username.Visible) { // usersList._Username.Visible (begin)
-        <th data-name="_Username" class="@(usersList._Username.HeaderCellClass)"><div id="elh_Users__Username" class="Users__Username">@Html.Raw(usersList.RenderFieldHeader(usersList._Username))</div></th>
+        <th data-name="_Username" class="@(usersList._Username.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Users__Username" class="Users__Username">@Html.Raw(usersList.RenderFieldHeader(usersList._Username))</div></th>
 } @* usersList._Username.Visible (end) *@
 @if (usersList.Password.Visible) { // usersList.Password.Visible (begin)
-        <th data-name="Password" class="@(usersList.Password.HeaderCellClass)"><div id="elh_Users_Password" class="Users_Password">@Html.Raw(usersList.RenderFieldHeader(usersList.Password))</div></th>
+        <th data-name="Password" class="@(usersList.Password.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Users_Password" class="Users_Password">@Html.Raw(usersList.RenderFieldHeader(usersList.Password))</div></th>
 } @* usersList.Password.Visible (end) *@
 @if (usersList.IsActive.Visible) { // usersList.IsActive.Visible (begin)
-        <th data-name="IsActive" class="@(usersList.IsActive.HeaderCellClass)"><div id="elh_Users_IsActive" class="Users_IsActive">@Html.Raw(usersList.RenderFieldHeader(usersList.IsActive))</div></th>
+        <th data-name="IsActive" class="@(usersList.IsActive.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Users_IsActive" class="Users_IsActive">@Html.Raw(usersList.RenderFieldHeader(usersList.IsActive))</div></th>
 } @* usersList.IsActive.Visible (end) *@
 @if (usersList.UserLevelID.Visible) { // usersList.UserLevelID.Visible (begin)
-        <th data-name="UserLevelID" class="@(usersList.UserLevelID.HeaderCellClass)"><div id="elh_Users_UserLevelID" class="Users_UserLevelID">@Html.Raw(usersList.RenderFieldHeader(usersList.UserLevelID))</div></th>
+        <th data-name="UserLevelID" class="@(usersList.UserLevelID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Users_UserLevelID" class="Users_UserLevelID">@Html.Raw(usersList.RenderFieldHeader(usersList.UserLevelID))</div></th>
 } @* usersList.UserLevelID.Visible (end) *@
 @if (usersList.CreatedBy.Visible) { // usersList.CreatedBy.Visible (begin)
-        <th data-name="CreatedBy" class="@(usersList.CreatedBy.HeaderCellClass)"><div id="elh_Users_CreatedBy" class="Users_CreatedBy">@Html.Raw(usersList.RenderFieldHeader(usersList.CreatedBy))</div></th>
+        <th data-name="CreatedBy" class="@(usersList.CreatedBy.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Users_CreatedBy" class="Users_CreatedBy">@Html.Raw(usersList.RenderFieldHeader(usersList.CreatedBy))</div></th>
 } @* usersList.CreatedBy.Visible (end) *@
 @if (usersList.CreatedDateTime.Visible) { // usersList.CreatedDateTime.Visible (begin)
-        <th data-name="CreatedDateTime" class="@(usersList.CreatedDateTime.HeaderCellClass)"><div id="elh_Users_CreatedDateTime" class="Users_CreatedDateTime">@Html.Raw(usersList.RenderFieldHeader(usersList.CreatedDateTime))</div></th>
+        <th data-name="CreatedDateTime" class="@(usersList.CreatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Users_CreatedDateTime" class="Users_CreatedDateTime">@Html.Raw(usersList.RenderFieldHeader(usersList.CreatedDateTime))</div></th>
 } @* usersList.CreatedDateTime.Visible (end) *@
 @if (usersList.UpdatedBy.Visible) { // usersList.UpdatedBy.Visible (begin)
-        <th data-name="UpdatedBy" class="@(usersList.UpdatedBy.HeaderCellClass)"><div id="elh_Users_UpdatedBy" class="Users_UpdatedBy">@Html.Raw(usersList.RenderFieldHeader(usersList.UpdatedBy))</div></th>
+        <th data-name="UpdatedBy" class="@(usersList.UpdatedBy.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Users_UpdatedBy" class="Users_UpdatedBy">@Html.Raw(usersList.RenderFieldHeader(usersList.UpdatedBy))</div></th>
 } @* usersList.UpdatedBy.Visible (end) *@
 @if (usersList.UpdatedDateTime.Visible) { // usersList.UpdatedDateTime.Visible (begin)
-        <th data-name="UpdatedDateTime" class="@(usersList.UpdatedDateTime.HeaderCellClass)"><div id="elh_Users_UpdatedDateTime" class="Users_UpdatedDateTime">@Html.Raw(usersList.RenderFieldHeader(usersList.UpdatedDateTime))</div></th>
+        <th data-name="UpdatedDateTime" class="@(usersList.UpdatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Users_UpdatedDateTime" class="Users_UpdatedDateTime">@Html.Raw(usersList.RenderFieldHeader(usersList.UpdatedDateTime))</div></th>
 } @* usersList.UpdatedDateTime.Visible (end) *@
 @* Render list options (header, right) *@
 @usersList.ListOptions.RenderHeader("right")

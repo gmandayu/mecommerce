@@ -1914,16 +1914,22 @@ public partial class mecommerce {
             // Common render codes for all row types
 
             // Id
+            Id.CellCssStyle = "white-space: nowrap;";
 
             // User
+            _User.CellCssStyle = "white-space: nowrap;";
 
             // Endpoint
+            Endpoint.CellCssStyle = "white-space: nowrap;";
 
             // PublicKey
+            PublicKey.CellCssStyle = "white-space: nowrap;";
 
             // AuthenticationToken
+            AuthenticationToken.CellCssStyle = "white-space: nowrap;";
 
             // ContentEncoding
+            ContentEncoding.CellCssStyle = "white-space: nowrap;";
 
             // View row
             if (RowType == RowType.View) {

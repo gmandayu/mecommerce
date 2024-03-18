@@ -1131,10 +1131,13 @@ public partial class mecommerce {
             // Common render codes
 
             // UserLevelID
+            UserLevelID.CellCssStyle = "white-space: nowrap;";
 
             // TableName
+            _TableName.CellCssStyle = "white-space: nowrap;";
 
             // Permission
+            Permission.CellCssStyle = "white-space: nowrap;";
 
             // UserLevelID
             UserLevelID.ViewValue = UserLevelID.CurrentValue;

@@ -162,10 +162,10 @@ if (!userLevelsList.IsExport() && Empty(userLevelsList.CurrentAction) && userLev
 @* Render list options (header, left) *@
 @userLevelsList.ListOptions.RenderHeader("left")
 @if (userLevelsList.UserLevelID.Visible) { // userLevelsList.UserLevelID.Visible (begin)
-        <th data-name="UserLevelID" class="@(userLevelsList.UserLevelID.HeaderCellClass)"><div id="elh_UserLevels_UserLevelID" class="UserLevels_UserLevelID">@Html.Raw(userLevelsList.RenderFieldHeader(userLevelsList.UserLevelID))</div></th>
+        <th data-name="UserLevelID" class="@(userLevelsList.UserLevelID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_UserLevels_UserLevelID" class="UserLevels_UserLevelID">@Html.Raw(userLevelsList.RenderFieldHeader(userLevelsList.UserLevelID))</div></th>
 } @* userLevelsList.UserLevelID.Visible (end) *@
 @if (userLevelsList.UserLevelName.Visible) { // userLevelsList.UserLevelName.Visible (begin)
-        <th data-name="UserLevelName" class="@(userLevelsList.UserLevelName.HeaderCellClass)"><div id="elh_UserLevels_UserLevelName" class="UserLevels_UserLevelName">@Html.Raw(userLevelsList.RenderFieldHeader(userLevelsList.UserLevelName))</div></th>
+        <th data-name="UserLevelName" class="@(userLevelsList.UserLevelName.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_UserLevels_UserLevelName" class="UserLevels_UserLevelName">@Html.Raw(userLevelsList.RenderFieldHeader(userLevelsList.UserLevelName))</div></th>
 } @* userLevelsList.UserLevelName.Visible (end) *@
 @* Render list options (header, right) *@
 @userLevelsList.ListOptions.RenderHeader("right")

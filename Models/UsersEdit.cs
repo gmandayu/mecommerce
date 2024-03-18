@@ -724,7 +724,7 @@ public partial class mecommerce {
                     break;
                 case "update": // Update // DN
                     CloseRecordset(); // DN
-                    string returnUrl = ReturnUrl;
+                    string returnUrl = ViewUrl;
                     if (GetPageName(returnUrl) == "userslist")
                         returnUrl = AddMasterUrl(ListUrl); // List page, return to List page with correct master key if necessary
                     SendEmail = true; // Send email on update success

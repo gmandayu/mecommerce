@@ -2187,48 +2187,70 @@ public partial class mecommerce {
             // Common render codes for all row types
 
             // CustomerID
+            CustomerID.CellCssStyle = "white-space: nowrap;";
 
             // FirstName
+            FirstName.CellCssStyle = "white-space: nowrap;";
 
             // MiddleName
+            MiddleName.CellCssStyle = "white-space: nowrap;";
 
             // LastName
+            LastName.CellCssStyle = "white-space: nowrap;";
 
             // Gender
+            Gender.CellCssStyle = "white-space: nowrap;";
 
             // PlaceOfBirth
+            PlaceOfBirth.CellCssStyle = "white-space: nowrap;";
 
             // DateOfBirth
+            DateOfBirth.CellCssStyle = "white-space: nowrap;";
 
             // PrimaryAddress
+            PrimaryAddress.CellCssStyle = "white-space: nowrap;";
 
             // PrimaryAddressCity
+            PrimaryAddressCity.CellCssStyle = "white-space: nowrap;";
 
             // PrimaryAddressPostCode
+            PrimaryAddressPostCode.CellCssStyle = "white-space: nowrap;";
 
             // PrimaryAddressCountryID
+            PrimaryAddressCountryID.CellCssStyle = "white-space: nowrap;";
 
             // AlternativeAddress
+            AlternativeAddress.CellCssStyle = "white-space: nowrap;";
 
             // AlternativeAddressCity
+            AlternativeAddressCity.CellCssStyle = "white-space: nowrap;";
 
             // AlternativeAddressPostCode
+            AlternativeAddressPostCode.CellCssStyle = "white-space: nowrap;";
 
             // AlternativeAddressCountryID
+            AlternativeAddressCountryID.CellCssStyle = "white-space: nowrap;";
 
             // MobileNumber
+            MobileNumber.CellCssStyle = "white-space: nowrap;";
 
             // UserID
+            UserID.CellCssStyle = "white-space: nowrap;";
 
             // Status
+            Status.CellCssStyle = "white-space: nowrap;";
 
             // CreatedBy
+            CreatedBy.CellCssStyle = "white-space: nowrap;";
 
             // CreatedDateTime
+            CreatedDateTime.CellCssStyle = "white-space: nowrap;";
 
             // UpdatedBy
+            UpdatedBy.CellCssStyle = "white-space: nowrap;";
 
             // UpdatedDateTime
+            UpdatedDateTime.CellCssStyle = "white-space: nowrap;";
 
             // View row
             if (RowType == RowType.View) {

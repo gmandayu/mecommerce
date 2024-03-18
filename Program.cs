@@ -64,7 +64,7 @@ builder.Services.AddMemoryCache();
 builder.Services.AddHttpClient();
 
 // Add identity types
-builder.Services.AddIdentity<ApplicationUser, ApplicationRole>();
+builder.Services.AddIdentity<ApplicationUser, ApplicationRole>().AddDefaultTokenProviders();
 
 // Identity Services
 builder.Services.AddTransient<IUserStore<ApplicationUser>, CustomUserStore>();
@@ -101,6 +101,11 @@ builder.Services.AddAuthentication(options => {
         options.SlidingExpiration = true;
         options.LoginPath = new PathString("/login");
         options.AccessDeniedPath = new PathString("/error");
+    })
+    .AddGoogle(options => { // Google
+        options.CorrelationCookie.SameSite = Enum.Parse<Microsoft.AspNetCore.Http.SameSiteMode>(Config.CookieSameSite);
+        options.ClientId = Config.Authentications["Google"].Id;
+        options.ClientSecret = Config.Authentications["Google"].Secret;
     })
     .AddJwtBearer(options => { // JWT
         options.TokenValidationParameters = new () {

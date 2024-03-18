@@ -162,64 +162,64 @@ if (!customersList.IsExport() && Empty(customersList.CurrentAction) && customers
 @* Render list options (header, left) *@
 @customersList.ListOptions.RenderHeader("left")
 @if (customersList.CustomerID.Visible) { // customersList.CustomerID.Visible (begin)
-        <th data-name="CustomerID" class="@(customersList.CustomerID.HeaderCellClass)"><div id="elh_Customers_CustomerID" class="Customers_CustomerID">@Html.Raw(customersList.RenderFieldHeader(customersList.CustomerID))</div></th>
+        <th data-name="CustomerID" class="@(customersList.CustomerID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Customers_CustomerID" class="Customers_CustomerID">@Html.Raw(customersList.RenderFieldHeader(customersList.CustomerID))</div></th>
 } @* customersList.CustomerID.Visible (end) *@
 @if (customersList.FirstName.Visible) { // customersList.FirstName.Visible (begin)
-        <th data-name="FirstName" class="@(customersList.FirstName.HeaderCellClass)"><div id="elh_Customers_FirstName" class="Customers_FirstName">@Html.Raw(customersList.RenderFieldHeader(customersList.FirstName))</div></th>
+        <th data-name="FirstName" class="@(customersList.FirstName.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Customers_FirstName" class="Customers_FirstName">@Html.Raw(customersList.RenderFieldHeader(customersList.FirstName))</div></th>
 } @* customersList.FirstName.Visible (end) *@
 @if (customersList.MiddleName.Visible) { // customersList.MiddleName.Visible (begin)
-        <th data-name="MiddleName" class="@(customersList.MiddleName.HeaderCellClass)"><div id="elh_Customers_MiddleName" class="Customers_MiddleName">@Html.Raw(customersList.RenderFieldHeader(customersList.MiddleName))</div></th>
+        <th data-name="MiddleName" class="@(customersList.MiddleName.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Customers_MiddleName" class="Customers_MiddleName">@Html.Raw(customersList.RenderFieldHeader(customersList.MiddleName))</div></th>
 } @* customersList.MiddleName.Visible (end) *@
 @if (customersList.LastName.Visible) { // customersList.LastName.Visible (begin)
-        <th data-name="LastName" class="@(customersList.LastName.HeaderCellClass)"><div id="elh_Customers_LastName" class="Customers_LastName">@Html.Raw(customersList.RenderFieldHeader(customersList.LastName))</div></th>
+        <th data-name="LastName" class="@(customersList.LastName.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Customers_LastName" class="Customers_LastName">@Html.Raw(customersList.RenderFieldHeader(customersList.LastName))</div></th>
 } @* customersList.LastName.Visible (end) *@
 @if (customersList.Gender.Visible) { // customersList.Gender.Visible (begin)
-        <th data-name="Gender" class="@(customersList.Gender.HeaderCellClass)"><div id="elh_Customers_Gender" class="Customers_Gender">@Html.Raw(customersList.RenderFieldHeader(customersList.Gender))</div></th>
+        <th data-name="Gender" class="@(customersList.Gender.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Customers_Gender" class="Customers_Gender">@Html.Raw(customersList.RenderFieldHeader(customersList.Gender))</div></th>
 } @* customersList.Gender.Visible (end) *@
 @if (customersList.PlaceOfBirth.Visible) { // customersList.PlaceOfBirth.Visible (begin)
-        <th data-name="PlaceOfBirth" class="@(customersList.PlaceOfBirth.HeaderCellClass)"><div id="elh_Customers_PlaceOfBirth" class="Customers_PlaceOfBirth">@Html.Raw(customersList.RenderFieldHeader(customersList.PlaceOfBirth))</div></th>
+        <th data-name="PlaceOfBirth" class="@(customersList.PlaceOfBirth.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Customers_PlaceOfBirth" class="Customers_PlaceOfBirth">@Html.Raw(customersList.RenderFieldHeader(customersList.PlaceOfBirth))</div></th>
 } @* customersList.PlaceOfBirth.Visible (end) *@
 @if (customersList.DateOfBirth.Visible) { // customersList.DateOfBirth.Visible (begin)
-        <th data-name="DateOfBirth" class="@(customersList.DateOfBirth.HeaderCellClass)"><div id="elh_Customers_DateOfBirth" class="Customers_DateOfBirth">@Html.Raw(customersList.RenderFieldHeader(customersList.DateOfBirth))</div></th>
+        <th data-name="DateOfBirth" class="@(customersList.DateOfBirth.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Customers_DateOfBirth" class="Customers_DateOfBirth">@Html.Raw(customersList.RenderFieldHeader(customersList.DateOfBirth))</div></th>
 } @* customersList.DateOfBirth.Visible (end) *@
 @if (customersList.PrimaryAddressCity.Visible) { // customersList.PrimaryAddressCity.Visible (begin)
-        <th data-name="PrimaryAddressCity" class="@(customersList.PrimaryAddressCity.HeaderCellClass)"><div id="elh_Customers_PrimaryAddressCity" class="Customers_PrimaryAddressCity">@Html.Raw(customersList.RenderFieldHeader(customersList.PrimaryAddressCity))</div></th>
+        <th data-name="PrimaryAddressCity" class="@(customersList.PrimaryAddressCity.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Customers_PrimaryAddressCity" class="Customers_PrimaryAddressCity">@Html.Raw(customersList.RenderFieldHeader(customersList.PrimaryAddressCity))</div></th>
 } @* customersList.PrimaryAddressCity.Visible (end) *@
 @if (customersList.PrimaryAddressPostCode.Visible) { // customersList.PrimaryAddressPostCode.Visible (begin)
-        <th data-name="PrimaryAddressPostCode" class="@(customersList.PrimaryAddressPostCode.HeaderCellClass)"><div id="elh_Customers_PrimaryAddressPostCode" class="Customers_PrimaryAddressPostCode">@Html.Raw(customersList.RenderFieldHeader(customersList.PrimaryAddressPostCode))</div></th>
+        <th data-name="PrimaryAddressPostCode" class="@(customersList.PrimaryAddressPostCode.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Customers_PrimaryAddressPostCode" class="Customers_PrimaryAddressPostCode">@Html.Raw(customersList.RenderFieldHeader(customersList.PrimaryAddressPostCode))</div></th>
 } @* customersList.PrimaryAddressPostCode.Visible (end) *@
 @if (customersList.PrimaryAddressCountryID.Visible) { // customersList.PrimaryAddressCountryID.Visible (begin)
-        <th data-name="PrimaryAddressCountryID" class="@(customersList.PrimaryAddressCountryID.HeaderCellClass)"><div id="elh_Customers_PrimaryAddressCountryID" class="Customers_PrimaryAddressCountryID">@Html.Raw(customersList.RenderFieldHeader(customersList.PrimaryAddressCountryID))</div></th>
+        <th data-name="PrimaryAddressCountryID" class="@(customersList.PrimaryAddressCountryID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Customers_PrimaryAddressCountryID" class="Customers_PrimaryAddressCountryID">@Html.Raw(customersList.RenderFieldHeader(customersList.PrimaryAddressCountryID))</div></th>
 } @* customersList.PrimaryAddressCountryID.Visible (end) *@
 @if (customersList.AlternativeAddressCity.Visible) { // customersList.AlternativeAddressCity.Visible (begin)
-        <th data-name="AlternativeAddressCity" class="@(customersList.AlternativeAddressCity.HeaderCellClass)"><div id="elh_Customers_AlternativeAddressCity" class="Customers_AlternativeAddressCity">@Html.Raw(customersList.RenderFieldHeader(customersList.AlternativeAddressCity))</div></th>
+        <th data-name="AlternativeAddressCity" class="@(customersList.AlternativeAddressCity.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Customers_AlternativeAddressCity" class="Customers_AlternativeAddressCity">@Html.Raw(customersList.RenderFieldHeader(customersList.AlternativeAddressCity))</div></th>
 } @* customersList.AlternativeAddressCity.Visible (end) *@
 @if (customersList.AlternativeAddressPostCode.Visible) { // customersList.AlternativeAddressPostCode.Visible (begin)
-        <th data-name="AlternativeAddressPostCode" class="@(customersList.AlternativeAddressPostCode.HeaderCellClass)"><div id="elh_Customers_AlternativeAddressPostCode" class="Customers_AlternativeAddressPostCode">@Html.Raw(customersList.RenderFieldHeader(customersList.AlternativeAddressPostCode))</div></th>
+        <th data-name="AlternativeAddressPostCode" class="@(customersList.AlternativeAddressPostCode.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Customers_AlternativeAddressPostCode" class="Customers_AlternativeAddressPostCode">@Html.Raw(customersList.RenderFieldHeader(customersList.AlternativeAddressPostCode))</div></th>
 } @* customersList.AlternativeAddressPostCode.Visible (end) *@
 @if (customersList.AlternativeAddressCountryID.Visible) { // customersList.AlternativeAddressCountryID.Visible (begin)
-        <th data-name="AlternativeAddressCountryID" class="@(customersList.AlternativeAddressCountryID.HeaderCellClass)"><div id="elh_Customers_AlternativeAddressCountryID" class="Customers_AlternativeAddressCountryID">@Html.Raw(customersList.RenderFieldHeader(customersList.AlternativeAddressCountryID))</div></th>
+        <th data-name="AlternativeAddressCountryID" class="@(customersList.AlternativeAddressCountryID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Customers_AlternativeAddressCountryID" class="Customers_AlternativeAddressCountryID">@Html.Raw(customersList.RenderFieldHeader(customersList.AlternativeAddressCountryID))</div></th>
 } @* customersList.AlternativeAddressCountryID.Visible (end) *@
 @if (customersList.MobileNumber.Visible) { // customersList.MobileNumber.Visible (begin)
-        <th data-name="MobileNumber" class="@(customersList.MobileNumber.HeaderCellClass)"><div id="elh_Customers_MobileNumber" class="Customers_MobileNumber">@Html.Raw(customersList.RenderFieldHeader(customersList.MobileNumber))</div></th>
+        <th data-name="MobileNumber" class="@(customersList.MobileNumber.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Customers_MobileNumber" class="Customers_MobileNumber">@Html.Raw(customersList.RenderFieldHeader(customersList.MobileNumber))</div></th>
 } @* customersList.MobileNumber.Visible (end) *@
 @if (customersList.UserID.Visible) { // customersList.UserID.Visible (begin)
-        <th data-name="UserID" class="@(customersList.UserID.HeaderCellClass)"><div id="elh_Customers_UserID" class="Customers_UserID">@Html.Raw(customersList.RenderFieldHeader(customersList.UserID))</div></th>
+        <th data-name="UserID" class="@(customersList.UserID.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Customers_UserID" class="Customers_UserID">@Html.Raw(customersList.RenderFieldHeader(customersList.UserID))</div></th>
 } @* customersList.UserID.Visible (end) *@
 @if (customersList.Status.Visible) { // customersList.Status.Visible (begin)
-        <th data-name="Status" class="@(customersList.Status.HeaderCellClass)"><div id="elh_Customers_Status" class="Customers_Status">@Html.Raw(customersList.RenderFieldHeader(customersList.Status))</div></th>
+        <th data-name="Status" class="@(customersList.Status.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Customers_Status" class="Customers_Status">@Html.Raw(customersList.RenderFieldHeader(customersList.Status))</div></th>
 } @* customersList.Status.Visible (end) *@
 @if (customersList.CreatedBy.Visible) { // customersList.CreatedBy.Visible (begin)
-        <th data-name="CreatedBy" class="@(customersList.CreatedBy.HeaderCellClass)"><div id="elh_Customers_CreatedBy" class="Customers_CreatedBy">@Html.Raw(customersList.RenderFieldHeader(customersList.CreatedBy))</div></th>
+        <th data-name="CreatedBy" class="@(customersList.CreatedBy.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Customers_CreatedBy" class="Customers_CreatedBy">@Html.Raw(customersList.RenderFieldHeader(customersList.CreatedBy))</div></th>
 } @* customersList.CreatedBy.Visible (end) *@
 @if (customersList.CreatedDateTime.Visible) { // customersList.CreatedDateTime.Visible (begin)
-        <th data-name="CreatedDateTime" class="@(customersList.CreatedDateTime.HeaderCellClass)"><div id="elh_Customers_CreatedDateTime" class="Customers_CreatedDateTime">@Html.Raw(customersList.RenderFieldHeader(customersList.CreatedDateTime))</div></th>
+        <th data-name="CreatedDateTime" class="@(customersList.CreatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Customers_CreatedDateTime" class="Customers_CreatedDateTime">@Html.Raw(customersList.RenderFieldHeader(customersList.CreatedDateTime))</div></th>
 } @* customersList.CreatedDateTime.Visible (end) *@
 @if (customersList.UpdatedBy.Visible) { // customersList.UpdatedBy.Visible (begin)
-        <th data-name="UpdatedBy" class="@(customersList.UpdatedBy.HeaderCellClass)"><div id="elh_Customers_UpdatedBy" class="Customers_UpdatedBy">@Html.Raw(customersList.RenderFieldHeader(customersList.UpdatedBy))</div></th>
+        <th data-name="UpdatedBy" class="@(customersList.UpdatedBy.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Customers_UpdatedBy" class="Customers_UpdatedBy">@Html.Raw(customersList.RenderFieldHeader(customersList.UpdatedBy))</div></th>
 } @* customersList.UpdatedBy.Visible (end) *@
 @if (customersList.UpdatedDateTime.Visible) { // customersList.UpdatedDateTime.Visible (begin)
-        <th data-name="UpdatedDateTime" class="@(customersList.UpdatedDateTime.HeaderCellClass)"><div id="elh_Customers_UpdatedDateTime" class="Customers_UpdatedDateTime">@Html.Raw(customersList.RenderFieldHeader(customersList.UpdatedDateTime))</div></th>
+        <th data-name="UpdatedDateTime" class="@(customersList.UpdatedDateTime.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Customers_UpdatedDateTime" class="Customers_UpdatedDateTime">@Html.Raw(customersList.RenderFieldHeader(customersList.UpdatedDateTime))</div></th>
 } @* customersList.UpdatedDateTime.Visible (end) *@
 @* Render list options (header, right) *@
 @customersList.ListOptions.RenderHeader("right")

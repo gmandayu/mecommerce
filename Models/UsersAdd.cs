@@ -607,7 +607,7 @@ public partial class mecommerce {
                         if (Empty(SuccessMessage) && Post("addopt") != "1") // Skip success message for addopt (done in JavaScript)
                             SuccessMessage = Language.Phrase("AddSuccess"); // Set up success message
                         string returnUrl = "";
-                        returnUrl = ReturnUrl;
+                        returnUrl = ViewUrl;
                         if (GetPageName(returnUrl) == "userslist")
                             returnUrl = AddMasterUrl(ListUrl); // List page, return to List page with correct master key if necessary
                         else if (GetPageName(returnUrl) == "usersview")

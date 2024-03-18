@@ -162,19 +162,19 @@ if (!subscriptionsList.IsExport() && Empty(subscriptionsList.CurrentAction) && s
 @* Render list options (header, left) *@
 @subscriptionsList.ListOptions.RenderHeader("left")
 @if (subscriptionsList.Id.Visible) { // subscriptionsList.Id.Visible (begin)
-        <th data-name="Id" class="@(subscriptionsList.Id.HeaderCellClass)"><div id="elh_Subscriptions_Id" class="Subscriptions_Id">@Html.Raw(subscriptionsList.RenderFieldHeader(subscriptionsList.Id))</div></th>
+        <th data-name="Id" class="@(subscriptionsList.Id.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Subscriptions_Id" class="Subscriptions_Id">@Html.Raw(subscriptionsList.RenderFieldHeader(subscriptionsList.Id))</div></th>
 } @* subscriptionsList.Id.Visible (end) *@
 @if (subscriptionsList._User.Visible) { // subscriptionsList._User.Visible (begin)
-        <th data-name="_User" class="@(subscriptionsList._User.HeaderCellClass)"><div id="elh_Subscriptions__User" class="Subscriptions__User">@Html.Raw(subscriptionsList.RenderFieldHeader(subscriptionsList._User))</div></th>
+        <th data-name="_User" class="@(subscriptionsList._User.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Subscriptions__User" class="Subscriptions__User">@Html.Raw(subscriptionsList.RenderFieldHeader(subscriptionsList._User))</div></th>
 } @* subscriptionsList._User.Visible (end) *@
 @if (subscriptionsList.PublicKey.Visible) { // subscriptionsList.PublicKey.Visible (begin)
-        <th data-name="PublicKey" class="@(subscriptionsList.PublicKey.HeaderCellClass)"><div id="elh_Subscriptions_PublicKey" class="Subscriptions_PublicKey">@Html.Raw(subscriptionsList.RenderFieldHeader(subscriptionsList.PublicKey))</div></th>
+        <th data-name="PublicKey" class="@(subscriptionsList.PublicKey.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Subscriptions_PublicKey" class="Subscriptions_PublicKey">@Html.Raw(subscriptionsList.RenderFieldHeader(subscriptionsList.PublicKey))</div></th>
 } @* subscriptionsList.PublicKey.Visible (end) *@
 @if (subscriptionsList.AuthenticationToken.Visible) { // subscriptionsList.AuthenticationToken.Visible (begin)
-        <th data-name="AuthenticationToken" class="@(subscriptionsList.AuthenticationToken.HeaderCellClass)"><div id="elh_Subscriptions_AuthenticationToken" class="Subscriptions_AuthenticationToken">@Html.Raw(subscriptionsList.RenderFieldHeader(subscriptionsList.AuthenticationToken))</div></th>
+        <th data-name="AuthenticationToken" class="@(subscriptionsList.AuthenticationToken.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Subscriptions_AuthenticationToken" class="Subscriptions_AuthenticationToken">@Html.Raw(subscriptionsList.RenderFieldHeader(subscriptionsList.AuthenticationToken))</div></th>
 } @* subscriptionsList.AuthenticationToken.Visible (end) *@
 @if (subscriptionsList.ContentEncoding.Visible) { // subscriptionsList.ContentEncoding.Visible (begin)
-        <th data-name="ContentEncoding" class="@(subscriptionsList.ContentEncoding.HeaderCellClass)"><div id="elh_Subscriptions_ContentEncoding" class="Subscriptions_ContentEncoding">@Html.Raw(subscriptionsList.RenderFieldHeader(subscriptionsList.ContentEncoding))</div></th>
+        <th data-name="ContentEncoding" class="@(subscriptionsList.ContentEncoding.HeaderCellClass)" style="white-space: nowrap;"><div id="elh_Subscriptions_ContentEncoding" class="Subscriptions_ContentEncoding">@Html.Raw(subscriptionsList.RenderFieldHeader(subscriptionsList.ContentEncoding))</div></th>
 } @* subscriptionsList.ContentEncoding.Visible (end) *@
 @* Render list options (header, right) *@
 @subscriptionsList.ListOptions.RenderHeader("right")
